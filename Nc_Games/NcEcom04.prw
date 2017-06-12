@@ -1,0 +1,530 @@
+#INCLUDE "PROTHEUS.CH"
+#INCLUDE "TOPCONN.CH"
+#Include "XMLXFUN.CH"
+#INCLUDE "TBICONN.CH"
+
+#Define Enter Chr(13)+Chr(10)
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM03  บAutor  ณLucas Felipe        บ Data ณ  03/13/14   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+User Function Ecom04Job(aDados)
+
+	Default aDados:={"01","03"}
+	RpcSetEnv(aDados[1],aDados[2])
+
+	U_NcEcom04()
+
+	RpcClearEnv()
+
+Return
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNcEcom04  บAutor  ณOctavio A. Estevam  บ Data ณ  23/12/13   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ Integra็ใo Protheus x CiaShop                              บฑฑ
+ฑฑบ          ณ Atualiza a tabela de pre็o na ferramenta Ciashop           บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ NC Games                                                  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+User Function NcEcom04()
+
+	Local aArea		:= GetArea()
+	Local aAreSql		:= GetNextAlias()
+	Local oobj			:= nil
+	Local oXml			:= nil
+	Local _cxml		:= ""
+	Local cError		:= ""
+	Local cWarning	:= ""
+	Local _cQuery		:= ""
+	Local nHDL
+	Local _aXml		:= {}
+	Local _nCont		:= 0
+	Local cWSUser		:= Alltrim(U_MyNewSX6("EC_NCG0010","wsncgames","C","Usuแrio com acesso a Integra็ใo(WS)","","",.F. )   )
+	Local cWSPass		:= Alltrim(U_MyNewSX6("EC_NCG0011","apeei.1453","C","Senha do Usuแrio com acesso a Integra็ใo(WS)","","",.F. )   )
+	Local nVlrOfer
+	Local dDtIOfer	:= "2012-01-01"
+	Local dDtFOfer	:= "2012-02-01"
+	
+	Local cCodPro		:= ""
+	Local cCodTab		:= ""
+	Local cVlrDe		:= ""
+	Local cVlrPor		:= ""
+	Local cDtIni		:= ""
+	Local cDtFim		:= ""
+
+	Local oSrv
+	Local aReturn 	:= {}
+
+	If !Semaforo(.T.,@nHDL,"NCECOM04")
+		Return()
+	EndIf
+
+
+	_cQuery:=" SELECT ZC4_CODTAB, ZC4_CODPRO, ZC4_PRCCIA, ZC4.* "
+	_cQuery+=" FROM "+RetSqlName("ZC4")+" ZC4"
+	_cQuery+=" WHERE ZC4_FILIAL='"+xFilial("ZC4")+"'"
+	_cQuery+=" And D_E_L_E_T_= ' ' "
+	_cQuery+=" AND ZC4_FLAG='2' "
+
+	_cQuery := ChangeQuery(_cQuery)
+
+	dbUseArea(.T., "TOPCONN", TCGenQry(,,_cQuery), aAreSql, .T., .F.)
+
+	(aAreSql)->(DbSelectArea(aAreSql))
+	(aAreSql)->(DbGoTop())
+
+	If (aAreSql)->(!EoF())
+	
+		Do While (aAreSql)->(!EoF())
+		
+			If _nCont == 800
+				_nCont := 0
+				Aadd(_aXml,_cxml)
+				_cXml:=""
+			Endif
+			
+			cCodPro 	:= AllTrim((aAreSql)->ZC4_CODPRO)
+			cCodTab	:= AllTrim((aAreSql)->ZC4_CODTAB)
+			
+			If (aAreSql)->ZC4_CIAOFE > 0 .And. StoD((aAreSql)->ZC4_DTFIMO) - MsDate() > 0
+				cVlrDe		:= AllTrim( Str(Round( (aAreSql)->ZC4_CIAOFE * 100 ,0) ))
+				cVlrPor	:= AllTrim( Str(Round( (aAreSql)->ZC4_PRCCIA * 100 ,0) ))
+				cDtIni		:= IIf(!Empty((aAreSql)->ZC4_DTINIO),(SubSTR((aAreSql)->ZC4_DTINIO,1,4)+"-"+SubSTR((aAreSql)->ZC4_DTINIO,5,2)+"-"+SubSTR((aAreSql)->ZC4_DTINIO,7,2)),dDtIOfer)
+				cDtFim		:= IIf(!Empty((aAreSql)->ZC4_DTFIMO),(SubSTR((aAreSql)->ZC4_DTFIMO,1,4)+"-"+SubSTR((aAreSql)->ZC4_DTFIMO,5,2)+"-"+SubSTR((aAreSql)->ZC4_DTFIMO,7,2)),dDtFOfer)
+			Else
+				cVlrDe		:= AllTrim( Str(Round((aAreSql)->ZC4_PRCCIA * 100 + 1 ,0) ))
+				cVlrPor	:= AllTrim( Str(Round((aAreSql)->ZC4_PRCCIA * 100 ,0) ))
+				cDtIni		:= dDtIOfer //2012-01-01
+				cDtFim		:= dDtFOfer //2012-02-01
+			EndIf
+		
+			_cxml += '<TabelaPrecoVariante xmlns="" op="I" sku="'+ cCodPro +'" tabelapreco="'+ cCodTab +'" list_price="'+ cVlrDe +'" sale_price="'+ cVlrPor +'" sale_start="'+ cDtIni +'" sale_end="'+ cDtFim +'"  />'
+			
+			(aAreSql)->(DbSkip())
+			_nCont++
+			
+		EndDo
+		
+	If !Empty(Alltrim(_cxml))
+		Aadd(_aXml,_cxml)
+	Endif
+	
+	Ecom04Log(_aXml)
+	
+	For i:=1 to Len(_aXml)
+		
+		_cxml:='<?xml version="1.0" encoding="utf-8" standalone="no" ?><TabelaPrecoVarianteList xmlns="dsReceipt.xsd">'
+		_cxml+=_aXml[i]
+		_cxml+='</TabelaPrecoVarianteList >'
+		
+		//Cria o Obejto com os M้todos do Portal CiaShop
+		oobj:=NC_WSWSIntegracao():new()
+		
+		//U_NcEcoLog("NcEcom04()","Atualiza็ใo da Tabela de Pre็o na Ciashop:")
+		//chama o metodo do portal
+		
+		
+		//oSrv:=RpcConnect( "192.168.0.217",1242,"TOTVSHOM_ECOMMERCE","01","03" )
+		//aReturn :=(oSrv:callproc("U_M04POSTPRE",_cxml))
+		//RpcDisconnect (oSrv )
+		oobj:TabelaPrecoVariante(SuperGetMV("EC_NCG0010",,"wsncgames"),SuperGetMV("EC_NCG0011",,"apeei.1453"),_cxml)
+		
+		If oobj:lTabelaPrecoVarianteResult
+			
+			cError:=""
+			//transforma o xml do resultado em objeto
+			oXml := XmlParser( oobj:cxml, "_", @cError, @cWarning )
+			
+			//recupera o conteudo dentro do objeto xml
+			//U_NcEcoLog("NcEcom04()",oxml:_result:_resulttext:text)
+			If !Empty(cError)
+				U_COM09CAD("PRECO","PRECO","UPDATE","",cError,"")
+			Else
+				U_COM09CAD("PRECO","PRECO","UPDATE","Atualiza็ใo do Preco realizada com sucesso.","","")
+			EndIf
+			
+			
+		Else
+			U_COM09CAD("PRECO","PRECO","UPDATE","",GetWSCError(),"")
+		Endif
+	Next i
+	
+Else
+	//U_NcEcoLog("NcEcom04()","Nใo hแ saldos a serem exportados!")
+Endif
+	(aAreSql)->(DbCloseArea())
+//U_NcEcoLog("NcEcom04()","Termino da Rotina")
+
+Semaforo(.F.,nHDL,"NCECOM04")
+
+RestArea(aArea)
+Return
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM04  บAutor  ณMicrosiga           บ Data ณ  01/30/14   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+Static Function Semaforo(lTipo,nHdl,cArq)
+Local lRet		:=	.f.
+Local cSemaf	:=	"SEMAFORO\"+cArq+".LCK"
+
+If lTipo
+	nHdl := MSFCREATE(cSemaf,1 + 16)
+	lRet := nHdl > 0
+Else
+	lRet :=	Fclose(nHdl)
+	Ferase(cSemaf)
+EndIf
+
+Return(lRet)
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM04  บAutor  ณLucas Felipe        บ Data ณ  04/10/14   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+User Function NcE04Proc()
+
+Local cMsgYes := "A Rotina de atualiza็ใo de pre็os pode demorar alguns minutos. Deseja Prosseguir?"
+
+
+If MsgYesno(cMsgYes)
+	Processa( { ||U_NcEcom04()}, "Aguarde...", "Processando atualiza็ใo...",.F.)
+Else
+	Return
+EndIf
+
+Return
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM04  บAutor  ณMicrosiga           บ Data ณ  06/13/15   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+User Function Nc04Pric(cCodPro)
+
+Local cQry 		:= ""
+Local cAliasQry	:= GetNextAlias()
+
+Local oApiSite
+Local cUrlPrice	:= ""
+Local cBody		:= ""
+
+Local cPrcDe	:= ""
+Local cPrcPor	:= ""
+Local cMensagem	:= ""
+Local cMsgem	:= ""
+
+Default cCodPro	:= ""
+
+
+cQry := ""
+cQry += " SELECT ZC4.ZC4_CODTAB, "+CRLF
+cQry += " 		  ZC4.ZC4_CODPRO, "+CRLF
+cQry += " 		  ZC4.ZC4_PRCCIA, "+CRLF
+cQry += " 		  ZC4.ZC4_CIAOFE,	"+CRLF
+cQry += " 		  ZC4.ZC4_DESCRI	"+CRLF
+cQry += " FROM "+RetSqlName("ZC3")+" ZC3 "+CRLF
+cQry += " 	INNER JOIN "+RetSqlName("ZC4")+" ZC4 "+CRLF
+cQry += " 	ON ZC4.ZC4_FILIAL = '"+xFilial("ZC4")+"' "+CRLF
+cQry += " 	AND ZC4.ZC4_CODPRO = ZC3.ZC3_CODPRO "+CRLF
+cQry += " 	AND ZC4.D_E_L_E_T_ = ' ' "+CRLF
+cQry += " WHERE ZC3_FILIAL = '"+xFilial("ZC3")+"' "+CRLF
+cQry += " AND ZC3.D_E_L_E_T_ = ' ' "+CRLF
+
+If !Empty(cCodPro)
+	cQry += " AND ZC3_CODPRO = '"+cCodPro+"' "+CRLF
+EndIf
+
+cQry := ChangeQuery(cQry)
+dbUseArea(.T., "TOPCONN", TCGenQry(,,cQry), cAliasQry, .T., .F.)
+
+Do While !((cAliasQry)->(EOF()))
+	
+	oApiSite:= ApiCiaShop():New()
+	cUrlPrice	:= 'variantsErpId/'+AllTrim((cAliasQry)->ZC4_CODPRO)+'/pricingtablesErpId/'+AllTrim((cAliasQry)->ZC4_CODTAB)+'/price'
+	
+	cPrcDe		:= Alltrim(STR((cAliasQry)->ZC4_PRCCIA-0.01))
+	cPrcPor		:= Alltrim(STR((cAliasQry)->ZC4_PRCCIA))
+	
+	cBody:='{
+	cBody+='  "price": '+cPrcPor+',
+	cBody+='  "salePrice": '+cPrcDe+',
+	cBody+='  "saleDateStart": "2015-01-01T00:00:00-02:00",
+	cBody+='  "saleDateEnd": "2015-01-31T03:00:00-02:00"
+	cBody+='}
+	
+	oApiSite:cUrl	:= cUrlPrice
+	oApiSite:cBody := EnCodeUtf8(cBody)
+	oApiSite:HttpPost()
+	
+	If At("errors",oApiSite:cResponse)>0
+		cMsgem+="Erro na grava็ao do Produto na tabela "+AllTrim((cAliasQry)->ZC4_CODTAB)+"."+CRLF
+	Else
+		cMensagem:="Pre็o do produto gravado com sucesso."+CRLF
+	EndIf
+	
+	(cAliasQry)->(DbSkip())
+	
+EndDo
+
+Eco04Padr(cCodPro)
+
+
+MsgAlert(cMsgem+cMensagem,"Nc04Pric")
+
+(cAliasQry)->(DbCloseArea())
+
+Return
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM04  บAutor  ณMicrosiga           บ Data ณ  08/13/15   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+Static Function Ecom04Log(aXmlLog)
+
+Local cPara		:= "lfelipe@ncgames.com.br;rciambarella@ncgames.com.br"
+Local cAssunto  := "Integra็ใo de pre็o "+DtoC(MsDate())
+Local cBody     := "Email gerado automaticamente"
+Local cAttach   := ""
+
+Local nTotLinhas:= 0
+Local cPathArq	:= StrTran(GetSrvProfString( "StartPath", "" )+"\","\\","\")
+Local cArq 		:= "ciashop_pre็os"+DtoS(MsDate())
+Local cExtExcel	:= ".CSV"
+Local nArq,nInd
+Local cTexto	:= ""
+Local aAcolsAux	:= {}
+Local cAcolsAux	:= ""
+
+If Len(aXmlLog)==0
+	Return()
+Endif
+
+nArq  := FCreate(cPathArq + cArq + cExtExcel)
+
+FWrite(nArq, '<?xml version="1.0" encoding="utf-8" standalone="no" ?><TabelaPrecoVarianteList xmlns="dsReceipt.xsd">'+Enter)
+
+For nInd := 1 to Len(aXmlLog)
+	
+	aAcolsAux := Separa(aXmlLog[nInd],"<")
+	For nI := 1 to Len(aAcolsAux)
+		FWrite(nArq, "<" + aAcolsAux[nI] +Enter)
+	Next
+	
+Next
+
+FWrite(nArq, '</TabelaPrecoVarianteList>' +Enter)
+
+FClose(nArq)
+
+cAttach := cPathArq+cArq+cExtExcel
+
+Ec04Send(,cPara,cAssunto,cBody,cAttach)
+
+Ferase(cPathArq+cArq+cExtExcel)
+
+Return    
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCGRL212  บAutor  ณMicrosiga           บ Data ณ  05/18/15   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+Static Function Ec04Send(cFrom,cPara,cAssunto,cBody,cAttach)
+
+Local cUser 	:= GetNewPar("MV_RELACNT","")
+Local cPass 	:= GetNewPar("MV_RELAPSW","")
+Local cSendSrv 	:= GetNewPar("MV_RELSERV","")
+Local lMailAuth := GetNewPar("MV_RELAUTH",.F.)
+Local nSmtpPort := GetNewPar("MV_GCPPORT","")
+Local lSSL	:= SuperGetMv("MV_RELSSL",.F.)
+Local lTLS	:= SuperGetMv("MV_RELTLS",.F.)
+
+Local xRet
+Local oServer, oMessage
+
+Local cFrom1 	:= "Workflow@ncgames.com.br"
+
+Default cPara 	:= "lfelipe@ncgames.com.br"
+Default cAssunto:= ""
+Default cBody 	:= ""
+
+If At(":",cSendSrv) > 0
+	cSendSrv := SubStr(cSendSrv,1,At(":",cSendSrv)-1)
+EndIf
+
+cFrom := IIf(Empty(cFrom),cFrom1,cFrom)
+
+oServer := TMailManager():New()  
+oServer:SetUseSSL( lSSL )
+oServer:SetUseTLS(lTLS ) //ADD 23/06/2016 -- configura็ใo de gmail
+oServer:Init( "", cSendSrv, cUser, cPass, , nSmtpPort )
+
+// estabilish the connection with the SMTP server
+xRet := oServer:SMTPConnect()
+if xRet <> 0
+	cMsg := "Could not connect on SMTP server: " + oServer:GetErrorString( xRet )
+	conout( cMsg )
+	return
+endif
+
+// authenticate on the SMTP server (if needed)
+xRet := oServer:SmtpAuth( cUser, cPass )
+if xRet <> 0
+	cMsg := "Could not authenticate on SMTP server: " + oServer:GetErrorString( xRet )
+	conout( cMsg )
+	oServer:SMTPDisconnect()
+	return
+endif
+
+oMessage := TMailMessage():New()
+oMessage:Clear()
+
+//oMessage:cDate := cValToChar( Date() )
+oMessage:cFrom		:= cFrom
+oMessage:cTo		:= cPara
+oMessage:cSubject	:= cAssunto
+oMessage:cBody		:= cBody
+If !Empty(cAttach)
+	oMessage:AttachFile( cAttach ) // Adiciona um anexo.
+EndIf
+
+xRet := oMessage:Send( oServer )
+if xRet <> 0
+	cMsg := "Could not send message: " + oServer:GetErrorString( xRet )
+	conout( cMsg )
+endif
+
+xRet := oServer:SMTPDisconnect()
+if xRet <> 0
+	cMsg := "Could not disconnect from SMTP server: " + oServer:GetErrorString( xRet )
+	conout( cMsg )
+endif
+
+return
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM04  บAutor  ณMicrosiga           บ Data ณ  09/10/15   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+Static Function Eco04Padr(cCodPro)
+
+Local cAliasSB1 := SB1->(GetArea())
+
+Local oApiSite
+Local cUrlPrice	:= ""
+Local cBody		:= ""
+
+Local cPrcDe	:= ""
+Local cPrcPor	:= ""
+Local cMensagem	:= ""
+
+Default cCodPro	:= ""
+
+If Empty(cCodPro)
+	Return()
+EndIf
+
+SB1->(DbSetOrder(1))
+SB1->(MsSeek(xFilial("SB1")+cCodPro))
+
+oApiSite:= ApiCiaShop():New()
+cUrlPrice	:= 'variantsErpId/'+AllTrim(SB1->B1_COD)+'/pricingtablesErpId/1000/price'
+                                                                       	
+cPrcDe		:= Alltrim(Str(round(SB1->B1_CONSUMI+(SB1->B1_CONSUMI*0.05),2)))
+cPrcPor		:= Alltrim(Str(round(SB1->B1_CONSUMI,2)))
+
+cBody:='{ "price": '+cPrcDe+', "salePrice": '+cPrcPor+', "saleDateStart": "2015-01-01T00:00:00-02:00", "saleDateEnd": "2015-01-31T03:00:00-02:00" }
+
+oApiSite:cUrl	:= cUrlPrice
+oApiSite:cBody 	:= EnCodeUtf8(cBody)
+oApiSite:HttpPost()
+
+If At("errors",oApiSite:cResponse)>0
+	cMensagem:="Erro na grava็ao do Pre็o Padrใo."
+	MsgAlert(cMensagem,"Nc04PTab")
+EndIf
+
+Return()

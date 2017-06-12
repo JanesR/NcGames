@@ -1,0 +1,79 @@
+
+User Function NCGResiduo()
+Local clAlias:=GetNextAlias()
+Local MV_PAR01
+Local MV_PAR02
+Local MV_PAR03
+
+Local MV_PAR10
+Local MV_PAR11
+
+Local MV_PAR07
+Local MV_PAR08
+
+RpcSetEnv("01","03")                              
+
+MV_PAR01:=100
+MV_PAR02:=CTOD("01/01/2000")
+MV_PAR03:=CTOD("31/01/2014")
+
+MV_PAR10:=CTOD("01/01/2000")
+MV_PAR11:=CTOD("31/01/2014")
+
+MV_PAR07:="01121448977"
+MV_PAR08:="01121448977"
+
+
+cQuery :=" SELECT DISTINCT SC5.R_E_C_N_O_ REGSC5 "
+cQuery +=" FROM "+RetSqlName("SC6")+" SC6, "+RetSqlName("SC5")+" SC5 "
+cQuery +=" WHERE SC6.C6_FILIAL='"+xFIlial("SC6")+"'"
+//cQuery +=" AND C6_NUM>='"+MV_PAR04+"'"
+//cQuery +=" AND C6_NUM<='"+MV_PAR05+"' AND "
+cQuery +=" AND C6_PRODUTO>='"+MV_PAR07+"'"
+cQuery +=" AND C6_PRODUTO<='"+MV_PAR08+"'"
+cQuery +=" AND C6_ENTREG BETWEEN '"+Dtos(MV_PAR10)+"' AND '"+Dtos(MV_PAR11)+"'"
+cQuery +=" AND C6_BLQ<>'R ' AND C6_BLQ<>'S '"
+cQuery +=" AND (C6_QTDVEN-C6_QTDENT)>0"
+//cQuery +=" AND C6_RESERVA='"+Space(Len(SC6->C6_RESERVA))+"'"
+cQuery += " AND SC6.D_E_L_E_T_<>'*'  "
+cQuery += " AND SC5.C5_FILIAL='"+xFilial("SC5")+"'"
+cQuery += " AND SC5.C5_NUM=SC6.C6_NUM  "
+cQuery += " AND SC5.C5_EMISSAO>='"+DTOS(MV_PAR02)+"'"
+cQuery += " AND SC5.C5_EMISSAO<='"+DTOS(MV_PAR03)+"'"
+cQuery += " AND SC5.D_E_L_E_T_<>'*' "
+cQuery += " AND ((SC6.C6_QTDVEN=0 AND SC5.C5_NOTA<>'"+Space(Len(SC5->C5_NOTA))+"') OR (100-((SC6.C6_QTDENT+SC6.C6_QTDEMP)/SC6.C6_QTDVEN*100)<="+Str(MV_PAR01,6,2)+")) "
+cQuery += " ORDER BY 1 "
+DbUseArea(.T.,"TOPCONN",TcGenQry(,,cQuery),clAlias, .F., .F.)
+
+
+
+Do While (clAlias)->(!Eof())
+	
+	SC5->(DbGoTo( (clAlias)->REGSC5 ))
+	
+	
+	If !SC6->( DbSeek(xFilial("SC6")+ SC5->C5_NUM ))
+		(clAlias)->(DbSkip());Loop
+	EndIf
+	
+	U_NC110Del(SC5->C5_NUM)
+	nVlrDep:=0
+	Do While SC6->(!Eof() ) .And. SC6->( C6_FILIAL+C6_NUM==xFilial("SC6")+ SC5->C5_NUM )
+		If !Empty(SC6->C6_RESERVA)  .And.  !SC0->( DbSeek( xFilial("SC0") +SC6->(C6_RESERVA+C6_PRODUTO+C6_LOCAL)   )   )
+			SC6->(RecLock("SC6",.F.) )
+			SC6->C6_RESERVA:=""
+			SC6->(MsUnLock())
+		EndIf
+		
+		MaResDoFat(nil, .T., .F., @nVlrDep)
+		SC6->(DbSkip())
+	EndDo
+	
+	MaLiberOk({ SC5->C5_NUM }, .T.)
+	
+	
+	(clAlias)->(DbSkip())
+	
+EndDo
+                    
+Return

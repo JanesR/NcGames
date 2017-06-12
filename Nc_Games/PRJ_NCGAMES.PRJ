@@ -1,0 +1,2265 @@
+Group NCGAMES
+   Version=7.0
+   VSSDB=
+   HasProperties=1
+   Properties
+      BeforeApply=
+      AfterApply=
+      Icon=
+      ID=
+      Version=
+      PalmName=
+      OutPut=
+   End
+   ProjectsCount=1
+   Project Fontes
+      FoldersCount=3
+      Folder Fontes
+         VSSPath=Nova Pasta1
+         FilesCount=704
+         File \TOTVS118\Microsiga\Protheus\my projects\a100del.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\a103vlex.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\a261tok.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\a410cons.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\a410plan.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\a440but.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\alt01szhj.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\alttes.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\atuszc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\atuszc_rev2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\atuszd.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\atuszq.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\avalchr.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\axcadszf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\axcadszh.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\axcadszk.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\axszisc1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\axszisc7.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\bordero.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\c5when01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cadkpi.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cadpj.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cadpro.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cadsz5.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cadsz6.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cadsz7.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cadszf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\calccond.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\calcdescont.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\calcfrete(novo).prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\calctit.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\checktop.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\clasrecl.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\classe.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cnab2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cnab3.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\codbar.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\comppb.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\compsx130430.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\compsxm.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\comrd003.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\conta.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\convld.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\corr_sb1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\cpyresiduo.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ctp241exce.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\danfeiii.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbcadorc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbcvicom.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbespco2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbespcom.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbimpcsv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbinddbf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbiprcsv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbkeycom.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbmcdcla.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbnv2csv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbnv3csv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbregcom.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbrelcom.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbrelpic.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbrelpr2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbrelprv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbrindic.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbrorcam.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbvincom.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dbvisped.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dsblqpro.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\dupli.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\eicpo150_rdm.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\enviaemail.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\esp_nota.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\estorno_pick.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\eti_vol_ped.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\exc01szhj.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\exlctb.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\expprowms.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\expsft.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\expsite.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\expsz7.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\f040adle.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\f040uret.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\f200var.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\f261trans.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\f300valid.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa040b01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa040del.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa040grv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa040inc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa050alt.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa050b01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa050del.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa050grv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa050inc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa080pe.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fa330qry.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fat001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fat002.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fin150_1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fina200.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\fretenpago.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\g01zhprod.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\g01zjdtprog.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\gerab1b2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\gerab2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\geragnre.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\getxml.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\gp670cpo.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\gqreentr.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\icpadfi3_rdm.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\impacertprod.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\impb1b5.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\impinvent.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\impnfeht.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\importa tabela preco.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\inc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\inc_dt_ped.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\inc01szhj.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\inc02szhj.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\inc03szhj.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\increm.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\invproc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\itemcta.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzbr19.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzgrinv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzmis002.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg03.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg04.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg05.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg11.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg12.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg15.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg016.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg17.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg19.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg20.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg21.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncg24.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzncgjob.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzrelfen.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzrfat02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\kzrinc18.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\laytexlog.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\laytransp.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\limpacom.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\limpafat.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\limpafin.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\logistica.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m030inc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m110stts.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m410alok.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m410get.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m410liok.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m410soli.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m410stts.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m440stts.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m460fim.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m460soli.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m521dnfs.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ma010fil.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ma41omnu.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ma261lin.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ma330seq.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ma450mnu.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\manut.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mbrwinv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mfrete.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mod3szhj.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\modulo11dv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\motaletracao.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\motdev.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\motivo.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mprobest.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ms520vld.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\msd2460.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt010alt.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt010inc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt100lok.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt103tok.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt120fim.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt130wf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt160wf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt260tok.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt340b2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt410ace.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt410alt.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt410cpy.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt410tok.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt450fim.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt540grv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mt540vld.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mta410e.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mta440at.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mta440c9.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mta450cl.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mta450i.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mta450lib.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mta450r.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\mtcpsapb1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nc_hist_excecao_fiscal.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nc_matr580.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nc580canal.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nc590mtr.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nccfg01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncfatcli.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncfatda1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncfatmrg.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncfatstar.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncfatvpc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgcd101.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgcd102.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgcd104.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgcd105.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgcd106.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgcd107.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgcs101.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgfg001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgfg101.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgfinr007.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr30.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr101.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr103.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgrl101.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgrl202.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgrl203.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgrl204.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgrl207.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgsh001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgud102.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgud104.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgwf101.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgwf102.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgwf103.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgws002.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncimpda1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncimpi001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncimpsb1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncrest0001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncrest002.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncrest003.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncrest004.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nestr01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nestr02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\netiemb.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfata01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfata02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatdsc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatg01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatg02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatg03.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatg04.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatm01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatm02a.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatm03.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatm03a.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr02w.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr03.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr04.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr05.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr05a.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr06.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr07.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatr09.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfatsc5a.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfesefaz.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfinr01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfinr01a.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfselsf2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nfselsz1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ngate01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\num_tit_cnab.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\numeros titulos.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\om010lok.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\p_f110fil.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\p_margr.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\p_mt440gr.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\p_mt440lib.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\p202calcfrete.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagacta.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagagen.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagano.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagban.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagcar.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagcodbar.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagdoc.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagide.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagmod.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagnos.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pcomovpla.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pedabert.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pedcomnc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pedidocompra.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pedvldprod.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pev042.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pev043.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pev044.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pev051.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pev052.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pev053.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\picksel.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\picksel2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\posclinf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pre_nota.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\prodxclient.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\proj01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pvclasind.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_ndc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_pick.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_pick2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_publish.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_res_cli.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_res_prod.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_res_vend.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\relafrete.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\relcquality.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\reldesc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\relfrealt.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\retdre.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\retdre1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rnga01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\sc5digi.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\sel_arq3.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\sf1100i.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\sf2520e.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\sldinv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\stfdet.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\tabpreco.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\telaresultado.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\trackcon.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\tracking.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\trepszd.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\trepszg.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\trnoate.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\trszjszh.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg03.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg04.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg05.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg06.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg07.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg08.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg11.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg12.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg15.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg18.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg19.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg20.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncg24.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updncga1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\updpdz.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\valcodbar.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\valdesp.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\valida cliente pv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\valida_total_titulo.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\validinscr.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\validpreco.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\validtab.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\valor total pv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\vencimento.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\verdscmd.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\verificmodal.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\vermargpv.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\vis01szhj.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\vldcamp.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\vlddsc01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\vldean.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\wsmt010b.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\wsmt360.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\wsusrfield.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\xmt160wf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\zrcredi.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\eicor100_rdm.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT730X.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\PE01NFESEFAZ.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\CADMVZZ6.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr700.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr701.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr702.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA330FIM.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MC030ARR.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MC030GRV.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MC030IDE.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MC030PRJ.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NC_ReclCMVG.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR102.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGRL205.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\CadP0C.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NC_IMP_AM.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NC_IMP_AO.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NC_VERBA_VS_CODMOV.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NC_VT_VA_VR.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr703.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\APURF6OK.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\QGFINEXCE.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\QE030ALT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGRL206.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MTA410.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT100AG.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT20FOPOS.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA410DEL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA050TTS.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FRETDOCENT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\m050tok.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Avfluxo_rdm.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\REC_ALFAND1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\IC086IN1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT112IT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FA050S.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M410FSQL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M450BRW.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\IoDialog2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\GetMail.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Sendmail.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Helpdesk.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\HD_HTML.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ATU02DA0DA1.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\AXCADSZU.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGA010.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ATU03DA0DA1.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\APRJ01SZH.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NC_IMPCMGBR.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MBCADZZC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\PRINTZZC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\A010TOK.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA41OMNU.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MS520DEL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MSD2520.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT010EXC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT410ROD.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT450ABT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MTA010OK.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGA001.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGA002.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGA003.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGA004.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGA005.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGA006.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGA007.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGC001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGC002.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGC003.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGJ001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGM001.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR105.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR106.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgrl208.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGC004.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCAGrpCont.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NC_TRANSP_NF.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\TITICMST.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\A410TAB.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR705.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGRL209.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr107.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR107A.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR707.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGWF103.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M460MARK.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FA070MDB.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR110.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NC110MTR730.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT103FIM.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\A175GRV.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT261TDOK.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGCMGBR.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCG_OS.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\CTB001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA080VLD.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FA080LIB.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\GP410CRP.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgrl210.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcMsgTrk.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\nc_impnfe.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\F080FIL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\EICDI500_RDM.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGA100.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGSAC03.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGSAC02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGSAC01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\RelVendAnt.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M020ALT.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MMENSNCG.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M070INFC.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT080GRV.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCRepCrC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Fa330Vld.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\F330VEEX.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\F330AE5I.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\AtuVlMid.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M410ALOK.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncecom01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOM08.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ECOMhtm.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOM10.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcEcomIt.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOM12.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOM11.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOM09.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcEcom07.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcEcom06.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcEcom05.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcEcom04.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcEcom03.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcEcom02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR121.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr120.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOM14.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA030TOK.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\DPZZC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M440FIL.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcgXFun.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOM13.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\danfeii.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOIT02.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FISATEND.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MTC050FI.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ESP_ECOM.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncecomrl.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR712.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR711.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR710.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr709.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR708.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR706.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ConsZZC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\SD1100E.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCPREFEFN.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOM15.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA030BUT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FT080DSC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FA60FIL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP203.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCWFPP02.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP202.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP201.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\F060BROW.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FA740BRW.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FA060QRY.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA440VLD.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\CADZZR.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\CADZX5.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\VldRisLC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP206.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP207.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FA330ORD.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\OM010TOK.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\GETPRTS.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\F340LIBT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M450ABRW.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA020TOK.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\PTA00004.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\PTA00003.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\umatr260prw.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\umatr285.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MAVALMMAIL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA280FIM.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M450FLB.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR123.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcgFR010.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FC010BRW.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcgFatG1.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCCHVNFE.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MAAVCRPR.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR112.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR111.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR109.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR114.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR113.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\GatTabP.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCRFTSAG.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR116.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCCONTRP.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP303.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCWFPP31.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR124.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT116AGL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCAWFPFV.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\SX1toTxt.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR100.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP307.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP306.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP304.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPP35.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCWFPP32.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCBXTMP.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCBXTMP2.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCVTEX02.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MTA010MNU.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCVTEX01.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\EFIN410.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT103PN.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr117.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCVTEX00.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCVTEXWS.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCVTEX06.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCWEBM00.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCWEBM01.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCVTEX03.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCVTEX04.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCVTEX05.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCWEBM02.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M410INIC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCVTEX07.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcVtex08.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ImpNota.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMLOG.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWML07.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF13.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF12.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF11.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF10.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF09.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF08.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF07.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF06.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF05.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF04.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF03.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FISFILNFE.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M103FILB.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA300OK.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGINT001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MTA103MNU.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWML0B.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWML01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWML02.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWML03.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWML04.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWML06.PRW
+             Type=T
+         End
+         File \TOTVS118\MICROSIGA\PROTHEUS\MY PROJECTS\MT140FIL.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\A103CLAS.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_RZ.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWML05.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT930SF3.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_pedLibFat.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr002.prw
+             Type=T
+         End
+         File \TOTVS118\MICROSIGA\PROTHEUS\MY PROJECTS\NCGRL212.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMR01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\csvBaixaNota.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMR02.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\track001.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGRVITC.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr118.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\IMPGPE2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcVtex09.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\arqImport.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\CHGX5FIL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIDMP02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\IMPPRENF.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\A261TOK.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Ncgrl213.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M261Imp.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgrl211.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MT500ANT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCILM001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR130.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\devolFiliais.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR131.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_VendEcomerc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Ncgpr135.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Ncgpr136.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Ncgpr134.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Ncgpr129.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_transf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGWM002.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGWM001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCBXTMPV.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA103BUT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCCPRDLJ.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\MA140BUT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcgPr125.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCRCRD01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\GP660ROT.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\F060QRCP.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcVtex10.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcFinR130.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pwsv044.aph
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\desc_li.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\pagval.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\rel_dev.prx
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NcVtex11.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECORL1.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR137.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\TrocaTipoEstoqueReprocessa.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\RelFinEco.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCPREATUAL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR138.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FA050MD5.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgrl214.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR139.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGRL204Mod2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCIWMF14.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\impXMLCTE.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR_TRANSF.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\IMPDANFE.prw
+             Type=T
+         End
+      End
+      Folder Recurso
+         VSSPath=Nova Pasta2
+         FilesCount=1
+         File \TOTVS118\Microsiga\Protheus\my projects\br_vdclaro.bmp
+             Type=I
+         End
+      End
+      Folder Updates
+         VSSPath=Nova Pasta3
+         FilesCount=40
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updpr700.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\upd_ina.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\upd_sac.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updzzq.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updvvist.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updsc5.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updtabpr.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updzze.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updgrpct.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updZZ5.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\upzd2zf2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\UPD_FILIAL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updcmgbr.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updhd02.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updvarmo.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updp05.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updp0c.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updpp.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\ncgud009.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updpp2.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\uppz5pz6.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updecom.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\NCGResiduo.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updppii.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\BACA002.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updpac.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\upd_prj_es.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updze4.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\UPDzc5.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updzao.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updsb1cpy.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updvtex.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updwmlf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updsb1fc.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updzc9.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updgati.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updp0g.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\UpdPC.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updp08.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\Updates\updzca.prw
+             Type=T
+         End
+      End
+   End
+End

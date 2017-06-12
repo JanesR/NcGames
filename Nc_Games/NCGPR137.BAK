@@ -1,0 +1,11 @@
+#include 'protheus.ch'
+#include 'parmtype.ch'
+
+user function NCGPR137()
+	Local oProcessa
+	
+	oProcessa = TrocaTipoEstoqueReprocessa():New()
+	oProcessa:consultaErros()
+	oProcessa:comparaEGravaInterf()
+	
+return

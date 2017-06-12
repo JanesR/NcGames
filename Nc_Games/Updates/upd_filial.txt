@@ -1,0 +1,137 @@
+--------------------------------------------------------------------------------------------------------------------------------
+                                                                                                                                
+LOG DA ATUALIZAÇÃO DOS DICIONÁRIOS
+                                                                                                                                
+--------------------------------------------------------------------------------------------------------------------------------
+
+ Dados Ambiente
+ --------------------
+ Empresa / Filial...: 01/01
+ Nome Empresa.......: Nc Games & Arcades C.i.e.l.f.m Ltda
+ Nome Filial........: Nc Games
+ DataBase...........: 28/09/13
+ Data / Hora Ínicio.: 28/09/13 / 18:19:16
+ Environment........: compila
+ StartPath..........: \system\
+ RootPath...........: D:\PROTHEUS11\Protheus_Data
+ Versão.............: TOTVS 2011 Série T Distribuição e Logística Compila
+ Usuário TOTVS .....:  
+ Computer Name......: NCAPLICACAO
+ 
+ Dados Thread
+ --------------------
+ Usuário da Rede....: csilva.dbms
+ Estação............: NCAPLICACAO
+ Programa Inicial...: U_UPD_FILIAL
+ Environment........: compila
+ Conexão............: Sat Sep 28 18:17:53 2013
+--------------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------------
+Empresa : 01/NC Games       
+
+Ínicio da Atualização SX2
+
+Foi incluída a tabela PZ1
+Foi incluída a tabela PZ2
+Foi incluída a tabela PZ3
+
+Final da Atualização SX2
+--------------------------------------------------------------------------------------------------------------------------------
+
+Ínicio da Atualização SX3
+
+Criado o campo PZ1_FILIAL
+Criado o campo PZ1_FILORI
+Criado o campo PZ1_ORCAME
+Criado o campo PZ1_PVORIG
+Criado o campo PZ1_CLIORI
+Criado o campo PZ1_LJORIG
+Criado o campo PZ1_FILDES
+Criado o campo PZ1_PVDEST
+Criado o campo PZ1_CLIDES
+Criado o campo PZ1_LJDEST
+Criado o campo PZ1_DOCSF2
+Criado o campo PZ1_SERSF2
+Criado o campo PZ1_DOCSF1
+Criado o campo PZ1_SERSF1
+Criado o campo PZ1_DTWMS
+Criado o campo PZ1_DTEXPE
+Criado o campo PZ1_EXCLUI
+Criado o campo PZ1_DTEXCL
+Criado o campo PZ1_DSF2OR
+Criado o campo PZ1_SSF2OR
+Criado o campo PZ1_ROMAN
+Criado o campo PZ1_EXCLPV
+Criado o campo PZ2_FILIAL
+Criado o campo PZ2_PVORIG
+Criado o campo PZ2_FILORI
+Criado o campo PZ2_ACAO
+Criado o campo PZ2_DATA
+Criado o campo PZ2_HORA
+Criado o campo PZ2_USUARI
+Criado o campo PZ2_OBS
+Criado o campo PZ2_ERRO
+Criado o campo PZ3_FILIAL
+Criado o campo PZ3_GRPCLI
+Criado o campo PZ3_CODCLI
+Criado o campo PZ3_LOJA
+Criado o campo PZ3_POSIPI
+Criado o campo PZ3_FILFAT
+Criado o campo A1_YTAB05
+Criado o campo B5_YCODMS
+Criado o campo B5_YSOFTW
+Criado o campo C6_YMIDPAI
+Criado o campo C6_YITORIG
+Criado o campo C6_YPRMDSO
+Criado o campo F4_YTESENT
+Criado o campo YD_YFILFAT
+
+Final da Atualização SX3
+--------------------------------------------------------------------------------------------------------------------------------
+
+Ínicio da Atualização SIX
+
+Índice criado PZ1/1 - PZ1_FILIAL+PZ1_FILORI+PZ1_PVORIG+PZ1_FILDES
+Índice criado PZ1/2 - PZ1_FILIAL+PZ1_FILDES+PZ1_PVDEST
+Índice criado PZ1/3 - PZ1_FILIAL+PZ1_FILDES+PZ1_DOCSF2+PZ1_SERSF2+PZ1_CLIDES+PZ1_LJDEST
+Índice criado PZ2/1 - PZ2_FILIAL+PZ2_FILORI
+Índice criado PZ3/1 - PZ3_FILIAL+PZ3_GRPCLI+PZ3_CODCLI+PZ3_LOJA+PZ3_POSIPI
+Índice criado PZ3/2 - PZ3_FILIAL+PZ3_POSIPI+PZ3_GRPCLI+PZ3_CODCLI+PZ3_LOJA
+
+Final da Atualização SIX
+--------------------------------------------------------------------------------------------------------------------------------
+
+Ínicio da Atualização SX6
+
+Foi incluído o parâmetro   NCG_100000 Conteúdo [S]
+Foi incluído o parâmetro   NCG_100001 Conteúdo [04;05]
+Foi incluído o parâmetro   NCG_100002 Conteúdo [05]
+Foi incluído o parâmetro   NCG_100003 Conteúdo [03]
+Foi incluído o parâmetro   NCG_100004 Conteúdo [546]
+Foi incluído o parâmetro   NCG_100005 Conteúdo [6]
+Foi incluído o parâmetro   NCG_100006 Conteúdo [000001]
+Foi incluído o parâmetro   NCG_100007 Conteúdo [27]
+Foi incluído o parâmetro   NCG_100008 Conteúdo [175]
+Foi incluído o parâmetro   NCG_100009 Conteúdo [572]
+
+Final da Atualização SX6
+--------------------------------------------------------------------------------------------------------------------------------
+
+Ínicio da Atualização SX7
+
+
+Final da Atualização SX7
+--------------------------------------------------------------------------------------------------------------------------------
+
+Ínicio da Atualização SXB
+
+Foi incluída a consulta padrão SA1MS
+
+Final da Atualização SXB
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+ Data / Hora Final.: 28/09/13 / 18:19:16
+--------------------------------------------------------------------------------------------------------------------------------

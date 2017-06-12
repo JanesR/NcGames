@@ -1,0 +1,295 @@
+#Include 'Protheus.ch'
+#INCLUDE 'TOPCONN.ch'
+#INCLUDE 'rwmake.ch'
+
+#Define Enter Chr(13)+Chr(10)
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} ReportDef
+
+@author    Lucas Felipe
+@version   1.xx
+@since     23/05/2016
+/*/
+//------------------------------------------------------------------------------------------
+
+User Function NcVtex11()
+
+Local aBotoes		:= {}
+Local aSays		:= {}
+Local aPergunt	:= {}
+Local nOpcao		:= 0
+Local oRegua    	:= Nil
+Local alPerg		:= {}
+Local llImp		:= .T.
+
+Private alMsgErro	:= {}
+
+//Tela de aviso e acesso aos parametros
+AAdd(aSays,"[Importação de planilha]")
+AAdd(aSays,"Esse programa efetuara a importação de dados")
+AAdd(aSays,"referentes aos cupons a serem gerados")
+
+AAdd(aBotoes,{ 5,.T.,{|| alPerg := PergFile() 		}} )
+AAdd(aBotoes,{ 1,.T.,{|| nOpcao := 1, FechaBatch() 	}} )
+AAdd(aBotoes,{ 2,.T.,{|| FechaBatch() 				}} )
+FormBatch( "[Importação]", aSays, aBotoes )
+
+//Verifica se o parametro com o endereço do arquivo foi preenchido
+If Len(alPerg) > 0
+	
+	If alPerg[1]
+		If nOpcao == 1
+			//Processa({|| llImp := ImpArqPla(alPerg) })
+			//MsgRun( 'Importando dados...' ,  '', { || ImpArqPla(alPerg)} )
+			Processa( {|| ImpArqPla(alPerg) },"","" )
+		EndIf
+	Else
+		MsgAlert("Erro ao ler arquivo...")
+	EndIf
+Else
+	MsgAlert("O parâmetro com o nome do arquivo não foi preenchido ! ")
+EndIf
+
+Return(Nil)
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} PergFile
+
+@author    Lucas Felipe
+@version   1.xx
+@since     17/08/2016
+/*/
+//------------------------------------------------------------------------------------------
+
+Static Function PergFile()
+
+Local aArea 		:= GetArea()
+Local alRetPath	:= {}
+Local alParamBox	:= {}
+Local llRet			:= .F.
+Local alRet			:= {}
+
+aAdd( alParamBox ,{6,"Endereço de arquivo","","","File(&(ReadVar()))","",100,.T.,"Arquivos .CSV |*.CSV","",GETF_LOCALHARD+GETF_NETWORKDRIVE})
+
+//Monta a pergunta
+llRet := ParamBox(alParamBox ,"Endereço de arquivo",@alRetPath,,,.T.,50,50,				,			,.T.			,.T.)
+
+alRet := {llRet, alRetPath}
+
+RestArea(aArea)
+
+Return alRet
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} ReportDef
+
+@author    Lucas Felipe
+@version   1.xx
+@since     23/05/2016
+/*/
+//------------------------------------------------------------------------------------------
+
+Static Function ImpArqPla(aParam)
+
+Local aArquivo 	:= {}
+Local cLinha   	:= ""
+Local alLinha  	:= {}
+Local lRetImp		:= .T.
+Local clArq 		:= aParam[2][1]
+
+Local nInd
+
+FT_FUse(clArq)
+FT_FGoTop()
+
+ProcRegua(FT_FLastRec())
+
+FT_FGoTop()
+
+While !FT_FEof()
+	
+	IncProc("Efetuando a leitura do arquivo...")
+	
+	//Inicia as variaveis com vazio
+	cLinha  	:= ""
+	alLinha 	:= {}
+	
+	cLinha   := FT_FReadLn()
+	alLinha	:= Separa(StrTran(cLinha,'"',""),";")
+	
+	//Adiciona a linha ao arquivo
+	aAdd(aArquivo,alLinha )
+	
+	FT_FSkip()
+	
+End
+
+If Len(aArquivo) > 0
+	
+	For nInd:= 1 to Len(aArquivo)
+		
+		ZCA->(DbSetOrder(2))
+		
+		If nInd == 1 .and. MsgYesNo("O arquivo possui cabeçalho?","teste")
+			Loop
+		EndIF
+		If !ZCA->(DbSeek(xFilial("ZCA")+aArquivo[nInd][2]+aArquivo[nInd][1]))
+			ZCA->(RecLock("ZCA",.t.))
+			
+			ZCA->ZCA_NUM 		:= LastItem()
+			ZCA->ZCA_CUPOM 	:= Alltrim(aArquivo[nInd][2])
+			ZCA->ZCA_SOURCE 	:= ""
+			ZCA->ZCA_CAMPAN 	:= AllTrim(aArquivo[nInd][1])
+			ZCA->ZCA_DTCRIA 	:= MsDate()
+			ZCA->ZCA_STATUS	:= "P"
+			ZCA->ZCA_USER		:= RetCodUsr(Substr(cUsuario,1,6))
+			ZCA->ZCA_PDESC		:= Val(aArquivo[nInd][3])
+			
+			ZCA->(MsUnlock())
+		EndIf
+		
+	Next
+	
+Else
+	
+	Aviso("ARQVAZIO", "Não existe dados a serem importados", {"Ok"})
+	lRetImp := .F.
+	
+EndIf
+  
+If lRetImp
+	If MsgYesNo("Deseja realizar a importação dos cupons para a Vtex?")
+		
+	U_ExpCupons()
+		
+	EndIf
+EndIf
+
+Return
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºPrograma  ³NCVTEX11  ºAutor  ³Microsiga           º Data ³  09/13/16   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDesc.     ³                                                            º±±
+±±º          ³                                                            º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³ AP                                                        º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+User Function ExpCupons()
+
+Local cAreaZCA := ZCA->(GetArea())
+Local cAreaQry := GetNextAlias()
+
+Local cResp		:= ""
+Local cPost		:= ""
+Local oSite
+
+IncProc("Efetuando a exportação do arquivo para vtex, Aguarde...")
+BeginSql alias cAreaQry
+	
+	SELECT R_E_C_N_O_ AS RecZCA
+	FROM %Table:ZCA% ZCA
+	WHERE ZCA.ZCA_FILIAL  = %xfilial:ZCA%
+	AND ZCA.ZCA_STATUS = 'P'
+	AND ZCA.%notDel%
+	
+EndSql
+
+Do While (cAreaQry)->(!EoF())
+	
+	ZCA->(DbGoTo((cAreaQry)->RecZCA))
+	
+	oSite	:= Nil
+	oSite	:= ApiVtex():New("NcGames")
+	
+	cPost := ""
+	
+	cPost += '{ "utmSource": "'+ AllTrim(ZCA->ZCA_SOURCE) +'", '
+	cPost += '	"utmCampaign": "'+ AllTrim(ZCA->ZCA_CAMPAN) +'", '
+	cPost += ' "couponCode": "'+ AllTrim(ZCA->ZCA_CUPOM) +'", '
+	cPost += ' "isArchived": false, '
+	cPost += ' "maxItemsPerClient": 1, '
+	cPost += ' "expirationIntervalPerUse": "00:00:00" }'
+	
+	If !Empty(cPost)
+		oSite:cBody := cPost
+		oSite:CupomMassa()
+	EndIf
+	
+	cResp := alltrim(substr(oSite:cResponse,1,(AT(Enter,oSite:cResponse)-1)))
+	
+	ZCA->(RecLock("ZCA",.f.))
+	
+	If "400"$cResp
+		
+		ZCA->ZCA_STATUS 	:= "E"
+		ZCA->ZCA_LOGINT	:=	"Erro na importação"+ DtoS(MsDate()) +" - "+ time()
+		
+	ElseIf "20"$cResp
+		
+		ZCA->ZCA_STATUS 	:= "I"
+		ZCA->ZCA_LOGINT	:=	"Importado com sucesso"+ DtoS(MsDate()) +" - "+ time()
+		
+	Else
+		
+		ZCA->ZCA_STATUS 	:=	"P"
+		ZCA->ZCA_LOGINT	:=	""
+		
+	EndIf
+	
+	ZCA->(MsUnlock())
+	
+	(cAreaQry)->(DbSkip())
+	
+EndDo
+
+(cAreaQry)->(DbCloseArea())
+RestArea(cAreaZCA)
+
+Return
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºPrograma  ³NCVTEX11  ºAutor  ³Microsiga           º Data ³  09/13/16   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDesc.     ³                                                            º±±
+±±º          ³                                                            º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³ AP                                                        º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+Static Function LastItem()
+
+Local aAreaAtu 	:= GetArea()
+Local aAreaSql	:= GetNextAlias()
+Local cItem		:= Space(06)
+
+BeginSql Alias aAreaSql
+	
+	SELECT MAX(ZCA_NUM) NUM FROM %Table:ZCA% ZCA WHERE ZCA_FILIAL = %xfilial:ZC4% AND ZCA.%notDel%
+	
+EndSql
+
+If !Empty((aAreaSql)->NUM)
+	cItem := Soma1((aAreaSql)->NUM,4)
+Else
+	cItem := Soma1(cItem,4)
+EndIf
+
+(aAreaSql)->(DbCloseArea())
+
+RestArea(aAreaAtu)
+
+Return cItem

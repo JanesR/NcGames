@@ -1,0 +1,2145 @@
+#INCLUDE "PROTHEUS.CH"
+#INCLUDE "FATA080.CH"
+
+#DEFINE MAXGETDAD 4096
+#DEFINE MAXSAVERESULT 4096
+
+Static aUltResult
+Static aDescEsca
+Static lAmbOffLn 	:= SuperGetMv("MV_LJOFFLN", Nil, .F.)			//Identifica se o ambiente esta operando em offline
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³ FATA080  ³ Autor ³Vendas Clientes        ³ Data ³09.05.2001  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ Rotina de Manutencao das Regras de Desconto                  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Sintaxe   ³ FATA080                                                      ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³                                                              ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                             ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Function FATA080()
+
+Private aRotina := MenuDef()
+
+If FindFunction("LJValCenVd")
+	LJValCenVd() 
+EndIf	
+
+AjustaSX3()
+
+Private cCadastro := OemToAnsi(STR0007)	//"Manutencao das Regras de Desconto"
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Endereca para a funcao MBrowse                                          ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+dbSelectArea("ACO")
+dbSetOrder(1)
+DbSeek(xFilial("ACO"))
+mBrowse(06,01,22,75,"ACO")
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Restaura a Integridade da Rotina                                        ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+dbSelectArea("ACO")
+dbSetOrder(1)
+dbClearFilter()
+Return
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³Ft080RDes ³ Autor ³Vendas Clientes        ³ Data ³09.05.2001  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Rotina de Manutencao da Regra de Descontos                    ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Sintaxe   ³Ft080RDes                                                     ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³ExpC1: Alias do Arquivo                                       ³±±
+±±³          ³ExpN2: Numero do Registro                                     ³±±
+±±³          ³ExpN3: Opcao do aRotina                                       ³±±
+±±³          ³                                                              ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                             ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Function Ft080RDes( cAlias,nReg,nOpc, xParam, lCopia )
+
+Local aArea     := GetArea()
+Local aPosObj   := {}
+Local aObjects  := {}
+Local aSize     := {}
+Local aInfo     := {}
+Local nUsado    := 0
+Local nX        := 0
+Local nOpcA     := 0
+Local nOper     := 0
+Local nSaveSx8  := GetSx8Len()
+Local lContinua := .T.
+LOcal lGrade    := ACP->(FieldPos("ACP_ITEMGR")) > 0 .And. MaGrade()
+Local aButtons  := {}
+Local lFT080MRN := .F.
+
+Local oDlg
+Local oGetD
+Local cSeek  :=  Nil	
+Local cWhile :=	 Nil  
+
+DEFAULT lCopia  := .F.
+
+Private aHeader := {}
+Private Acols   := {}
+Private aTELA[0][0],aGETS[0]
+Private oGrade := MsMatGrade():New("oGrade",,"ACP_PERDES",,"Positivo().And.Ft080VlGr()",,{{"ACP_PERDES",.T.,,.T.},{"ACP_FAIXA",.T.,,.T.}}) 
+
+nOper := aRotina[ nOpc, 4 ]
+
+INCLUI := ( nOper == 3 .AND. !lCopia )
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Inicializa as variaveis da Enchoice                                     ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If INCLUI
+	RegToMemory( "ACO", .T., .F. )
+EndIf
+
+If !INCLUI
+	If SoftLock("ACO")
+		RegToMemory( "ACO", .F., .F. )
+	Else
+		lContinua := .F.
+	EndIf
+EndIf
+If lContinua
+
+ 	cSeek  := 	xFilial("ACP")+M->ACO_CODREG
+ 	cWhile :=	"ACP->ACP_FILIAL + ACP->ACP_CODREG" 
+ 
+
+	FillGetDados(	nOpc , "ACP", 1, cSeek,; 
+					{||&(cWhile)}, /*{|| bCond,bAct1,bAct2}*/, /*aNoFields*/,; 
+			   		/*aYesFields*/, /*lOnlyYes*/,/* cQuery*/, /*bMontAcols*/, IIf(nOpc<>3,.F.,.T.),; 
+					/*aHeaderAux*/, /*aColsAux*/,{||Fat080Item()} , /*bBeforeCols*/,;
+					/*bAfterHeader*/, /*cAliasQry*/)   
+
+	If lGrade
+		aCols := aColsGrade(oGrade,aCols,aHeader,"ACP_CODPRO","ACP_ITEM","ACP_ITEMGR",aScan(aHeader,{|x| AllTrim(x[2]) == "ACP_DESPRO"}))
+	EndIf
+	
+	If lCopia
+
+		M->ACO_CODREG := CriaVar("ACO_CODREG",.T.)
+	EndIf
+  
+	dbSelectArea("ACP")
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³ Faz o calculo automatico de dimensoes de objetos     ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+	aSize := MsAdvSize()
+	AAdd( aObjects, { 100, 100, .T., .T. } )
+	AAdd( aObjects, { 200, 200, .T., .T. } )
+	aInfo := { aSize[ 1 ], aSize[ 2 ], aSize[ 3 ], aSize[ 4 ], 5, 5 }
+	aPosObj := MsObjSize( aInfo, aObjects,.T.)
+
+	DEFINE MSDIALOG oDlg TITLE cCadastro From aSize[7],0 To aSize[6],aSize[5] of oMainWnd PIXEL	
+	EnChoice( "ACO", nReg, nOpc,,,,,aPosObj[1], , 3, , , , , ,.F. )
+	oGetD := MsGetDados():New(aPosObj[2,1],aPosObj[2,2],aPosObj[2,3],aPosObj[2,4],nOpc,"Ft080LOk()","Ft080TOk()","+ACP_ITEM",(nOper==3 .OR. nOper==4),,1,,MAXGETDAD)
+	PRIVATE oGetDad := oGetD
+	
+	If ExistBlock( "FT080MRN" )
+		aButtons := ExecBlock( "FT080MRN",.F.,.F.,{@oGetD} )
+		If ValType( aButtons ) = "A"
+			lFT080MRN := .T.
+		Endif  	
+	Endif
+	
+	ACTIVATE MSDIALOG oDlg ON INIT EnchoiceBar(oDlg,{||nOpcA := 1,If(oGetd:TudoOk(),If(!Obrigatorio(aGets,aTela),nOpcA := 0,oDlg:End()),nOpcA := 0)},{||oDlg:End()},,Iif(lFT080MRN, aButtons,Nil))
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³Rotina de Gravacao da Tabela de preco                         ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+	If nOpcA == 1 .AND. nOpc > 2
+
+		If nModulo == 12 //SIGALOJA
+			FATA080AltOk(aCols, "DELETAR")
+		EndIf
+
+		Begin Transaction
+			If lGrade
+				aCols := aGradeCols(oGrade,aCols,aHeader,"ACP_CODPRO","ACP_ITEMGR","ACP_PERDES","ACP_ITEM")
+			EndIf
+			Ft080Grv(nOpc-2,lCopia)
+			
+			If nModulo == 12 //SIGALOJA
+				FATA080AltOk(aCols, "FINALIZAR")
+			EndIf
+			
+			While (GetSx8Len() > nSaveSx8 )
+				ConfirmSx8()
+			EndDo
+			EvalTrigger()
+		End Transaction
+	EndIf
+EndIf
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Restaura a entrada da Rotina                                  ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+While (GetSx8Len() > nSaveSx8 )
+	RollBackSxE()
+EndDo
+MsUnLockAll()
+FreeUsedCode()
+RestArea(aArea)
+Return(nOpcA)
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºFuncao    |Fat080ITem  ºAutor ³Vendas Clientes      º Data ³ 14/02/07  º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDescricao ³Inclui na primeira linha do acols o numero do item 		  º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±³Parametros³												              ³±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³ Regras de descontos                                   	  º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+
+Static Function Fat080Item()
+Local nX := 0
+If Len(aCols) == 1
+	For nX := 1 To Len(aHeader)
+			If AllTrim(aHeader[nX,2]) == "ACP_ITEM"
+				Acols[Len(Acols)][nX] := StrZero(1,Len(ACP->ACP_ITEM))
+			EndIf    
+	Next nX
+EndIf  
+Return(.T.)
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³Ft080Grv  ³ Autor ³Vendas Clientes        ³ Data ³ 08/05/2001 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Rotina de Gravacao                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Sintaxe   ³Ft080Grv                                                      ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³ExpN1: Opcao da Gravacao sendo:                               ³±±
+±±³          ³       [1] Inclusao                                           ³±±
+±±³          ³       [2] Alteracao                                          ³±±
+±±³          ³       [3] Exclusao                                           ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                             ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Static Function Ft080Grv(nOpcao,lCopia)
+
+Local aArea     := GetArea()
+Local aRegNo    := {}
+Local lGravou   := .F.
+Local lTravou   := .T.
+Local nPProd    := aScan(aHeader,{|x| AllTrim(x[2])=="ACP_CODPRO"})
+Local nPFaixa   := aScan(aHeader,{|x| AllTrim(x[2])=="ACP_FAIXA"})
+Local nPItem	:= aScan(aHeader,{|x| AllTrim(x[2])=="ACP_ITEM"})
+Local nX        := 0
+Local nY        := 0
+Local nUsado    := Len(aHeader)
+Local bCampo 	:= {|nCPO| Field(nCPO) }
+Local cItem     := Repl("0",Len(ACP->ACP_ITEM))
+Local cTipoProc := ""	//Identifica o tipo de processo off-line: INSERT,UPDATE OU DELETE
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Limpa buffer                                                 ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+aUltResult := Nil
+
+If nPProd > 0 .AND. nPFaixa > 0
+	aCols := aSort(aCols,,,{|x,y| x[nPProd]+StrZero(x[nPFaixa],18,2) < y[nPProd]+StrZero(y[nPFaixa],18,2)})
+EndIf
+
+Do Case
+Case nOpcao <> 3
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³Grava o Cabecalho                                             ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+	dbSelectArea("ACO")
+	dbSetOrder(1)
+	If DbSeek(xFilial("ACO")+M->ACO_CODREG)
+		RecLock("ACO",.F.)
+		cTipoProc := "UPDATE"
+	Else
+		RecLock("ACO",.T.)  
+		cTipoProc := "INSERT"          	
+	EndIf     
+	
+	For nX := 1 TO FCount()
+		FieldPut(nX,M->&(EVAL(bCampo,nX)))
+	Next nX
+	ACO->ACO_CFAIXA := Inverte(Alltrim(StrZero(ACO->ACO_FAIXA,18,2)))
+	ACO->ACO_FILIAL := xFilial("ACO")
+	MsUnLock()
+	ACO->(FkCommit(.T.))
+	
+	Ft080AltOk("028","ACO",ACO->ACO_CODREG,1, cTipoProc)	
+	
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³Guarda os registro para reaproveita-los                       ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+	dbSelectArea("ACP")
+	dbSetOrder(1)
+	DbSeek(xFilial("ACP")+M->ACO_CODREG)
+	While ( !Eof() .AND. xFilial("ACP") == ACP->ACP_FILIAL .AND. M->ACO_CODREG == ACP->ACP_CODREG )
+		aadd(aRegNo,RecNo())
+		dbSelectArea("ACP")
+		dbSkip()
+	EndDo
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³Grava os itens                                                ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ	
+	aCols := aSort(aCols,,,{|x,y| x[nPItem] < y[nPItem]})
+	For nX := 1 To Len(Acols)
+		If !Empty(aCols[nX,nUsado]) .And. !lCopia
+			DbSelectArea("ACP")
+			DbGoto(aCols[nX,nUsado])
+			RecLock("ACP")
+			nY := aScan(aRegNo,{|x| x == aCols[nX,nUsado]})
+			aDel(aRegNo,nY)
+			aSize(aRegNo,Len(aRegNo)-1)
+			cTipoProc := "UPDATE"
+		ElseIf !aCols[nX,nUsado+1]
+			RecLock("ACP",.T.)
+			cTipoProc := "INSERT"			
+		EndIf
+		If (!aCols[nX][nUsado+1] )
+			cItem := Soma1(cItem)
+			aCols[nX][nPItem] := cItem
+			For nY := 1 to Len(aHeader)
+				If aHeader[nY][10] <> "V"
+					If AllTrim(aHeader[NY][2]) == "ACP_ITEM"
+						ACP->ACP_ITEM:= cItem
+					Else	
+						ACP->(FieldPut(FieldPos(aHeader[nY][2]),aCols[nX][nY]))
+					EndIf	
+				EndIf
+			Next nY
+			ACP->ACP_FILIAL := xFilial("ACP")
+			ACP->ACP_CODREG := M->ACO_CODREG
+			ACP->ACP_CFAIXA := Alltrim(StrZero(ACP->ACP_FAIXA,18,2))
+			lGravou := .T.
+		ElseIf !Empty(aCols[nX,nUsado]) .And. !lCopia
+			ACP->(DbDelete()) 
+			cTipoProc := "DELETE"
+		EndIf
+     	MsUnLock()         
+    	
+		Ft080AltOk("028","ACP",ACP->ACP_CODREG + ACP->ACP_ITEM,1, cTipoProc)	
+	
+  	Next nX
+  	
+ 	DbSelectArea("ACP")
+	For nX := 1 To Len(aRegNo)
+		DbGoto(aRegNo[nX])
+		RecLock("ACP")
+		dbDelete()
+		MsUnLock()
+	Next nX
+Case nOpcao == 3
+	dbSelectArea("ACP")
+	dbSetOrder(1)
+	DbSeek(xFilial("ACP")+M->ACO_CODREG)
+	While ( !Eof() .AND. xFilial("ACP") == ACP->ACP_FILIAL .AND. M->ACO_CODREG == ACP->ACP_CODREG )
+		RecLock("ACP")
+		dbDelete()
+		MsUnLock()
+		Ft080AltOk("028","ACP",ACP->ACP_CODREG + ACP->ACP_ITEM,1, cTipoProc)	
+		dbSelectArea("ACP")
+		dbSkip()
+	EndDo
+	dbSelectArea("ACO")
+	dbSetOrder(1)
+	If DbSeek(xFilial("ACO")+M->ACO_CODREG)
+		RecLock("ACO")
+		dbDelete()
+		MsUnLock()
+	EndIf
+EndCase
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Ponto de entrada apos a atualizacao das tabelas              ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If ExistBlock("FT080GRV")
+	ExecBlock("FT080GRV",.F.,.F.,{nOpcao})
+EndIf	
+Return(lGravou)
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³Ft080LOk  ³ Autor ³Vendas Clientes        ³ Data ³ 09/05/2001 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Rotina de Validacao da linha Ok                               ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Sintaxe   ³Ft080Lok()                                                    ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³Nenhum                                                        ³±±
+±±³          ³                                                              ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                             ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Function Ft080Lok()
+
+Local aArea     := GetArea()
+Local lRetorno  := .T.
+Local nPProd    := aScan(aHeader,{|x| AllTrim(x[2])=="ACP_CODPRO"})
+Local nPFaixa   := aScan(aHeader,{|x| AllTrim(x[2])=="ACP_FAIXA"})
+Local nPPerDes  := aScan(aHeader,{|x| AllTrim(x[2])=="ACP_PERDES"})
+Local nPGrupo   := aScan(aHeader,{|x| AllTrim(x[2])=="ACP_GRUPO"})
+Local nUsado    := Len(aHeader)
+Local nX        := 0
+Local lExistCpo := .F.
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ|
+//³Variaveis criadas pela equipe de Templates³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ|
+Local lRet		  := .T.
+Local nLinAcols   := 0
+
+
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Eh verificado se existe o campo ACP_FAIATE   ³
+//³Campo especifico para o Template de Drogaria.³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If (ACP->(FieldPos("ACP_FAIATE"))  > 0)
+	lRet := .F.    
+Endif  
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Eh verificado se existe o campo ACP_FAIXDE   ³
+//³Campo especifico para o Template de Drogaria.³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If (ACP->(FieldPos("ACP_FAIXDE"))  > 0)
+	lRet := .F.    
+Endif  
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Caso nao encontre os campos especificos do Template,³
+//³faz o tratamento normal.                            ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If lRet
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³Verifica os campos obrigatorios                                         ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+	If !Acols[n][nUsado+1]
+		Do Case
+			Case nPProd == 0 .OR. nPFaixa == 0 .OR. nPPerDes == 0 .OR. nPGrupo == 0
+				lRetorno := .F.
+				Help(" ",1,"OBRIGAT",,RetTitle("ACP_CODPRO")+","+RetTitle("ACP_GRUPO")+","+RetTitle("ACP_FAIXA")+","+RetTitle("ACP_PERDES"),4)
+		   	//Foi retirado a obrigatoriedade de informar um produto, pois o cliente deseja que a regra do cabeçalho
+		   	//funcione para todos os produtos. Chamado: TFAJRE - FNC: 00000013407/2012
+		   	//Case Empty(Acols[n][nPProd]) .AND. Empty(Acols[n][nPGrupo])
+				//lRetorno := .F.
+				//Help(" ",1,"OBRIGAT",,RetTitle("ACP_CODPRO"),4)
+			Case Empty(Acols[n][nPFaixa])
+				lRetorno := .F.
+				Help(" ",1,"OBRIGAT",,RetTitle("ACP_FAIXA"),4)
+			Case ACO->(FieldPos('ACO_ESCALA')) > 0 .AND. ACO->ACO_ESCALA == '1' .AND. aCols[n][nPPerDes] > 0
+				aCols[n][nPPerDes]	:=	0
+		EndCase
+		//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		//³Verifica se nao ha valores duplicados                                   ³
+		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+		If lRetorno
+			If nPProd <> 0 .AND. nPFaixa <> 0
+				For nX := 1 To Len(Acols)
+					If nX <> N .AND. !Acols[nX][nUsado+1]
+						If ( Acols[nX][nPProd]+Acols[nX][nPGrupo]==Acols[N][nPProd]+Acols[N][nPGrupo] .AND. Acols[nX][nPFaixa] == Acols[N][nPFaixa] )
+							lRetorno := .F.
+							Help(" ",1,"JAGRAVADO")
+						EndIf
+					EndIf
+				Next nX
+			EndIf
+		EndIf
+		//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		//³Verifica se o item ja foi cadastrado                                    ³
+		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+		dbSelectArea("ACO")
+		dbSetOrder(2)
+		If ACO->(FieldPos("ACO_GRPVEN")) > 0
+			lExistCpo := .T.
+		EndIf
+		If DbSeek(xFilial("ACO")+M->ACO_CODTAB+M->ACO_CONDPG+M->ACO_FORMPG+M->ACO_CODCLI+M->ACO_LOJA)
+			While ( !Eof() .AND. ACO->ACO_CODTAB == M->ACO_CODTAB .AND.;
+				ACO->ACO_CONDPG == M->ACO_CONDPG .AND.;
+				ACO->ACO_FORMPG == M->ACO_FORMPG .AND.;
+				ACO->ACO_CODCLI == M->ACO_CODCLI .AND.;
+				ACO->ACO_LOJA == M->ACO_LOJA )
+				If lExistCpo .AND. ACO->ACO_GRPVEN <> M->ACO_GRPVEN
+					DbSkip()
+					Loop
+				EndIf
+				
+				If M->ACO_CODREG <> ACO->ACO_CODREG
+					dbSelectArea("ACP")
+					dbSetOrder(2)
+					If DbSeek(xFilial("ACP")+ACO->ACO_CODREG+aCols[n][nPGrupo]+aCols[n][nPProd])
+						While ( !Eof() .AND. xFilial("ACP")==ACP->ACP_FILIAL .AND.;
+							ACO->ACO_CODREG == ACP->ACP_CODREG .AND.;
+							aCols[n][nPGrupo] == ACP->ACP_GRUPO .AND.;
+							aCols[n][nPProd] == ACP->ACP_CODPRO )
+							If ACP->ACP_FAIXA == aCols[n][nPFaixa]
+								If Ft080DtHs()
+									lRetorno := .F.
+									Help(" ",1,"FT080TOK01",,RetTitle("ACO_CODREG")+": "+ACO->ACO_CODREG,3)
+								EndIf
+							EndIf
+							dbSelectArea("ACP")
+							dbSkip()
+						EndDo
+					EndIf
+				EndIf
+				dbSelectArea("ACO")
+				dbSkip()
+			EndDo
+		EndIf
+	EndIf
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ|
+//³Caso encontre os campos especificos do Template,³
+//³verifica se a regra de desconto contem:         ³
+//³                                                ³
+//³Descontos iguais para o mesmo grupo de produtos.³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ|
+Else
+	If n != 1 
+		For nLinAcols := 1 to Len(aCols)
+			If (!Empty(aCols[n][nPGrupo]) .AND. !Empty(aCols[nLinAcols][nPGrupo]))
+				If (aCols[n][nPGrupo] = aCols[nLinAcols][nPGrupo] .AND. aCols[n][nPPerDes] = aCols[nLinAcols][nPPerDes] .AND. nLinAcols != n  .AND. !aCols[n][Len(aHeader)+1])
+					MsgAlert("Existe(m) Grupo(s) e % de Descontos iguais, favor verificar.")		
+					lRetorno := lRet		
+					exit
+				Endif
+			Endif
+		Next
+	Endif
+Endif
+RestArea(aArea)
+Return(lRetorno)
+
+
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³Ft080TOk  ³ Autor ³Vendas Clientes        ³ Data ³ 10/05/2001 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Rotina de Validacao da TudoOk                                 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Sintaxe   ³Ft080Tok()                                                    ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³Nenhum                                                        ³±±
+±±³          ³                                                              ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                             ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+
+Function Ft080Tok()
+Local aArea    := GetArea()
+Local lRetorno := .T.
+
+Local lExistCpo := .F.
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ|
+//³Variaveis criadas pela equipe de Templates³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ|
+Local lRet		  := .T.
+Local nLinAcols   := 0   
+Local nPGrupo   := aScan(aHeader,{|x| AllTrim(x[2])=="ACP_GRUPO"})    
+Local nPPerDes  := aScan(aHeader,{|x| AllTrim(x[2])=="ACP_PERDES"})
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Eh verificado se existe o campo ACP_FAIATE   ³
+//³Campo especifico para o Template de Drogaria.³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If (ACP->(FieldPos("ACP_FAIATE"))  > 0)
+	lRet := .F.    
+Endif  
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Eh verificado se existe o campo ACP_FAIXDE   ³
+//³Campo especifico para o Template de Drogaria.³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If (ACP->(FieldPos("ACP_FAIXDE"))  > 0)
+	lRet := .F.    
+Endif  
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Caso nao encontre os campos especificos do Template,³
+//³faz o tratamento normal.                            ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If lRet
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³Verifica se a regra ja foi cadastrada                                   ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+	dbSelectArea("ACO")
+	dbSetOrder(2)
+	If ACO->(FieldPos("ACO_GRPVEN")) > 0
+		lExistCpo := .T.
+	EndIf
+	If DbSeek(xFilial("ACO")+M->ACO_CODTAB+M->ACO_CONDPG+M->ACO_FORMPG+M->ACO_CODCLI+M->ACO_LOJA)
+		While ( !Eof() .AND. ACO->ACO_CODTAB == M->ACO_CODTAB .AND.;
+			ACO->ACO_CONDPG == M->ACO_CONDPG .AND.;
+			ACO->ACO_FORMPG == M->ACO_FORMPG .AND.;
+			ACO->ACO_CODCLI == M->ACO_CODCLI .AND.;
+			ACO->ACO_LOJA == M->ACO_LOJA .AND.;
+			ACO->ACO_CODREG <> M->ACO_CODREG )
+			If lExistCpo .AND. ACO->ACO_GRPVEN <> M->ACO_GRPVEN
+				DbSkip()
+				Loop
+			EndIf
+			
+			If ACO->ACO_FAIXA == M->ACO_FAIXA
+				If Ft080DtHs()
+					lRetorno := .F.
+					Help(" ",1,"FT080TOK01",,RetTitle("ACO_CODREG")+": "+ACO->ACO_CODREG,3)
+				EndIf
+			EndIf
+			
+			dbSelectArea("ACO")
+			dbSkip()
+		EndDo
+	EndIf
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ|
+//³Caso encontre os campos especificos do Template,³
+//³verifica se a regra de desconto contem:         ³
+//³                                                ³
+//³Descontos iguais para o mesmo grupo de produtos.³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ|
+Else          
+	If n != 1 
+		For nLinAcols := 1 to Len(aCols)
+			If (!Empty(aCols[n][nPGrupo]) .AND. !Empty(aCols[nLinAcols][nPGrupo]))			
+				If (aCols[n][nPGrupo] = aCols[nLinAcols][nPGrupo] .AND. aCols[n][nPPerDes] = aCols[nLinAcols][nPPerDes] .AND. nLinAcols != n  .AND. !aCols[n][Len(aHeader)+1])
+					MsgAlert("Existe(m) Grupo(s) e % de Descontos iguais, favor verificar.")		
+					lRetorno := lRet
+					exit
+				Endif
+			Endif
+		Next
+	Endif
+Endif
+
+RestArea(aArea)
+Return(lRetorno)
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Funcao    ³MaRgrDesc ³ Autor ³Vendas Clientes        ³ Data ³15.05.2001³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Rotina de avaliacao da regra de desconto para os modulos    ³±±
+±±³          ³que possuem pedido de venda                                 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³ExpC1: Produto                                              ³±±
+±±³          ³ExpC2: Cliente                                              ³±±
+±±³          ³ExpC3: Loja                                                 ³±±
+±±³          ³ExpC4: Tabela                                               ³±±
+±±³          ³ExpN5: Faixa de desconto                                    ³±±
+±±³          ³ExpC6: Condicao de Pagamento                                ³±±
+±±³          ³ExpC7: Forma de Pagamento                                   ³±±
+±±³          ³ExpN8: Tipo de Desconto                                     ³±±
+±±³          ³       1 - Desconto por Item                                ³±±
+±±³          ³       2 - Desconto por Total                               ³±±
+±±³          ³ExpA9: Array contendo a seguinte estrutura :                ³±±
+±±³          ³       [n][1] : Codigo do produto                           ³±±
+±±³          ³       [n][2] : Grupo  do produto                           ³±±
+±±³          ³       [n][3] : Quantidade                                  ³±±
+±±³          ³       Devem ser passados tods os produtos e as suas Qtdes. ³±±
+±±³          ³       para ocalculo de descontos escalaveis.               ³±±
+±±³          ³ExpA10: Array contendo as regras que NAO devem ser considera³±±
+±±³          ³       das.                                                 ³±±
+±±³          ³ExpC11: Codigo da Regra de Desconto usada.                  ³±±
+±±³          ³ExpN12: Preco base do Item                                  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³ExpN1: Percentual de Desconto da Regra                      ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡„o ³Esta rotina tem como objetivo avaliar a regra de descontos  ³±±
+±±³          ³conforme os parametros da rotina                            ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Observacao³                                                            ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                           ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Function MaRgrDesc(cProduto,cCliente,cLoja,cTabPreco,nFaixa,cCondPg,cFormPg,nTipo,aProds,aExc, cCodRegDe, nPrcBase) 
+
+Static nRegPrior
+Static aPesq
+
+Local aArea     := GetArea()
+Local aComp		:= {}
+Local aCodReg   := {}
+Local cPesq     := ""
+Local cCampo    := ""
+Local cCaracter := ""
+Local cSeek     := ""
+Local cCompara  := ""
+Local cQuery    := ""
+Local cKeySql   := ""
+Local cAliasQry := ""
+Local nDesconto := 0
+Local nX        := 0
+Local nY        := 0
+Local nZ        := 0
+Local nW        := 0
+Local lValido   := .F.
+Local nOrdIndex := 0
+Local nQuantTot := 0
+Local lExistCpo := ACO->(FieldPos("ACO_GRPVEN")) > 0
+Local aDescontos:= {}
+Local cPeso	    :=	""
+Local lExistEsca:=	(ACO->(FieldPos('ACO_ESCALA'))*ACO->(FieldPos('ACO_LOTE')) > 0).AND.	GetNewPar("MV_DESCLOT",.F.)
+Local nDescs	:=	0
+Local cCnt		:=	""
+Local aCpos		:=	{}
+Local nCntFor	:=	1
+Local cGrupo	:= ""		//armazena o codigo de grupo do produto.
+
+DEFAULT cCodRegDe := ""  
+
+If !ExistBlock("FT080RDES")
+	If ACO->(Reccount()) > 0
+		If Type("nStack")=="U"
+			PRIVATE nStack := 1
+			PRIVATE cUltRegra := ""
+		Else
+			nStack++
+		EndIf
+
+		DEFAULT cProduto  := Space(Len(SB1->B1_COD))
+		DEFAULT cCliente  := Space(Len(SA1->A1_COD))
+		DEFAULT cLoja     := Space(Len(SA1->A1_LOJA))
+		DEFAULT cTabPreco := Space(Len(DA0->DA0_CODTAB))
+		DEFAULT cCondPg   := Space(Len(DA0->DA0_CONDPG))
+		DEFAULT cFormPg   := Space(Len(ACO->ACO_FORMPG))
+		DEFAULT nFaixa    := 0
+		DEFAULT nTipo     := 1
+		DEFAULT nRegPrior := GetMV("MV_REGDPRI")
+		DEFAULT aUltResult:= {}
+		DEFAULT aPesq     := {}
+		nX := aScan(aUltResult,{|x| (nTipo == 2 .OR. SubStr(x[1],1,Len(cProduto)) == cProduto) .AND.;
+			x[2] == cCliente .AND.;
+			x[3] == cLoja .AND.;
+			x[4] == cTabPreco .AND.;
+			x[5] == nFaixa .AND.;
+			x[6] == cCondPg .AND.;
+			x[7] == cFormPg .AND.;
+			x[8] == nTipo .AND.;
+			x[12]== cFilAnt})
+
+		DbSelectArea("ACO")
+		DbSetOrder(1)
+
+		If nX == 0  .OR. Ascan(aExc,aUltResult[nX][10]) > 0 .OR.;
+				(!Empty(aUltResult[nX][10]) .AND. DbSeek(xFilial("ACO")+aUltResult[nX][10]) .AND. !FtIsDataOk("ACO") )
+			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			//³Verificar a ordem de pesquisa da Regra de Desconto                      ³
+			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			dbSelectArea("ACO")
+			dbSetOrder(nRegPrior)
+			If Empty(aPesq)
+				cPesq := IndexKey()
+				nY := Len(cPesq)+1
+				For nX := 1 To nY
+					cCaracter := SubStr(cPesq,nX,1)
+					If ( cCaracter == "+" .OR. nX == nY )
+						aadd(aPesq,AllTrim(cCampo))
+						cCampo := ""
+					Else
+						cCampo += cCaracter
+					EndIf
+				Next nX			
+			EndIf
+			nY := Len(aPesq)			
+			For nX := 1 To nY
+				Do Case
+				Case Len(aPesq)<nX
+
+				Case aPesq[nX] == "ACO_CODCLI"
+					aadd(aComp,cCliente)
+					cKeySql += "+"+aPesq[nX]
+				Case aPesq[nX] == "ACO_LOJA"
+					aadd(aComp,cLoja)
+					cKeySql += "+"+aPesq[nX]
+				Case aPesq[nX] == "ACO_FILIAL"
+					aadd(aComp,xFilial("ACO"))
+					cKeySql += "+"+aPesq[nX]
+				Case aPesq[nX] == "ACO_CODTAB"
+					aadd(aComp,cTabPreco)
+					cKeySql += "+"+aPesq[nX]
+				Case aPesq[nX] == "ACO_CONDPG"
+					aadd(aComp,cCondPg)
+					cKeySql += "+"+aPesq[nX]
+				Case aPesq[nX] == "ACO_FORMPG"
+					aadd(aComp,cFormPg)
+					cKeySql += "+"+aPesq[nX]
+				OtherWise
+					aPesq := aDel(aPesq,nX)
+					aPesq := aSize(aPesq,Len(aPesq)-1)
+					nX--
+					nY--
+				EndCase
+			Next nX
+			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			//³Retira os campos da ordem para encontrar os descontos genericos         ³
+			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			For nX := nY To 2 STEP -1
+				#IFDEF TOP
+					cAliasQry := "MARGRDESC"
+
+					cQuery := "SELECT ACO.ACO_PERDES DESCONTO, ACO_CODREG "
+					If ACO->(FieldPos("ACO_VLRDES")) > 0
+						cQuery += ",ACO.ACO_VLRDES VLRDESC "
+					EndIf			
+					If lExistEsca
+						cQuery += ", ACO_ESCALA"				
+					EndIf
+					If lExistCpo
+						cQuery += ", ACO_GRPVEN"				
+					EndIf
+					If ACO->(FieldPos("ACO_DATDE")) * ACO->(FieldPos("ACO_DATATE")) * ACO->(FieldPos("ACO_HORADE")) * ;
+							ACO->(FieldPos("ACO_HORATE")) * ACO->(FieldPos("ACO_TPHORA"))  > 0
+						cQuery	+=	",ACO_DATDE,ACO_DATATE,ACO_HORADE,ACO_HORATE,ACO_TPHORA " 	
+						aCpos	:=	{ {'ACO_DATDE',"D",8,0},{'ACO_DATATE',"D",8,0}}
+					EndIf
+					cQuery += " FROM "+RetSqlName("ACO")+" ACO "
+					If nTipo == 1
+						cQuery += ", " + RetSqlName("ACP")+" ACP "
+					EndIf
+					cQuery += "WHERE ACO.ACO_FILIAL='"+xFilial("ACO")+"' AND "
+					cQuery += "(ACO.ACO_CODCLI='"+Space(Len(SA1->A1_COD))+"' OR ACO.ACO_CODCLI='"+cCliente+"') AND "
+					cQuery += "(ACO.ACO_LOJA='"+Space(Len(SA1->A1_LOJA))+"' OR ACO.ACO_LOJA='"+cLoja+"') AND "
+					cQuery += "(ACO.ACO_CODTAB='"+Space(Len(DA0->DA0_CODTAB))+"' OR ACO.ACO_CODTAB = '"+cTabPreco+"') AND "
+					cQuery += "(ACO.ACO_CONDPG='"+Space(Len(DA0->DA0_CONDPG))+"' OR ACO.ACO_CONDPG='"+cCondPg+"') AND "
+					cQuery += "(ACO.ACO_FORMPG='"+Space(Len(ACO->ACO_FORMPG))+"' OR ACO.ACO_FORMPG='"+cFormPg+"') AND "
+					cQuery += "ACO.D_E_L_E_T_=' ' AND "
+					If nTipo == 2
+						If !lExistEsca
+							cQuery += " (ACO.ACO_PERDES > 0 "
+							If ACO->(FieldPos("ACO_VLRDES")) > 0
+								cQuery += " OR ACO.ACO_VLRDES > 0"
+							EndIf
+							cQuery += " ) AND "	
+						EndIf
+						cQuery += "ACO.ACO_FAIXA<="+Alltrim(StrZero(nFaixa,18,2))+" "
+					Else
+						cQuery += "ACP.ACP_FILIAL='"+xFilial("ACP")+"' AND "
+						cQuery += "ACP.ACP_CODREG=ACO.ACO_CODREG AND "
+						cQuery += "(ACP.ACP_CODPRO='"+Space(Len(SB1->B1_COD))+"' OR ACP.ACP_CODPRO='"+cProduto+"') AND "
+						cQuery += "ACP.ACP_FAIXA>="+Alltrim(StrZero(nFaixa,18,2))+" AND "
+						cQuery += "ACP.D_E_L_E_T_=' ' "
+					EndIf
+					cQuery += "ORDER BY "+StrTran(SubStr(cKeySql,2),"+"," DESC,") + ",ACO_CFAIXA"
+					cQuery := ChangeQuery(cQuery)
+
+					dbUseArea(.T.,"TOPCONN",TcGenQry(,,cQuery),cAliasQry,.T.,.T.)
+					For nCntFor := 1 To Len(aCpos)
+						TcSetField(cAliasQry,aCpos[nCntFor][1],aCpos[nCntFor][2],aCpos[nCntFor][3],aCpos[nCntFor][4])
+					Next nCntFor
+					While !Eof()
+						If FtIsDataOk("ACO","MARGRDESC") .AND. Ascan(aExc,(cAliasQry)->ACO_CODREG) == 0
+							cPeso	:=	If(lExistCpo, FtIsGrpOk((cAliasQry)->ACO_GRPVEN,SA1->A1_GRPVEN),"00")
+							If !Empty(cPeso)
+								If nTipo == 1 .OR. (nTipo == 2 .AND. lExistEsca .AND. (cAliasQry)->ACO_ESCALA == '1')
+									If Ascan(aCodReg,{|x| x[1]==(cAliasQry)->ACO_CODREG}) == 0
+										Aadd(aCodReg,{(cAliasQry)->ACO_CODREG,cPeso,IIf(lExistEsca,(cAliasQry)->ACO_ESCALA,"")})
+									EndIf                                        
+								Else	                                                      
+									
+									If (MARGRDESC->DESCONTO <> 0) // desconto por percentual
+										nDesconto := MARGRDESC->DESCONTO
+									ElseIf  ACO->(FieldPos("ACO_VLRDES")) > 0 .AND. (MARGRDESC->VLRDESC <> 0) //desconto por valor
+										nDesconto := VlrToPct(MARGRDESC->VLRDESC, nTipo, nFaixa, nPrcBase)
+									Else
+										nDesconto := -1
+									EndIf
+									
+									If nDesconto > 0
+										cUltRegra	:=	ACO->ACO_CODREG
+									EndIf
+									AAdd(aDescontos,{cPeso,StrZero(999-Len(aDescontos),3),nDesconto,(cAliasQry)->ACO_CODREG})
+								EndIf
+								If nDesconto <> 0 .AND. !lExistCpo .AND. nTipo == 2
+									cUltRegra	:=	(cAliasQry)->ACO_CODREG
+									Exit
+								EndIf
+							Endif	
+						EndIf
+						dbSkip()
+					EndDo
+
+					dbSelectArea("MARGRDESC")
+					dbCloseArea()
+					dbSelectArea("ACO")
+					Exit
+
+				#ELSE
+					cSeek	:= ""
+					cCompara:= ""
+					
+					For nZ := 2 To nX
+						cCompara += "+"+aPesq[nZ]
+						cSeek += aComp[nZ]
+					Next nZ
+
+					cCompara := SubStr(cCompara,2)
+
+					If cSeek <> ""
+						If !Empty(cSeek)
+							nW++
+						EndIf
+						
+						//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+						//³Efetua a pesquisa do desconto                                           ³
+						//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+						dbSelectArea("ACO")
+						//Ordem setada acima
+						ACO->( DbSeek(xFilial("ACO") + cSeek , .T.) )
+						While ACO->( !Eof() ) .AND. xFilial("ACO") == ACO->ACO_FILIAL .AND. cSeek == &cCompara
+							cPeso	:=	 If(lExistCpo, FtIsGrpOk(ACO->ACO_GRPVEN,SA1->A1_GRPVEN) ,"00")
+							
+							If FtIsDataOk("ACO") .AND. !Empty(cPeso) .AND. Ascan(aExc,ACO->ACO_CODREG) == 0
+								lValido := .T.
+								For nZ := 2 To nY
+									If FieldGet(FieldPos(aPesq[nZ])) <> aComp[nZ] .AND. !Empty(FieldGet(FieldPos(aPesq[nZ])))
+										lValido := .F.
+									EndIf
+								Next nX
+
+								If lValido
+									If nTipo == 1 .OR. (nTipo == 2 .AND. lExistEsca .AND. ACO->ACO_ESCALA == '1')
+										If Ascan(aCodReg,{|x| x[1] == ACO->ACO_CODREG}) == 0
+											Aadd(aCodReg,{ACO->ACO_CODREG,cPeso,IIf(lExistEsca,ACO->ACO_ESCALA,"")})
+										EndIf
+									Else
+										IF nFaixa >= ACO->ACO_FAIXA											
+											IF (ACO->ACO_PERDES <> 0) // desconto por percentual
+												nDesconto := ACO->ACO_PERDES
+											ElseIf  ACO->(FieldPos("ACO_VLRDES")) > 0	.AND.	(ACO->ACO_VLRDES <> 0) //desconto por valor
+												nDesconto := VlrToPct(ACO->ACO_VLRDES, nTipo, nFaixa, nPrcBase)
+											Else
+												nDesconto := -1
+											EndIf
+											
+											If nDesconto > 0
+												cUltRegra	:=	ACO->ACO_CODREG
+											EndIf
+											AAdd(aDescontos,{cPeso,StrZero(999-Len(aDescontos),3),nDesconto,ACO->ACO_CODREG})
+										EndIf
+									EndIf
+								Else
+									If ( nDesconto <> 0 .AND. nTipo == 2 ) .AND.!lExistCpo
+										Exit
+									EndIf
+								EndIf
+
+								If lValido .AND. nTipo == 2    .AND. !lExistCpo
+									If nFaixa >= ACO->ACO_FAIXA
+										cUltRegra	:=	ACO->ACO_CODREG
+										Exit
+									EndIf
+								EndIf								
+							EndIf
+
+							ACO->( dbSkip() )
+						EndDo
+						
+						If ( nDesconto <> 0 .AND. nTipo == 2 ).AND.!lExistCpo
+							Exit
+						EndIf
+					EndIf
+				#EndIf
+			Next nX
+
+			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			//³A ordem para escolher os descontos sera determinada pelo peso do grupo  ³
+			//³de vendas mas a ordem em que foi achado                                 ³
+			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			If lExistCpo .AND. Len(aDescontos) > 0
+				aSort(aDescontos,,,{|x,y| x[1]+x[2] > y[1]+y[2] })
+				nDesconto	:=	If(aDescontos[1][3] == 0,-1,aDescontos[1][3])
+				If nDesconto > 0
+					cUltRegra	:=	If(aDescontos[1][3] == 0,cUltRegra,aDescontos[1][4])
+				EndIf
+				aDescontos	:=	{}
+			EndIf
+			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			//³Pesquisa o Desconto por Item                                            ³
+			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			If ( nTipo == 1 .AND. !Empty(aCodReg) )
+				
+				//Se o modulo for FrontLoja, utilizamos a tabela SBI ao inves de SB1
+				If NMODULO == 23	//FrontLoja
+					DbSelectArea("SBI")
+					SBI->( DbSetOrder(1) )		//BI_FILIAL + BI_COD
+					SBI->( DbSeek(xFilial("SBI") + cProduto) )
+					cGrupo := SBI->BI_GRUPO
+				Else
+					DbSelectArea("SB1")
+					SB1->( DbSetOrder(1) )		//B1_FILIAL + B1_COD
+					SB1->( DbSeek(xFilial("SB1") + cProduto) )
+					cGrupo := SB1->B1_GRUPO
+				EndIf
+
+				DbSelectArea("ACP")
+				ACP->( dbSetOrder(2) )	//ACP_FILIAL, ACP_CODREG, ACP_GRUPO, ACP_CODPRO, ACP_CFAIXA
+				
+				For nX := 1 To Len(aCodReg)
+					
+					If ACP->( DbSeek(xFilial("ACP") + aCodReg[nX][1] + Space(Len(cGrupo)) + cProduto) )
+						
+						While ( ACP->( !Eof() ) .AND. ACP->ACP_CODREG == aCodReg[nX][1] .AND.;
+								ACP->ACP_GRUPO == Space( Len(cGrupo) ) .AND.;
+								SubStr(ACP->ACP_CODPRO, 1, Len(cProduto)) == cProduto )
+							
+							If nFaixa <= ACP->ACP_FAIXA
+								If (ACP->ACP_PERDES <> 0) // desconto por percentual
+									nDesconto := ACP->ACP_PERDES
+								ElseIf  ACP->(FieldPos("ACP_VLRDES")) > 0	.AND. (ACP->ACP_VLRDES <> 0) //desconto por valor
+									nDesconto := VlrToPct(ACP->ACP_VLRDES, nTipo, nFaixa, nPrcBase, ACP->ACP_TPDESC)
+								Else
+									nDesconto := -1
+								EndIf
+
+								cCodRegDe := ACP->ACP_CODREG  
+								If nDesconto <> 0 .AND.!lExistCpo
+									Exit
+								Else
+									AAdd(aDescontos, {aCodReg[nX][2],StrZero(999-Len(aDescontos),3),nDesconto,aCodReg[nX][2]} )
+								EndIf
+							EndIf
+							
+							ACP->( dbSkip() )
+						EndDo
+
+						If nDesconto <> 0.AND.!lExistCpo
+							cUltRegra	:=	ACO->ACO_CODREG
+							Exit
+						EndIf
+					EndIf
+					
+					// ordem ja setada acima (indice 2)
+					If ACP->( DbSeek(xFilial("ACP") + aCodReg[nX][1] + cGrupo) )
+						
+						While ( ACP->( !Eof() ) .AND. ACP->ACP_CODREG == aCodReg[nX][1] .AND.;
+								ACP->ACP_GRUPO == cGrupo .AND. ;
+								ACP->ACP_CODPRO == Space( Len(cProduto) ) )
+								
+								If nFaixa <= ACP->ACP_FAIXA
+														
+									IF (ACP->ACP_PERDES <> 0) // desconto por percentual
+										nDesconto := ACP->ACP_PERDES
+									ElseIf  ACP->(FieldPos("ACP_VLRDES")) > 0	.AND. (ACP->ACP_VLRDES <> 0) //desconto por valor
+										nDesconto := VlrToPct(ACP->ACP_VLRDES, nTipo, nFaixa, nPrcBase, ACP->ACP_TPDESC)
+									Else
+										nDesconto := -1
+									EndIf
+
+									cCodRegDe := ACP->ACP_CODREG 
+									If nDesconto <> 0 .AND. !lExistCpo
+										Exit
+									Else
+										AAdd(aDescontos, {aCodReg[nX][2],StrZero(999-Len(aDescontos),3),nDesconto,aCodReg[nX][2]} )
+									EndIf
+								EndIf
+
+							ACP->( dbSkip() )
+						EndDo
+
+						If nDesconto <> 0.AND.!lExistCpo
+							cUltRegra	:=	aCodReg[nX][2]
+							Exit
+						EndIf
+					EndIf
+				Next nX
+				
+				//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+				//³A ordem para escolher os descontos sera determinada pelo peso do grupo  ³
+				//³de vendas mas a ordem em que foi achado                                 ³
+				//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+				If lExistCpo .AND. Len(aDescontos) > 0
+					aSort(aDescontos,,,{|x,y| x[1]+x[2] > y[1]+y[2] })
+					nDesconto	:=	If(aDescontos[1][3] == 0,-1,aDescontos[1][3])
+					If nDesconto > 0
+						cUltRegra	:=	If(aDescontos[1][3] == 0,cUltRegra,aDescontos[1][4])
+					EndIf
+					aDescontos	:=	{}
+				EndIf
+				
+			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			//³Pesquisa o desconto por total para o desconto escalavel                 ³
+			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			ElseIf (nTipo == 2 .AND. !Empty(aCodReg) )
+				For nX := 1 To Len(aCodReg)	
+					If lExistEsca.AND. aCodReg[nX][3] == "1"
+						DbSelectArea("ACO")
+						nOrdIndex:=IndexOrd()
+						DbSetOrder(1)
+						DbSeek(xFilial("ACO")+aCodReg[nX])
+						DbSetOrder(nOrdIndex)					
+						dbSelectArea("ACP")
+						dbSetOrder(2)
+						If DbSeek(xFilial("ACP")+aCodReg[nX])
+							cPeso	:=	If(lExistCpo, FtIsGrpOk(ACO->ACO_GRPVEN,SA1->A1_GRPVEN),"00")
+							nQuantTot	:=	0
+							While ( !Eof() .AND. ACP->ACP_CODREG == aCodReg[nX] ).AND. FtIsDataOk("ACO") .AND. !Empty(cPeso)
+								nPosProd	:=	If(Empty(ACP->ACP_CODPRO), Ascan(aProds,{|x| ACP->ACP_GRUPO == X[2]}), Ascan(aProds,{|x| ACP->ACP_CODPRO == X[1]}) )
+								If nPosProd > 0
+									nQuantTot	+=	aProds[nPosProd][3]
+								EndIf
+								dbSelectArea("ACP")
+								dbSkip()
+							EndDo
+							If nQuantTot >= ACO->ACO_LOTE
+								nDesconto	:=	ACO->ACO_PERDES
+								cCnt	:=	'2'
+								While ACO->(FieldPos('ACO_LOTE'+cCnt)) > 0  .AND. ;
+										nQuantTot >= ACO->(FieldGet(FieldPos('ACO_LOTE'+cCnt))) .AND. ;
+										ACO->(FieldGet(FieldPos('ACO_LOTE'+cCnt)))  > 0
+									nDesconto	:=	ACO->(FieldGet(FieldPos('ACO_PERDE'+cCnt)))
+									cCnt	:=	SOMA1(cCnt)
+								EndDo
+								AAdd(aDescontos, {cPeso,StrZero(999-Len(aDescontos),3),nDesconto,ACO->ACO_CODREG} )
+							Else
+								nDesconto	:=	0
+							EndIf
+							If nDesconto <> 0.AND.!lExistCpo
+								cUltRegra	:=	ACO->ACO_CODREG
+								Exit
+							EndIf
+						EndIf
+					EndIf
+				Next nX
+				//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+				//³A ordem para escolher os descontos sera determinada pelo peso do grupo  ³
+				//³de vendas mas a ordem em que foi achado                                 ³
+				//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+				If lExistCpo .AND. Len(aDescontos) > 0
+					aSort(aDescontos,,,{|x,y| x[1]+x[2] > y[1]+y[2] })
+					nDesconto	:=	If(aDescontos[1][3] == 0,-1,aDescontos[1][3])
+					If nDesconto > 0
+						cUltRegra	:=	If(aDescontos[1][3] == 0,cUltRegra,aDescontos[1][4])
+					EndIf
+				EndIf	
+				aDescontos	:=	{}
+				//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+				//³Determina para cada produto ou grupo a % de desconto                    ³
+				//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+				ACP->(DbSeek(xFilial("ACP")+cUltRegra))
+				While ACP->ACP_CODREG == cUltRegra .AND. !ACP->(EOF())
+					nDescs	:=	0
+					If Empty(ACP->ACP_CODPRO)
+						While  (nDescs   := Ascan(aProds,{|x| x[2] == ACP->ACP_GRUPO },nDescs+1  ) ) > 0
+							aProds[nDescs][4] := nDesconto
+							aProds[nDescs][5] := .F.
+						EndDo
+					Else
+						While  (nDescs   := Ascan(aProds,{|x| x[1] == ACP->ACP_CODPRO},nDescs+1  ) ) > 0
+							aProds[nDescs][4] := nDesconto
+						EndDo
+					EndIf
+					ACP->(DbSkip())
+				EndDo
+			EndIf
+			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			//³Retira o primeiro campo da chave e continua a busca recursiva           ³
+			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			If ( nDesconto == 0 )
+				For nX := nY-nW+1 To nY
+					Do Case
+					Case aPesq[nX] == "ACO_CODCLI"
+						cCliente := Nil
+					Case aPesq[nX] == "ACO_LOJA"
+						cLoja := Nil
+					Case aPesq[nX] == "ACO_CODTAB"
+						cTabPreco := Nil
+					Case aPesq[nX] == "ACO_CONDPG"
+						cCondPg := Nil
+					Case aPesq[nX] == "ACO_FORMPG"
+						cFormPg := Nil
+					EndCase
+					nDesconto := MaRgrDesc(cProduto,cCliente,cLoja,cTabPreco,nFaixa,cCondPg,cFormPg,nTipo,aProds,aExc,/*cCodRegDe*/, nPrcBase)
+					If nDesconto <> 0
+						Exit
+					EndIf
+				Next nX
+			EndIf
+			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			//³Guarda os ultimos resultados                                            ³
+			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			aadd(aUltResult,{cProduto,cCliente,cLoja,cTabPreco,nFaixa,cCondPg,cFormPg,nTipo,nDesconto,cUltRegra,aClone(aProds),cFilAnt})
+			If Len(aUltResult) > MAXSAVERESULT
+				aUltResult := aDel(aUltResult,1)
+				aUltResult := aSize(aUltResult,MAXSAVERESULT)
+			EndIf
+		Else
+			nDesconto	:= aUltResult[nX][09]
+			aProds		:=	aClone(aUltResult[nX][11])
+			If nDesconto > 0
+				cUltRegra	:=	aUltResult[nX][10]
+			EndIf
+		EndIf
+		RestArea(aArea)
+		If nStack == 1
+			nDesconto := Max(0,nDesconto)
+		Else
+			nStack--
+		EndIf
+	EndIf
+Else
+	nDesconto := ExecBlock("FT080RDES",.F.,.F.,{cProduto,cCliente,cLoja,cTabPreco,nFaixa,cCondPg,cFormPg,nTipo,aProds,aExc})
+EndIf
+Return(nDesconto)
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄ¿±±
+±±³Funcao    ³FtRegraDesc³ Autor ³Vendas Clientes        ³ Data ³15.05.01 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Gatilho para atualizacao do desconto no pedido de venda     ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³ExpN1: Tipo de Desconto                                     ³±±
+±±³          ³       1 - Desconto de Item de PV                           ³±±
+±±³          ³       2 - Desconto de Item de Orcamento                    ³±±
+±±³          ³       3 - Desconto de Cabecalho de PV                      ³±±
+±±³          ³       4 - Desconto de Cabecalho de Orcamento               ³±±
+±±³          ³ExpN2: Total dos Valores da Mercadoria sem Desconto         ³±±
+±±³          ³ExpN3: Variavel de desconto de cabecalho a ser atualizada   ³±±
+±±³          ³ExpA4: Array contendo as regras que NAO devem ser considera-³±±
+±±³          ³       das.                                                 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³ExpN1: Percentual de Desconto da Regra                      ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡„o ³Esta rotina tem como objetivo atualizar o campo C6_DESCONT  ³±±
+±±³          ³de acordo com o pedido de venda                             ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Observacao³  Usado nos campos C6_PRODUTO e C6_QTDVEN                   ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                           ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Function FtRegraDesc(nTipo,nTotDoc,nDescCab,aRegrasExc)
+
+Local aArea     := GetArea()
+Local aAreaTmp  := {}
+Local aProds	:= {}
+Local nDesconto := 0
+Local nPosProd  := 0
+Local nPQtdVen  := 0
+Local nPosGrp   := 0
+Local nPosQtd   := 0
+Local nPPrcVen  := 0
+Local nPPrUnit  := 0
+Local nPValor   := 0
+Local nPDescont := 0
+Local nDesc		:= 0
+Local nCnt		:= 0
+Local nX        := 0 
+Local nPContrat := 0
+Local cCampo    := ReadVar()
+Local cProduto  := ""
+Local lDescEsca	:=	GetNewPar("MV_DESCLOT",.F.)
+Local nPrcBase  := 0 		//preco base (unitario) do item
+
+DEFAULT nTipo   := 1
+DEFAULT nTotDoc := 0
+DEFAULT nDescCab:= 0
+DEFAULT aRegrasExc:={}
+Do Case
+Case nTipo == 1 .AND. M->C5_TIPO=="N"
+	If ACO->(DbSeek(xFilial("ACO")))
+		aDescEsca := If(aDescEsca <> Nil .AND. Len(aDescEsca) < Len(aCols),Nil,aDescEsca)
+		nPosProd  := Ascan(aHeader,{|x| Alltrim(x[2]) == "C6_PRODUTO"})
+		nPQtdVen  := Ascan(aHeader,{|x| Alltrim(x[2]) == "C6_QTDVEN"})
+		nPContrat := Ascan(aHeader,{|x| AllTrim(x[2]) == "C6_CONTRAT"})
+		nPPrcBase := Ascan(aHeader,{|x| AllTrim(x[2]) == "C6_PRUNIT"})
+		cProduto  := aCols[n][nPosProd]
+		nPrcBase  := aCols[n][nPPrcBase] //preco base (unitario) do item
+		
+		If MatGrdPrrf(cProduto)
+			MatGrdPrrf(@cProduto,.T.)
+		EndIf
+		If aCols[n,nPQtdVen]>0 .AND. (nPContrat==0 .OR. Empty(aCols[n,nPContrat]) )
+			SE4->(dbSetOrder(1))
+			SE4->(DbSeek(xFilial("SE4")+M->C5_CONDPAG))
+			nDesconto := MaRgrDesc(cProduto,M->C5_CLIENTE,M->C5_LOJACLI,M->C5_TABELA,aCols[n,nPQtdVen],M->C5_CONDPAG,SE4->E4_FORMA,1,,aRegrasExc,/*cCodRegDe*/,nPrcBase)
+		EndIf
+		If lDescEsca .AND. aDescEsca <> Nil .AND. aDescEsca[n] > 0
+			nTot	:=	100 - nDesconto
+			nTot	-=	nTot * aDescEsca[n] /100
+			nDesconto	:=	100 - nTot
+		EndIf
+	Else
+		nPDescont := Ascan(aHeader,{|x| Alltrim(x[2]) == "C6_DESCONT"})
+		If nPDescont <> 0
+			nDesconto := aCols[N][nPDescont]
+		EndIf
+	EndIf
+Case nTipo == 2
+	If ACO->(DbSeek(xFilial("ACO")))
+		aDescEsca := If(aDescEsca <> Nil .AND. Len(aDescEsca) < TMP1->(Reccount()),Nil,aDescEsca)
+		If TMP1->CK_QTDVEN > 0 .AND. Empty(TMP1->CK_CONTRAT)
+			SE4->(dbSetOrder(1))
+			SE4->(DbSeek(xFilial("SE4")+M->CJ_CONDPAG))
+			nDesconto := MaRgrDesc(TMP1->CK_PRODUTO,M->CJ_CLIENTE,M->CJ_LOJA,M->CJ_TABELA,TMP1->CK_QTDVEN,M->CJ_CONDPAG,SE4->E4_FORMA,1,,aRegrasExc,/*cCodRegDe*/,TMP1->CK_PRUNIT,TMP1->CK_QTDVEN)
+		EndIf
+		If lDescEsca .AND. aDescEsca <> Nil .AND. aDescEsca[TMP1->(Recno())] > 0
+			nTot	:=	100 - nDesconto
+			nTot	-=	nTot * aDescEsca[TMP1->(Recno())] /100
+			nDesconto	:=	100 - nTot
+		EndIf
+		M->CK_DESCONT := nDesconto
+		A415Descon()
+	Else
+		nDesconto := TMP1->CK_DESCONT
+	EndIf
+Case nTipo == 3 .AND. M->C5_TIPO=="N" 
+	If ACO->(DbSeek(xFilial("ACO")))
+		nPosProd  	:= Ascan(aHeader,{|x| Alltrim(x[2]) == "C6_PRODUTO"})
+		nPosQtd  	:= Ascan(aHeader,{|x| Alltrim(x[2]) == "C6_QTDVEN"})
+		nPPrcBase := Ascan(aHeader,{|x| AllTrim(x[2]) == "C6_PRUNIT"}) 
+		cProduto  := aCols[n][nPosProd]
+		nPrcBase := aCols[n][nPPrcBase] //preco base (unitario) do item
+
+		If MatGrdPrrf(cProduto)
+			MatGrdPrrf(@cProduto,.T.)
+		EndIf
+		aDescEsca	:=	Array(Len(aCols)+1)		
+		aFill(aDescEsca,0)
+		//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		//³Calcular o total de produtos suas quantidades para calcular o desconto escalable³
+		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+		If lDescEsca
+			For nX	:=	1	To	Len(aCols)
+				If (Len(aCols[nX]) == Len(aHeader)+1) .And. !aCols[nX][Len(aCols[nX])]
+					nPos	:=	Ascan(aProds,{|x| x[1] == aCols[nX][nPosProd]})
+					If nPos > 0
+						aProds[nPos][3] += aCols[nX][nPosQtd]
+					Else
+						AAdd(aProds,{aCols[nX][nPosProd],Posicione('SB1',1,xFilial('SB1')+aCols[nX][nPosProd],"B1_GRUPO"),aCols[nX][nPosQtd],0,.T.})
+					EndIf
+				EndIf
+			Next
+		EndIf
+		SE4->(dbSetOrder(1))
+		SE4->(DbSeek(xFilial()+M->C5_CONDPAG))
+		nDesconto := MaRgrDesc(cProduto,M->C5_CLIENTE,M->C5_LOJACLI,M->C5_TABELA,nTotDoc,M->C5_CONDPAG,SE4->E4_FORMA,2,aProds,aRegrasExc,/*cCodRegDe*/,nPrcBase)
+		If nDescCab <> nDesconto
+			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			//³Se houve desconto escalavel, aplicar ele a cada um dos ³
+			//³produtos que fazem parte da regra.                     ³
+			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			If !lDescEsca .OR. ACO->(FIELDPOS('ACO_ESCALA')) == 0 .OR. Posicione('ACO',1,xFilial('ACO')+cUltRegra,'ACO_ESCALA') <> '1'
+				nDescCab  := nDesconto
+			Else
+				//Distribui no array dos descontos escalaveis os descontos
+				For nX := 1 To Len(aProds)
+					If aProds[nX][5]
+						nCnt	:=	Ascan(aCols,{|x| x[nPosProd] == aProds[nX][1]})
+						While nCnt > 0
+							aDescEsca[nCnt]	:=	aProds[nX][4]
+							nCnt	:=	Ascan(aCols,{|x| x[nPosProd] == aProds[nX][1]},nCnt+1)
+						EndDo
+					Else
+						nCnt	:=	Ascan(aCols,{|x| x[nPosProd] == aProds[nX][2]})
+						While nCnt > 0
+							aDescEsca[nCnt]	:=	aProds[nX][4]
+							nCnt	:=	Ascan(aCols,{|x| Posicione('SB1',1,xFilial('SB1')+x[nPosProd],"B1_GRUPO") == aProds[nX][2]},nCnt+1)
+						EndDo
+					EndIf
+				Next
+			EndIf
+			a410Recalc(.T.)
+			lRefresh	:=	.T.
+		EndIf
+	EndIf
+Case nTipo == 4 .AND. nTotDoc > 0
+	If ACO->(DbSeek(xFilial("ACO")))
+		aDescEsca	:=	Array(TMP1->(Reccount())+1)
+		aFill(aDescEsca,0)
+		//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		//³Calcular o total de produtos suas quantidades para calcular o desconto escalable³
+		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+		If lDescEsca
+			aAreaTmp	:=	TMP1->(GetArea())
+			TMP1->(DbGoTop())
+			While !TMP1->(EOF())
+				If TMP1->(FieldPos('CK_FLAG')) > 0 .AND. !TMP1->CK_FLAG
+					nPos	:=	Ascan(aProds,{|x| x[1] == TMP1->CK_PRODUTO})
+					If nPos > 0
+						aProds[nPos][3] += TMP1->CK_QTDVEN
+					Else
+						AAdd(aProds,{TMP1->CK_PRODUTO,Posicione('SB1',1,xFilial('SB1')+TMP1->CK_PRODUTO,"B1_GRUPO"),TMP1->CK_QTDVEN,0,.T.})
+					EndIf
+				EndIf
+				TMP1->(DbSkip())
+			EndDo
+			RestArea(aAreaTmp)
+		EndIf
+		SE4->(dbSetOrder(1))
+		SE4->(DbSeek(xFilial("SE4")+M->CJ_CONDPAG))
+		nDesconto := MaRgrDesc(TMP1->CK_PRODUTO,M->CJ_CLIENTE,M->CJ_LOJA,M->CJ_TABELA,nTotDoc,M->CJ_CONDPAG,SE4->E4_FORMA,2,aProds,aRegrasExc,/*cCodRegDe*/,TMP1->CK_PRUNIT,TMP1->CK_QTDVEN)
+		If nDescCab <> nDesconto
+			//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+			//³Se houve desconto escalavel, aplicar ele a cada um dos ³
+			//³produtos que fazem parte da regra.                     ³
+			//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+			If !lDescEsca .OR. ACO->(FIELDPOS('ACO_ESCALA')) == 0 .OR. Posicione('ACO',1,xFilial('ACO')+cUltRegra,'ACO_ESCALA') <> '1'
+				nDescCab  := nDesconto
+			Else
+				//Distribui no array dos descontos escalaveis os descontos
+				aAreaTmp	:=	TMP1->(GetArea())
+				TMP1->(DbGoTop())
+				While !TMP1->(EOF())
+					nCnt	:=	Ascan(aProds,{|x| x[5] .AND. TMP1->CK_PRODUTO==x[1]})
+					If nCnt > 0 .AND. aProds[nCnt][4] > 0
+						aDescEsca[TMP1->(Recno())]	:=	aProds[nCnt][4]
+					Else
+						nCnt	:=	Ascan(aProds,{|x| !x[5] .AND. Posicione('SB1',1,xFilial('SB1')+TMP1->CK_PRODUTO,"B1_GRUPO")==x[2]})
+						If nCnt > 0 .AND. aProds[nCnt][4] > 0
+							aDescEsca[TMP1->(Recno())]	:=	aProds[nCnt][4]
+						EndIf
+					EndIf
+					TMP1->(DbSkip())
+				EndDo
+				RestArea(aAreaTmp)
+			EndIf
+			A415DesCab(.T.,.F.,.T.)
+		EndIf
+	EndIf
+EndCase
+RestArea(aArea)
+Return(nDesconto)
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄ¿±±
+±±³Funcao    ³FtDescCab  ³ Autor ³Vendas Clientes        ³ Data ³08.06.01 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Rotina de tratamento para desconto de cabecalho             ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³ExpN1: Preco de Tabela                                      ³±±
+±±³          ³ExpA2: Desconto de  Cascata - Percentual                    ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³ExpN1: Preco de tabela com o desconto aplicado              ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡„o ³Esta rotina tem como objetivo calcular o preco de venda     ³±±
+±±³          ³aplicando-se desconto de cabecalho sobre o preco de tabela  ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Observacao³                                                            ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                           ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Function FtDescCab(nPrcLista,aDesconto,nMoeda)
+
+Local nPrcVen := nPrcLista
+Local nX      := 0
+Local nRet    := 0
+
+For nX := 1 To Len(aDesconto)
+	If aDesconto[nX] <> 0
+		nPrcVen := nPrcVen * ( 1 - ( aDesconto[nX]/100 ) )
+	EndIf
+Next nX
+nPrcVen := A410Arred(nPrcVen,"D2_PRCVEN",nMoeda) 
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Ponto de entrada para customizar o desconto com base em³
+//³informacoes provenientes do cabeçalho                  ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄDeoÄ01/03/2011ÄÄÄÄÄÄÄÄÄÙ
+If	ExistBlock("FT080DSC")
+	nRet := ExecBlock("FT080DSC",.F.,.F.,{nPrcLista,nPrcVen})
+	If Valtype(nPrcVen) == "N" 
+		nPrcVen := nRet
+	EndIf
+EndIf
+
+Return(nPrcVen)
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄ¿±±
+±±³Funcao    ³FtDescItem ³ Autor ³Vendas Clientes        ³ Data ³08.06.01 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Rotina de tratamento para desconto de item                  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³ExpN1: Preco de lista aplicado o desconto de cabecalho      ³±±
+±±³          ³ExpN2: Preco de Venda                                       ³±±
+±±³          ³ExpN3: Quantidade vendida                                   ³±±
+±±³          ³ExpN4: Valor Total                                          ³±±
+±±³          ³ExpN5: Percentual de desconto                               ³±±
+±±³          ³ExpN6: Valor do desconto                                    ³±±
+±±³          ³ExpN7: Valor do desconto original                           ³±±
+±±³          ³ExpN7: Tipo de Desconto                                     ³±±
+±±³          ³       [1] Por percentual de desconto                       ³±±
+±±³          ³       [2] Por valor do desconto                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³ExpN1: Preco de Venda                                       ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡„o ³Esta rotina tem como objetivo calcular o preco de venda     ³±±
+±±³          ³aplicando-se desconto de item sobre o preco de tabela       ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Observacao³                                                            ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                           ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Function FtDescItem(nPrUnit,nPrcVen,nQtdVen,nTotal,nPerc,nDesc,nDescOri,nTipo,nQtdAnt,nMoeda)
+
+Local nPreco := 0
+Local nValTot:= 0
+DEFAULT nTipo    := 1
+DEFAULT nQtdAnt  := nQtdVen
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Calculo o Preco de Lista quando nao houver tabela de preco    ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If nPrUnit == 0
+	nPrUnit += nPrcVen + a410Arred(nDescOri/nQtdAnt,"D2_PRCVEN")		
+EndIf
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Calcula o novo preco de Venda                                 ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If nTipo == 1
+	nPreco := A410Arred(nPrUnit * (1-(nPerc/100)),"D2_PRCVEN",nMoeda)
+Else
+	nDesc  := a410Arred(nDesc/nQtdVen,"D2_PRCVEN")
+	nPreco := A410Arred(nPrUnit-nDesc,"D2_PRCVEN",nMoeda)
+EndIf
+nTotal := A410Arred(nPreco* nQtdVen,"D2_TOTAL",nMoeda)
+nValTot:= A410Arred(nPrUnit * nQtdVen,"D2_DESCON")
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Calculo dos descontos                                         ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+If cPaisLoc != "BRA"
+	If nPrUnit == 0
+		nDesc := 0
+		nPerc := 0
+	Else	
+		nDesc := A410Arred(nValTot-nTotal,"D2_DESCON")
+		If nTipo<>1
+			nPerc := A410Arred((1-(nPreco/nPrUnit))*100,"C6_DESCONT")
+		EndIf
+	EndIf	
+Else
+	nDesc := A410Arred(nValTot-nTotal,"D2_DESCON")
+	If nTipo<>1
+		nPerc := A410Arred((1-(nPreco/nPrUnit))*100,"C6_DESCONT")
+	EndIf		
+EndIf	
+Return(nPreco)
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Funcao    ³FtIsDataOk³ Autor ³ Vendas Clientes       ³ Data ³22.11.2001³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Funcao generica que valida os campos data e hora nos        ³±±
+±±           ´arquivos passados pelo parametro                            ´±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³ Logico                                                     ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³ 1 - Alias do arquivo                                       ³±±
+±±³          ³ 2 - Alias efetivamente em uso (para o caso de uma query)   ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Function FtIsDataOk(cAlias,cAliasAtu)
+
+Local cAliasCp  := Alltrim(cAlias)
+Local cDatDe    := cAliasCp+"_DATDE"
+Local cDatAte   := cAliasCp+"_DATATE"
+Local cHrDe     := cAliasCp+"_HORADE"
+Local cHrAte    := cAliasCp+"_HORATE"
+Local cTpHora   := cAliasCp+"_TPHORA"
+Local cAreaAnt  := Alias()
+Local lRetorno := .T.
+DEFAULT cAliasAtu	:=	cAlias
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³OBS :                                                                                ³
+//³Hora unica significa que a regra estara ativa do dia X as X1:XX, ate o dia Y as Y1:YY³
+//³Hora recorrente significa que estara ativa do dia X ate o dia Y, todos os dias       ³
+//³entre a hora X1:XX e Y1:YY.                                                          ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+DbSelectArea(cAliasAtu)
+
+// Se os campos da data inicial e final e hora final e inicial nao existirem , retorna .T. e ignora esses campos na regra
+If (cAliasAtu)->(FieldPos(cDatDe)) > 0 .AND. (cAliasAtu)->(FieldPos(cDatAte)) > 0 .AND. (cAliasAtu)->(FieldPos(cHrDe)) > 0 .AND. (cAliasAtu)->(FieldPos(cHrAte)) > 0 .AND.(cAliasAtu)->(FieldPos(cTpHora)) > 0
+	If &cTpHora == "1"    // Tipo da hora = Unica
+		If !( SubtHoras(dDataBase,Time(),If(Empty(&cDatAte),dDataBase,&cDatAte),&cHrAte) > 0 .AND.;
+				SubtHoras(&cDatDe,&cHrDe,dDataBase,Time()) > 0 )
+			lRetorno := .F.
+		EndIf
+	Else	              // Tipo da hora = Recorrente
+		If dDataBase >= &cDatDe .AND. dDataBase <= If(Empty(&cDatAte),dDataBase,&cDatAte)
+			If !( Time() >= &cHrDe .AND. Time() <= &cHrAte )
+				lRetorno := .F.
+			EndIf
+		Else
+			lRetorno := .F.
+		EndIf
+	EndIf
+EndIf
+
+DbSelectArea(cAreaAnt)
+
+Return(lRetorno)
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³Ft080Copia³ Autor ³Vendas Clientes        ³ Data ³19/10/2001  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Rotina de Copia da Regra de Descontos                         ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Sintaxe   ³ExpX1 := Ft080Copia( ExcC1, ExpN1, ExpN2 )                    ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³ExpC1: Alias do Arquivo                                       ³±±
+±±³          ³ExpN1: Numero do Registro                                     ³±±
+±±³          ³ExpN2: Opcao do aRotina                                       ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³ExpX1 -> Retorno da FT080RDES                                 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                             ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+
+Function Ft080Copia( cAlias, nRecno, nOpcao )
+
+Local xRet
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Faz a chamada passando o parametro de copia                  ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+xRet := Ft080RDes( cAlias, nRecno, nOpcao, , .T. )
+
+Return( xRet )
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºPrograma  ³Ft080DtHs   ºAutor  ³Vendas Clientes   ³Data  ³  03/04/02   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDesc.     ³Consistencia da Data e Hora                                 º±±
+±±º          ³                                                            º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³ FATA080                                                    º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+Static Function Ft080DtHs()
+
+Local lRet     := .T.
+Local cDtAte_A := IIF(Empty(Dtos(ACO->ACO_DATATE)),"99999999",Dtos(ACO->ACO_DATATE))
+Local cDtAte_B := IIF(Empty(Dtos(M->ACO_DATATE))  ,"99999999",Dtos(M->ACO_DATATE))
+
+//	Verifica se existem os campos no arquivo "ACO"
+If	ACO->(FieldPos("ACO_DATDE" )) > 0 .AND. ACO->(FieldPos("ACO_DATATE")) > 0 .AND. ;
+		ACO->(FieldPos("ACO_HORADE")) > 0 .AND. ACO->(FieldPos("ACO_HORATE")) > 0 .AND. ;
+		ACO->(FieldPos("ACO_TPHORA")) > 0
+
+	//	1 - Valida data
+	If	(Dtos(M->ACO_DATDE) > cDtAte_A) .OR. (cDtAte_B < Dtos(ACO->ACO_DATDE))
+		lRet := .F.
+	Else
+		//	2 - Valida hora tipo "RECURSIVO" 			
+		If M->ACO_TPHORA+ACO->ACO_TPHORA == "22"		
+			If	(M->ACO_HORATE < ACO->ACO_HORADE .OR. M->ACO_HORADE > ACO->ACO_HORATE )
+				lRet := .F.		
+			EndIf
+			//	3 - Valida data/hora tipo "11-UNICO", "12-UNICO/RECURSIVO" e "21-RECURSIVO/UNICO"
+		Else
+			If	Dtos(M->ACO_DATDE) == cDtAte_A
+				If	M->ACO_HORADE > ACO->ACO_HORATE
+					lRet := .F.		
+				EndIf
+			ElseIf cDtAte_B == Dtos(ACO->ACO_DATDE)
+				If	M->ACO_HORATE < ACO->ACO_HORADE
+					lRet := .F.		
+				EndIf
+			EndIf
+		EndIf
+	EndIf
+EndIf
+
+Return(lRet)
+                   
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄ¿±±
+±±³Funcao    ³MaReleRDes ³ Autor ³Vendas Clientes        ³ Data ³15/01/03 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Efetua a limpeza do cache das regras de desconto            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Sintaxe   ³ExpL1 := MaReleRDes()                                       ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³Nenhum                                                      ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³.T.                                                         ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Observacao³ Esta funcao nao pode ser removida deste fonte, ou deve     ³±±
+±±³          ³ estar no mesmo fonte em que o array estatico aUltResult da ³±±
+±±³          ³ regra de desconto eh inicializado                          ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Materiais/Distribuicao/Logistica                           ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+
+Function MaReleRDes()
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Limpa buffer                                                 ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+aUltResult := Nil
+
+Return(.T.)
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Programa  ³MenuDef   ³ Autor ³ Vendas Clientes       ³ Data ³01/09/2006³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ Utilizacao de menu Funcional                               ³±±
+±±³          ³                                                            ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³Array com opcoes da rotina.                                 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³Parametros do array a Rotina:                               ³±±
+±±³          ³1. Nome a aparecer no cabecalho                             ³±±
+±±³          ³2. Nome da Rotina associada                                 ³±±
+±±³          ³3. Reservado                                                ³±±
+±±³          ³4. Tipo de Transa‡„o a ser efetuada:                        ³±±
+±±³          ³	  1 - Pesquisa e Posiciona em um Banco de Dados           ³±±
+±±³          ³    2 - Simplesmente Mostra os Campos                       ³±±
+±±³          ³    3 - Inclui registros no Bancos de Dados                 ³±±
+±±³          ³    4 - Altera o registro corrente                          ³±±
+±±³          ³    5 - Remove o registro corrente do Banco de Dados        ³±±
+±±³          ³5. Nivel de acesso                                          ³±±
+±±³          ³6. Habilita Menu Funcional                                  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³   DATA   ³ Programador   ³Manutencao efetuada                         ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³          ³               ³                                            ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+
+Static Function MenuDef()
+     
+Private aRotina := {	{ STR0001,"AxPesqui"		,0,1,0,.F.},;	// "Pesquisar"
+						{ STR0002,"Ft080RDes"		,0,2,0,NIL},;	// "Visualizar"
+						{ STR0003,"Ft080RDes"		,0,3,0,NIL},;	// "Incluir"
+						{ STR0004,"Ft080RDes"		,0,4,0,NIL},;	// "Alterar"
+						{ STR0005,"Ft080RDes"		,0,5,0,NIL},;	// "Excluir"
+						{ STR0006,"Ft080Copia"		,0,3,0,NIL}}	// "Copiar"
+
+If ExistBlock("FT080MNU")
+	ExecBlock("FT080MNU",.F.,.F.)
+EndIf
+Return(aRotina)
+         
+/*ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡„o    ³Ft080GrPrd³Autor  ³Rodrigo T. Silva 		³ Data ³11/11/2009 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descricao ³Interface de Grade de Produtos - Regras de Desconto		   ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³FATA080													   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß*/
+Function Ft080GrPrd()
+Local lRet     	  := .T.
+Local nITEMGR 	  := aScan(aHeader,{|x| AllTrim(x[2]) == "ACP_ITEMGR"})
+Local nDESPRO 	  := aScan(aHeader,{|x| AllTrim(x[2]) == "ACP_DESPRO"})
+Local nDESCON 	  := aScan(aHeader,{|x| AllTrim(x[2]) == "ACP_PERDES"})
+Local nFaixa  	  := aScan(aHeader,{|x| AllTrim(x[2]) == "ACP_FAIXA"})
+Local lGrade  	  := !Empty(nITEMGR) .And. MaGrade()
+Local cProduto	  := M->ACP_CODPRO
+Local lReferencia := MatGrdPrrf(@cProduto)
+If lGrade                              
+	oGrade:MontaGrade(n,cProduto,.T.,,lReferencia)
+EndIf
+
+If lReferencia
+	aCols[n,nITEMGR] := "01"
+	aCols[n,nDESPRO] := oGrade:GetDescProd(M->ACP_CODPRO)
+	aCols[n,nDESCON] := 0
+	aCols[n,nFaixa]  := 0 	
+ElseIf (lRet := ExistCpo("SB1",M->ACP_CODPRO))
+	aCols[n,nDESPRO] := Posicione("SB1",1,xFilial("SB1")+M->ACP_CODPRO,"B1_DESC")
+	If !Empty(nITEMGR)
+		aCols[n,nITEMGR] := CriaVar("ACP_ITEMGR")
+	EndIF
+EndIf    
+Return lRet
+
+/*ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡„o    ³Ft080Grade³Autor  ³Rodrigo T. Silva 		³ Data ³11/11/2009 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³Se a Grade estiver ativa, efetua a entrada de dados na colu- ³±±
+±±³          ³na percentual de descontos.                                  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³FATA080													   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß*/
+
+Function Ft080Grade()
+Local lRet 		  := .T.
+Local nCODPRO     := aScan(aHeader,{|x| AllTrim(x[2]) == "ACP_CODPRO"})
+Local lGrade      := ACP->(FieldPos("ACP_ITEMGR")) > 0 .And. MaGrade()
+Local cProduto	  := aCols[n,nCODPRO]
+Local lReferencia := MatGrdPrrf(@cProduto)
+Local cCampo      := Substr(ReadVar(),4)
+
+If (cCampo == "ACP_PERDES" .And. !lReferencia) .And. ((M->ACP_PERDES < 0) .Or. (M->ACP_PERDES > 100))
+	Aviso(STR0010,STR0011,{"Ok"})// Atenção, Valor percentual deve estar entre 0 e 100.
+	lRet := .F.
+ElseIf lGrade .And. lReferencia
+	oGrade:cProdRef := aCols[n,nCODPRO]
+	oGrade:lShowGrd := .T.
+	oGrade:nPosLinO := n	
+	oGrade:Show(cCampo)	
+	&(ReadVar()) := oGrade:SomaGrade(cCampo,n)
+EndIf
+
+Return lRet
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºPrograma  ³Ft080VlGr ºAutor  ³Andre Anjos 		 º Data ³  18/11/09   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDescricao ³ Valida valores digitados na grade.                         º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³ FATA080                                                    º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+Function Ft080VlGr()
+Local lRet := .T.
+oGrade:lShowMsgDiff := .F.                                     
+If oGrade:cCpo == "ACP_PERDES" .And. &(ReadVar()) > 100
+	Aviso(STR0010,STR0011,{"Ok"})// Atenção, Valor percentual deve estar entre 0 e 100.
+	lRet := .F.
+EndIf
+oGrade:lShowMsgDiff := .T.
+Return lRet
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Funcao    ³Ft080AltOk³ Autor ³ IP-Vendas 			³ Data ³ 04/03/10 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descricao ³ Define a operacao que sera realizada na tabela de 	      ³±±
+±±³			 ³ integracap de acordo com o processo de replicacao executado³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Registros utilizados na integracao Off-line                ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+Function Ft080AltOk( cProcess, cTabela, cChave, nOrdem, cTipo)
+		
+	Local oProcessOff 	:= Nil											//Objeto do tipo LJCProcessoOffLine
+		
+	//Verifica se o ambiente esta em off-line
+	If lAmbOffLn
+		//Instancia o objeto LJCProcessoOffLine
+		oProcessOff := LJCProcessoOffLine():New(cProcess)
+		
+		//Determina o tipo de operacao 
+		If Empty(cTipo)
+			If INCLUI
+				cTipo := "INSERT"
+			ElseIf ALTERA
+				cTipo := "UPDATE"
+			Else
+				cTipo := "DELETE"				
+			EndIf
+		Endif                                   	
+		
+		If cTipo = "DELETE"
+			//Considera os registros deletados
+			SET DELETED OFF	
+		EndIf
+		
+			    
+		If !Empty(cTipo)
+			//Insere os dados do processo (registro da tabela)
+			oProcessOff:Inserir(cTabela, xFilial(cTabela) + cChave, nOrdem, cTipo)	
+				
+			//Processa os dados 
+			oProcessOff:Processar()	
+		EndIf
+		
+		//Desconsidera os registros deletados
+		SET DELETED ON
+	EndIf
+	
+Return Nil
+
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Programa  ³VlrToPct  ³ Autor ³ Vendas & CRM          ³ Data ³16/01/2012³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ Calcula a porcentagem de desconto baseado no valor do      ³±±
+±±³          ³ desconto.                                                  ³±±
+±±³          ³                                                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³Percentual de desconto                                      ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³ExpN1: Valor do desconto                                    ³±±
+±±³          ³ExpN2: Tipo de Desconto                                     ³±±
+±±³          ³       1 - Desconto por Item                                ³±±
+±±³          ³       2 - Desconto por Total                               ³±±
+±±³          ³ExpN3: nFaixa                                               ³±±
+±±³          ³       Se ExpN2 = 1 -> Qtde do Item                         ³±±
+±±³          ³       Se ExpN2 = 2 -> Valor Total do PV                    ³±±
+±±³          ³ExpN4: Valor Unitario do Item (quando tipo = 1)             ³±±
+±±³          ³ExpC5: Tipo de aplicacao do desconto                        ³±±
+±±³          ³       1 - Valor aplicado em cada unidade do item           ³±±
+±±³          ³       2 - Valor de desconto aplicado no total do item      ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ FATA080                                                    ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+
+Function VlrToPct(nVlrDesc, nTipo, nFaixa, nVlrUnit, cTipoAplic)
+
+Local nPctDesc := 0		//percentual de desconto
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Verifica parametros para evitar divisao por 0                ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+If nFaixa == 0 
+	Return 0
+ElseIf nTipo == 1 .And. nVlrUnit == 0
+	Return 0
+EndIf	
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Pct(%)desconto = (valor do desconto * 100/ valor do item)    ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Desconto no Item                                             ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+Do Case
+Case nTipo == 1
+	
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³ Desconto aplicado em cada unidade                            ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+	If cTipoAplic == "1"
+		nPctDesc := (nVlrDesc * 100 / nVlrUnit)
+		
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³ Desconto aplicado no total do Item                           ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ	
+	ElseIf cTipoAplic == "2"
+		nPctDesc := (nVlrDesc * 100 / (nVlrUnit * nFaixa))
+	EndIf
+		
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Desconto no Total do PV                                      ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+Case nTipo == 2
+	nPctDesc := (nVlrDesc * 100 / nFaixa) 
+
+EndCase
+
+Return nPctDesc
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Funcao    ³AjustaSX3³ Autor ³ Vendas / CRM         	³ Data ³ 27/12/13 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descricao ³ Ajusta campos do SX3                              	        ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Atualizar SX3                                               ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+Static Function AjustaSX3()
+   
+dbSelectArea("SX3")
+dbsetOrder(2)
+//Inserindo novas validações no campo de tabela de preço
+If dbSeek("ACO_CODTAB")
+	If AllTrim(SX3->X3_VALID) <> 'Vazio().Or.(ExistCpo("DA0") .And. MaVldTabPrc(M->ACO_CODTAB))'
+		Reclock("SX3",.F.)
+		SX3->X3_VALID := 'Vazio().Or.(ExistCpo("DA0") .And. MaVldTabPrc(M->ACO_CODTAB))'
+		MsUnlock()  
+	EndIf
+		
+EndIf
+
+Return 
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Funcao    ³FATA080AltOk³ Autor ³ Vendas cliente		³ Data ³ 12/03/14 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descricao ³ Responsavel em enviar os dados da regra de desconto para   ³±±
+±±³Descricao ³ integracao												  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Uso       ³ Cadastro de regras de desconto                             ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+Static Function FATA080AltOk(aCols, cOpc)
+
+Local cTipo 		:= ""											//Como os dados serao integrados no processo offline    
+Local oPOffACO 		:= Nil											//Objeto do tipo LJCProcessoOffLine
+Local oPOffACP 		:= Nil											//Objeto do tipo LJCProcessoOffLine
+Local lAmbOffLn 	:= SuperGetMv("MV_LJOFFLN", Nil, .F.)			//Identifica se o ambiente esta operando em offline
+Local nPosItem    	:= aScan(aHeader,{|x| AllTrim(x[2])=="ACP_ITEM"})
+Local nI			:= 1
+Local aColsBk		:= aClone(aCols)
+	
+	//Verifica se o ambiente esta em off-line
+	If lAmbOffLn
+
+		//Determina o tipo de operacao 
+		If INCLUI
+			cTipo := "INSERT"
+		ElseIf ALTERA
+			cTipo := "UPDATE"
+		Else
+			cTipo := "DELETE"
+			//Considera os registros deletados
+			SET DELETED OFF
+		EndIf
+	
+		If cOpc == "DELETAR" .And. cTipo == "UPDATE"
+
+			oPOffACO := LJCProcessoOffLine():New("021")
+			oPOffACO:Inserir("ACO", xFilial("ACO") + ACO->ACO_CODREG, 1, "DELETE")	
+			//Processa os dados 
+			oPOffACO:Processar()
+	
+			oPOffACP := LJCProcessoOffLine():New("022")
+			For nI := 1 To Len(aColsBk)
+				oPOffACP:Inserir("ACP", xFilial("ACP") + ACO->ACO_CODREG + aColsBk[nI][nPosItem], 1, "DELETE")
+			Next
+			//Processa os dados
+			oPOffACP:Processar()
+			
+		EndIf
+
+		If cOpc == "FINALIZAR"
+			
+			If !Empty(cTipo)
+				//Caso Update deve-se incluir pois ja fora deletados anteriormente
+				If cTipo == "UPDATE"
+					cTipo := "INSERT"
+				EndIf
+
+				//ACO - Cabecalho:
+				oPOffACO := LJCProcessoOffLine():New("021")
+				oPOffACO:Inserir("ACO", xFilial("ACO") + ACO->ACO_CODREG, 1, cTipo)	
+				//Processa os dados 
+				oPOffACO:Processar()
+
+
+				//ACP - Detalhes:
+				oPOffACP := LJCProcessoOffLine():New("022")
+				For nI := 1 To Len(aColsBk)
+					//Se deletado nao incluir
+					If !aColsBk[nI][Len(aColsBk[nI])]
+						oPOffACP:Inserir("ACP", xFilial("ACP") + ACO->ACO_CODREG + aColsBk[nI][nPosItem], 1, cTipo)
+					EndIf
+				Next
+				//Processa os dados 
+				oPOffACP:Processar()
+			EndIf  
+		EndIf
+		
+		//Desconsidera os registros deletados
+		SET DELETED ON
+	EndIf
+
+Return Nil

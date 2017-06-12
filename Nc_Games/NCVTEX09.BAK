@@ -1,0 +1,757 @@
+#include "rwmake.ch"
+#INCLUDE "PROTHEUS.CH"
+#INCLUDE "topconn.ch"
+
+#Define Enter Chr(13)+Chr(10)
+
+// #########################################################################################
+// Projeto: Ecommerce B2B/B2C
+// Modulo :
+// Fonte  : Ncvtex09
+// ---------+-------------------+-----------------------------------------------------------
+// Data     | Autor             | Descricao
+// ---------+-------------------+-----------------------------------------------------------
+// 14/12/15 | Lucas Felipe      | Fonte para a geração dos arquivos de importação
+// ---------+-------------------+-----------------------------------------------------------
+
+/*/{Protheus.doc} NcVtex09
+Fonte para a geração dos arquivos de importação.
+
+@author    Lucas Felipe
+@version   1.xx
+@since     14/12/2015
+/*/
+//------------------------------------------------------------------------------------------
+User Function NcVtex09()
+
+Local cPerg 	:= "ZC5PERG1  "
+Local cEmail 	:= ""
+Local dDtIni
+Local dDtFim
+
+Local aRel		:= {}
+Local aRet
+
+
+ZC5Sx1(cPerg)
+Pergunte(cPerg,.T.)
+
+If !Empty(Mv_Par01)
+	
+	If Mv_Par01 == 1
+		
+		aRet 	:= ZC5Param(Mv_Par01)
+		If !Empty(aRet)
+			cEmail := Lower(Alltrim(aRet[7]))
+			dDtIni := aRet[1]
+			dDtFim := aRet[2]
+			
+			Aadd(aRel,{aRet[4]})
+			Aadd(aRel,{aRet[5]})
+			Aadd(aRel,{aRet[6]})
+			
+			Vtex09B2W(dDtIni,dDtFim,cEmail,aRel)
+		EndIf
+	ElseIf Mv_Par01 == 2
+		
+		aRet 	:= ZC5Param(Mv_Par01)
+		If !Empty(aRet)
+			
+			dDtIni := aRet[1]
+			dDtFim := aRet[2]
+			
+			Vtex09cNova(dDtIni,dDtFim)
+		EndIf
+	EndIf
+	
+EndIf
+
+Return
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} Vtex09B2W
+// Fonte para a geração dos arquivos de importação.
+//
+// @author    Lucas Felipe
+// @version   1.xx
+// @since     14/12/2015
+/*/
+//------------------------------------------------------------------------------------------
+Static Function Vtex09B2W(dDtIni,dDtFim,cEmail,aRel)
+
+Local cPara		:= ""
+Local cAssunto  := "Email B2W_"+DtoS(MsDate())
+Local cBody     := "Email gerado automaticamente"
+Local cAttach   := ""
+Local aAttach   := {}
+
+Local cQryB2W 	:= ""
+Local cAreaQry	:= GetNextAlias()
+
+Local nTotLinhas:= 0
+Local cPathArq	:= StrTran(GetSrvProfString( "StartPath", "" )+"\","\\","\")
+Local cArq 		:= "B2W_"+DtoS(MsDate())
+Local cExtExcel	:= ".CSV"
+Local cDtIni	:= ""
+Local cDtFim	:= ""
+Local nArq
+Local nI
+Local nInd
+Local cCabec	:= "ENTREGA;IDPARCEIRO;DOCNUM;DOCSERIE;DOCEMISSAO;DOCCHAVE"
+
+Local cEntrega	:= ""
+Local cIdParc	:= ""
+Local cNumDoc	:= ""
+Local cSerie	:= ""
+Local cEmissao	:= ""
+Local cChave	:= ""
+
+Local cTransp	:= ""
+Local cUrlTrac	:= ""
+Local cRastr	:= ""
+Local cDtEnv	:= ""
+Local cDtProme	:= ""
+Local cDthoje	:= Day2Str(Msdate())+Month2Str(Msdate())+Year2Str(Msdate())
+
+Local cUrlCorreio := Alltrim(U_MyNewSX6("EC_NCG0021",'http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_LINGUA=001&P_TIPO=001&P_COD_UNI=',"C","URL de rastreio do Correrios","","",.F. ))
+Local cUrlTra 		:= Alltrim(U_MyNewSX6("EC_NCG0025",'https://www.rapiddo.com.br/t/',"C","URL de rastreio transp Rapiddo","","",.F. ))
+
+cDtIni 	:= DtoS(dDtIni)
+cDtFim 	:= Dtos(dDtFim)
+cPara	:= cEmail
+
+If !Empty(aRel)
+	For nInd := 1 to Len(aRel)
+		
+		If aRel[nInd][1] .and. nInd==1//Notas Fiscais Emitidas
+		
+		cArq 		:= "B2W_NF_EMITIDA_"+DtoS(MsDate())
+		cCabec	 	:= "ENTREGA;IDPARCEIRO;DOCNUM;DOCSERIE;DOCEMISSAO;DOCCHAVE"
+		cQryB2W 	:= ""
+		cAreaQry	:= GetNextAlias()
+		
+		nArq  := FCreate(cPathArq + cArq + cExtExcel)
+			//FWrite(nArq,cCabec+ Enter)
+		
+		cQryB2W += " SELECT ZC5_PVVTEX, "+CRLF
+		
+		//cQryB2W += " 		SUBSTR(ZC5_PVVTEX, INSTR(ZC5_PVVTEX, '-')+1, LENGTH(TRIM(ZC5_PVVTEX))) ENTREGA, "+CRLF
+		cQryB2W += " CASE "+CRLF
+		cQryB2W += "		WHEN UPPER(ZC5_PVVTEX) LIKE '%IBWW%'"+CRLF
+		cQryB2W += "			THEN SUBSTR(REPLACE( ZC5_PVVTEX ,'Ibww-',''), INSTR( REPLACE( ZC5_PVVTEX ,'Ibww-',''), '-')+1, LENGTH(TRIM(REPLACE( ZC5_PVVTEX ,'Ibww-',''))))"+CRLF   
+		cQryB2W += "		ELSE SUBSTR(REPLACE( ZC5_PVVTEX ,'bww-',''), INSTR( REPLACE( ZC5_PVVTEX ,'bww-',''), '-')+1, LENGTH(TRIM(REPLACE( ZC5_PVVTEX ,'bww-',''))))"+CRLF
+		cQryB2W += "		END AS ENTREGA,"+CRLF
+		cQryB2W += "        '01455929000330' ID_PARCEIRO, "+CRLF
+		cQryB2W += "        F2_DOC, "+CRLF
+		cQryB2W += "        F2_SERIE, "+CRLF
+		cQryB2W += "        (SUBSTR(F2_EMISSAO, 7,2)|| "+CRLF
+		cQryB2W += "         SUBSTR(F2_EMISSAO, 5,2)|| "+CRLF
+		cQryB2W += "         SUBSTR(F2_EMISSAO, 1,4)) AS F2_EMISSAO, "+CRLF
+		cQryB2W += "         SF2.F2_CHVNFE "+CRLF
+		cQryB2W += " FROM "+ RetSqlName("ZC5") +" ZC5 "+CRLF
+		cQryB2W += " INNER JOIN "+ RetSqlName("SF2") +" SF2  "+CRLF
+		cQryB2W += " ON SF2.F2_FILIAL = '"+ xFilial("SF2") +"' "+CRLF
+		cQryB2W += " AND SF2.F2_DOC = ZC5.ZC5_NOTA "+CRLF
+		cQryB2W += " AND SF2.F2_SERIE = ZC5.ZC5_SERIE "+CRLF
+		cQryB2W += " AND SF2.F2_CLIENTE = ZC5.ZC5_CLIENT "+CRLF
+		cQryB2W += " AND SF2.F2_LOJA = ZC5.ZC5_LOJA "+CRLF
+		cQryB2W += " AND SF2.D_E_L_E_T_ = ' ' "+CRLF
+		cQryB2W += " AND SF2.F2_EMISSAO BETWEEN '"+cDtIni+"' AND '"+cDtFim+"' "+CRLF 
+		cQryB2W += " AND SF2.F2_CHVNFE <> ' ' "+CRLF
+		cQryB2W += " WHERE ZC5.ZC5_FILIAL = '"+ xFilial("ZC5") +"' "+CRLF
+		cQryB2W += "   AND ZC5_PVVTEX LIKE '%bww%' "+CRLF
+		cQryB2W += "   AND ZC5.D_E_L_E_T_ = ' ' "+CRLF
+		cQryB2W += " Union "+CRLF
+		cQryB2W += " SELECT CASE "+CRLF
+		cQryB2W += "            WHEN C5_YPVECOM = ' ' THEN c5_pedcli "+CRLF
+		cQryB2W += "            ELSE C5_YPVECOM "+CRLF
+		cQryB2W += "        END AS ZC5_PVVTEX, "+CRLF
+		cQryB2W += "        CASE "+CRLF
+			cQryB2W += "            WHEN C5_YPVECOM = ' ' THEN SUBSTR (C5_PEDCLI, INSTR(C5_PEDCLI,'-')+1, LENGTH(TRIM(C5_PEDCLI))) "+CRLF
+			cQryB2W += "            ELSE SUBSTR (C5_YPVECOM, INSTR(C5_YPVECOM,'-')+1, LENGTH(TRIM(C5_YPVECOM))) "+CRLF
+		cQryB2W += "        END AS ENTREGA, "+CRLF
+		cQryB2W += "        '01455929000330' ID_PARCEIRO, "+CRLF
+		cQryB2W += "        SF2.F2_DOC, "+CRLF
+		cQryB2W += "        SF2.F2_SERIE, "+CRLF
+		cQryB2W += "        (SUBSTR(F2_EMISSAO, 7,2)||  "+CRLF
+		cQryB2W += "        SUBSTR(F2_EMISSAO, 5,2)||  "+CRLF
+		cQryB2W += "        SUBSTR(F2_EMISSAO, 1,4)) AS SF2_EMISSAO, "+CRLF
+		cQryB2W += "        SF2.F2_CHVNFE "+CRLF
+		cQryB2W += " FROM "+ RetSqlName("SC5") +" SC5 "+CRLF
+		cQryB2W += " INNER JOIN "+ RetSqlName("SF2") +" SF2  "+CRLF
+		cQryB2W += " ON SF2.F2_FILIAL = '"+ xFilial("SF2") +"' "+CRLF
+		cQryB2W += " AND SF2.F2_DOC = SC5.C5_NOTA "+CRLF
+		cQryB2W += " AND SF2.F2_SERIE = SC5.C5_SERIE "+CRLF
+		cQryB2W += " AND SF2.F2_CLIENTE = SC5.C5_CLIENTE "+CRLF
+		cQryB2W += " AND SF2.F2_EMISSAO BETWEEN '"+cDtIni+"' AND '"+cDtFim+"' "+CRLF
+		cQryB2W += " AND SF2.F2_CHVNFE <> ' ' "+CRLF
+		cQryB2W += " AND SF2.D_E_L_E_T_ = ' ' "+CRLF
+		cQryB2W += " WHERE SC5.C5_FILIAL = '"+ xFilial("SF2") +"' "+CRLF
+		cQryB2W += "   AND SC5.D_E_L_E_T_ = ' ' "+CRLF
+		cQryB2W += "   AND (UPPER(SC5.C5_YPVECOM) LIKE '%BWW%' "+CRLF
+		cQryB2W += "        OR upper(sc5.C5_PEDCLI) LIKE '%BWW%') "+CRLF
+		cQryB2W += "   AND C5_NUM NOT IN "+CRLF
+		cQryB2W += "     (SELECT ZC5.ZC5_NUMPV "+CRLF
+		cQryB2W += "      FROM "+ RetSqlName("ZC5") +" ZC5 "+CRLF
+		cQryB2W += "      WHERE ZC5.ZC5_FILIAL = '"+ xFilial("SF2") +"' "+CRLF
+		cQryB2W += "        AND ZC5.D_E_L_E_T_ = ' ' "+CRLF
+		cQryB2W += "        AND ZC5.ZC5_NUM = 0 "+CRLF
+		cQryB2W += "        AND ZC5.ZC5_PVVTEX <> ' ') "+CRLF
+		
+		cQryB2W := ChangeQuery(cQryB2W)
+		
+		dbUseArea(.T., "TOPCONN", TCGenQry(,,cQryB2W), cAreaQry, .T., .F.)
+		
+		While !(cAreaQry)->(EOF())
+			++ nTotLinhas
+			
+				cEntrega:= Alltrim((cAreaQry)->ENTREGA)
+				cIdParc	:= Alltrim((cAreaQry)->ID_PARCEIRO)
+				cNumDoc	:= Alltrim((cAreaQry)->F2_DOC)
+				cSerie	:= Alltrim((cAreaQry)->F2_SERIE)
+				cEmissao:= Alltrim((cAreaQry)->F2_EMISSAO+SubStr(Time(),1,2)+SubStr(Time(),4,2))
+				cChave	:= Alltrim((cAreaQry)->F2_CHVNFE)
+			
+			
+			cTexto	:= cEntrega+";"+cIdParc+";"+cNumDoc+";"+cSerie+";"+cEmissao+";"+cChave
+			
+			FWrite(nArq, cTexto +Enter)
+			
+			(cAreaQry)->(DbSkip())
+			
+		EndDo
+		
+		FClose(nArq) 
+		
+		cAttach := cPathArq+cArq+cExtExcel
+		
+		aAdd(aAttach,cAttach)
+		
+		(cAreaQry)->(DbCloseArea())
+		
+		ElseIf aRel[nInd][1] .and. nInd==2//Nf entregue a transportadora
+		
+		cArq	 	:= "B2W_ENT_TRANP_"+DtoS(MsDate())
+		cCabec		:= "ENTREGA;IDPARCEIRO;DTENVIO;DTPROMETIDA;RASTREIO;TRANSP;URLTRACKING"
+		cQryB2W 	:= ""
+		cAreaQry	:= GetNextAlias()
+		
+		nArq  := FCreate(cPathArq + cArq + cExtExcel)
+			//FWrite(nArq,cCabec+ Enter)
+		
+		//	cQryB2W += " SELECT SUBSTR(ZC5_PVVTEX, INSTR(ZC5_PVVTEX, '-')+1, LENGTH(TRIM(ZC5_PVVTEX))) AS ENTREGA, "+CRLF
+			
+		cQryB2W += " SELECT CASE "+CRLF
+		cQryB2W += "		WHEN UPPER(ZC5_PVVTEX) LIKE '%IBWW%'"+CRLF
+		cQryB2W += "			THEN SUBSTR(REPLACE( ZC5_PVVTEX ,'Ibww-',''), INSTR( REPLACE( ZC5_PVVTEX ,'Ibww-',''), '-')+1, LENGTH(TRIM(REPLACE( ZC5_PVVTEX ,'Ibww-',''))))"+CRLF   
+		cQryB2W += "		ELSE SUBSTR(REPLACE( ZC5_PVVTEX ,'bww-',''), INSTR( REPLACE( ZC5_PVVTEX ,'bww-',''), '-')+1, LENGTH(TRIM(REPLACE( ZC5_PVVTEX ,'bww-',''))))"+CRLF
+		cQryB2W += "		END AS ENTREGA,"+CRLF
+		cQryB2W += "        '01455929000330' AS ID_PARCEIRO, "+CRLF
+		cQryB2W += "        ZC5_RASTRE AS PROTOCOLO, "+CRLF
+		cQryB2W += "        ZC5_CODENT as ZC5_CODENT "+CRLF
+		cQryB2W += " FROM "+ RetSqlName("ZC5") +" ZC5 "+CRLF
+		cQryB2W += " 	INNER JOIN "+ RetSqlName("SZ1") +" SZ1  "+CRLF
+		cQryB2W += " 		ON SZ1.Z1_FILIAL = '"+ xFilial("SZ1") +"' "+CRLF
+		cQryB2W += " 		AND SZ1.Z1_DOC = ZC5.ZC5_NOTA "+CRLF
+		cQryB2W += " 		AND SZ1.Z1_SERIE = ZC5.ZC5_SERIE "+CRLF
+		cQryB2W += " 		AND SZ1.D_E_L_E_T_ = ' ' "+CRLF
+		cQryB2W += " 	INNER JOIN "+ RetSqlName("SF2") +" SF2 "+CRLF
+		cQryB2W += " 		ON SF2.F2_FILIAL = '"+ xFilial("SF2") +"' "+CRLF
+		cQryB2W += " 		AND SF2.F2_DOC = ZC5.ZC5_NOTA "+CRLF
+		cQryB2W += " 		AND SF2.F2_SERIE = ZC5.ZC5_SERIE "+CRLF
+		cQryB2W += " 		AND SF2.F2_EMISSAO BETWEEN '"+cDtIni+"' AND '"+cDtFim+"' "+CRLF
+		cQryB2W += " 		AND SF2.D_E_L_E_T_ = ' ' "+CRLF
+		cQryB2W += " 		AND SF2.F2_CHVNFE <> ' ' "+CRLF
+		cQryB2W += " WHERE ZC5.ZC5_FILIAL = '"+ xFilial("ZC5") +"' "+CRLF
+		cQryB2W += "   AND ZC5.ZC5_NOTA <> ' ' "+CRLF
+		cQryB2W += "   AND ZC5.ZC5_PVVTEX LIKE '%bww%' "+CRLF
+		cQryB2W += "   AND ZC5_RASTRE <> ' ' "+CRLF
+		cQryB2W += "   AND ZC5.D_E_L_E_T_ = ' ' "+CRLF
+		
+		cQryB2W := ChangeQuery(cQryB2W)
+		
+		dbUseArea(.T., "TOPCONN", TCGenQry(,,cQryB2W), cAreaQry, .T., .F.)
+		
+		While !(cAreaQry)->(EOF())
+			++ nTotLinhas
+			
+			cEntrega	:= Alltrim((cAreaQry)->ENTREGA)
+				cIdParc		:= Alltrim((cAreaQry)->ID_PARCEIRO)
+				cDtEnv		:= cDthoje+SubStr(Time(),1,2)+SubStr(Time(),4,2)
+				cDtPromet	:= cDthoje+SubStr(Time(),1,2)+SubStr(Time(),4,2)
+				cRastr		:= Alltrim((cAreaQry)->PROTOCOLO)
+				If AllTrim((cAreaQry)->ZC5_CODENT) $ "862|863|6665"  
+					cTransp		:= "CORREIOS"
+					cUrlTrac	:= Alltrim(cUrlCorreio) + Alltrim((cAreaQry)->PROTOCOLO)
+				ElseIf AllTrim((cAreaQry)->ZC5_CODENT) == "861"
+					cTransp		:= "DIRECT TRANSPORTADORA"
+					cUrlTrac	:= Alltrim(cUrlTra) + Alltrim((cAreaQry)->PROTOCOLO)
+			Else
+				cTransp		:= " "
+				cUrlTrac	:= Alltrim((cAreaQry)->PROTOCOLO)
+			EndIf
+			
+			cTexto	:= cEntrega+";"+cIdParc+";"+cDtEnv+";"+cDtPromet+";"+cRastr+";"+cTransp+";"+cUrlTrac
+			
+			FWrite(nArq, cTexto +Enter)
+			
+			(cAreaQry)->(DbSkip())
+			
+		EndDo
+		
+		FClose(nArq)
+		cAttach := cPathArq+cArq+cExtExcel
+		
+		aAdd(aAttach,cAttach)
+		
+		(cAreaQry)->(DbCloseArea())
+		
+		ElseIf aRel[nInd][1] .and. nInd==3//Nf entregue ao cliente
+		
+		cArq 		:= "B2W_ENTR_CLI_"+DtoS(MsDate())
+		cCabec		:= "ENTREGA;IDPARCEIRO;DTENTREGA"
+		cQryB2W 	:= ""
+		cAreaQry	:= GetNextAlias()
+		
+		nArq  := FCreate(cPathArq + cArq + cExtExcel)
+			//FWrite(nArq,cCabec+ Enter)
+		
+		//cQryB2W += " SELECT SUBSTR(ZC5_PVVTEX, INSTR(ZC5_PVVTEX, '-')+1, LENGTH(TRIM(ZC5_PVVTEX))) AS ENTREGA, "+CRLF
+		cQryB2W += " SELECT CASE "+CRLF
+		cQryB2W += "		WHEN UPPER(ZC5_PVVTEX) LIKE '%IBWW%'"+CRLF
+		cQryB2W += "			THEN SUBSTR(REPLACE( ZC5_PVVTEX ,'Ibww-',''), INSTR( REPLACE( ZC5_PVVTEX ,'Ibww-',''), '-')+1, LENGTH(TRIM(REPLACE( ZC5_PVVTEX ,'Ibww-',''))))"+CRLF   
+		cQryB2W += "		ELSE SUBSTR(REPLACE( ZC5_PVVTEX ,'bww-',''), INSTR( REPLACE( ZC5_PVVTEX ,'bww-',''), '-')+1, LENGTH(TRIM(REPLACE( ZC5_PVVTEX ,'bww-',''))))"+CRLF
+		cQryB2W += "		END AS ENTREGA,"+CRLF
+		cQryB2W += "        '01455929000330' AS ID_PARCEIRO, "+CRLF
+		cQryB2W += "        Z1_DTENTRE as DTENTRE "+CRLF
+		cQryB2W += " FROM "+ RetSqlName("ZC5") +" ZC5 "+CRLF
+		cQryB2W += " 	INNER JOIN "+ RetSqlName("SZ1") +" SZ1  "+CRLF
+		cQryB2W += " 		ON SZ1.Z1_FILIAL = '"+ xFilial("SZ1") +"' "+CRLF
+		cQryB2W += " 		AND SZ1.Z1_DOC = ZC5.ZC5_NOTA "+CRLF
+		cQryB2W += " 		AND SZ1.Z1_SERIE = ZC5.ZC5_SERIE "+CRLF
+		cQryB2W += " 		AND SZ1.Z1_DTENTRE <> ' ' "+CRLF
+		cQryB2W += " 		AND SZ1.D_E_L_E_T_ = ' ' "+CRLF
+		cQryB2W += " 	INNER JOIN "+ RetSqlName("SF2") +" SF2 "+CRLF
+		cQryB2W += " 		ON SF2.F2_FILIAL = '"+ xFilial("SF2") +"' "+CRLF
+		cQryB2W += " 		AND SF2.F2_DOC = ZC5.ZC5_NOTA "+CRLF
+		cQryB2W += " 		AND SF2.F2_SERIE = ZC5.ZC5_SERIE "+CRLF
+		cQryB2W += " 		AND SF2.F2_EMISSAO BETWEEN '"+cDtIni+"' AND '"+cDtFim+"' "+CRLF
+		cQryB2W += " 		AND SF2.F2_CHVNFE <> ' ' "+CRLF
+		cQryB2W += " 		AND SF2.D_E_L_E_T_ = ' ' "+CRLF
+		cQryB2W += " WHERE ZC5.ZC5_FILIAL = '"+ xFilial("ZC5") +"' "+CRLF
+		cQryB2W += "   AND ZC5.ZC5_NOTA <> ' ' "+CRLF
+		cQryB2W += "   AND ZC5.ZC5_PVVTEX LIKE '%bww%' "+CRLF
+		cQryB2W += "   AND ZC5_RASTRE <> ' ' "+CRLF
+		cQryB2W += "   AND ZC5.D_E_L_E_T_ = ' ' "+CRLF
+		
+		cQryB2W := ChangeQuery(cQryB2W)
+		
+		dbUseArea(.T., "TOPCONN", TCGenQry(,,cQryB2W), cAreaQry, .T., .F.)
+		
+		While !(cAreaQry)->(EOF())
+			++ nTotLinhas
+			
+			cEntrega	:= Alltrim((cAreaQry)->ENTREGA)
+			cIdParc		:= (cAreaQry)->ID_PARCEIRO
+				cDtEnv		:= cDthoje+SubStr(Time(),1,2)+SubStr(Time(),4,2)
+			
+			cTexto	:= cEntrega+";"+cIdParc+";"+cDtEnv
+			
+			FWrite(nArq, cTexto +Enter)
+			
+			(cAreaQry)->(DbSkip())
+			
+		EndDo
+		
+		FClose(nArq)
+		cAttach := cPathArq+cArq+cExtExcel
+		
+		aAdd(aAttach,cAttach)
+		
+		(cAreaQry)->(DbCloseArea())
+		
+	EndIf 
+	
+	Next
+		
+		Vt09Send(,cPara,cAssunto,cBody,aAttach)
+		
+		For nI:=1 to Len(aAttach)
+	   		Ferase(aAttach[nI])
+	    Next
+EndIf
+
+Return
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} Vtex09cNova
+// Fonte para a geração dos arquivos de importação.
+//
+// @author    Lucas Felipe
+// @version   1.xx
+// @since     14/12/2015
+/*/
+//------------------------------------------------------------------------------------------
+Static Function Vtex09cNova(dDtIni,dDtFim)
+
+Local oReport
+Private cAreaQry := GetNextAlias()
+
+If !Empty(dDtIni) .And. !Empty(dDtFim)
+	oReport := ReportDef(dDtIni,dDtFim)
+	oReport:PrintDialog()
+EndIf
+
+
+If Select(cAreaQry)>0
+	(cAreaQry)->(DbCloseArea())
+EndIf
+
+
+Return
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} Vtex09cNova
+// Fonte para a geração dos arquivos de importação.
+//
+// @author    Lucas Felipe
+// @version   1.xx
+// @since     14/12/2015
+/*/
+//------------------------------------------------------------------------------------------
+Static Function ReportDef(dDtIni,dDtFim)
+
+Local oReport
+Local oSection
+Local cTitle 	:=  "Pedidos cNova"
+Local cRelDesc	:=	"Pedidos cNova"
+
+//AjustaSx1()
+//Pergunte("ECOMRL1",.T.) //2ºtentativa
+
+
+If !Empty(dDtIni) .And. !Empty(dDtFim)
+	
+	oReport := TReport():New("VT09CNO",cTitle,"VT09CNO",{|oReport| PrintReport(oReport,dDtIni,dDtFim)},cRelDesc)
+	
+	oReport:SetLandscape()
+	oReport:SetTotalInLine(.F.)
+	
+	oSection := TRSection():New(oReport,OemToAnsi(cTitle),{"ZC5","SF2","ZC6"})
+	
+	//TRCell():New( < oParent>, < cName>, [ cAlias], [ cTitle], [ cPicture], [ nSize], [ lPixel], [ bBlock] )
+	
+	TRCell():New(oSection,"IDPEDIDO"	,cAreaQry	,"Id Pedido"		,"@!"							,15						)
+	TRCell():New(oSection,"DTENVIO" 	,cAreaQry	,"Data do Envio"	,"@R 99/99/9999 99:99:99"		,20						)
+	TRCell():New(oSection,"IDSKU"		,cAreaQry	,"Id SKU"			,PesqPict("ZC6","ZC6_IDPROD")	,TamSx3("ZC6_IDPROD")[1])
+	TRCell():New(oSection,"COD_RASTREIO",cAreaQry	,"Código Rastreio"	,PesqPict("ZC5","ZC5_RASTRE")	,TamSx3("ZC5_RASTRE")[1])
+	TRCell():New(oSection,"URLRASTREIO"	,	   		,"Url Rastreio"		,"@#"  							,120					)
+	TRCell():New(oSection,"TRANPORT"	,			,"Transportadora"	,"@!"							,40 					)
+	TRCell():New(oSection,"CNPJ_EMISSOR",cAreaQry	,"CNPJ Emissor"		,"@!"							,15						)
+	TRCell():New(oSection,"NOTA"		,cAreaQry	,"Numero Nfe"		,PesqPict("SF2","F2_DOC")		,TamSx3("F2_DOC") [1] 	)
+	TRCell():New(oSection,"SERIE"		,cAreaQry	,"Serie NFe"		,PesqPict("SF2","F2_SERIE")		,TamSx3("F2_SERIE") [1] )
+	TRCell():New(oSection,"CHAVE"		,cAreaQry	,"Chave Acesso Nfe"	,PesqPict("SF2","F2_CHVNFE")	,TamSx3("F2_CHVNFE") [1])
+	TRCell():New(oSection,"URLNFE"		,			,"Url Nfe"			,"@#"							,150		     		)
+	
+	
+	//³ Alinhamento a direita as colunas de valor
+	//oCabEcom:Cell("ZC5_TOTAL"):SetHeaderAlign("RIGHT")/
+	//oCabEcom:Cell("ZC5_FRETE"):SetHeaderAlign("RIGHT")
+	
+EndIf
+
+Return oReport
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} PrintReport
+//
+// @author    Lucas Felipe
+// @version   1.xx
+// @since     14/12/2015
+/*/
+//------------------------------------------------------------------------------------------
+
+Static Function PrintReport(oReport,dDtIni,dDtFim)
+
+Local oSection	:= oReport:Section(1)
+Local cDtIni	:= ""
+Local cDtFim	:= ""
+
+Local cQuery	:= ""
+Local cDtEnvio	:= Day2Str(Msdate())+Month2Str(Msdate())+Year2Str(Msdate())
+Local cUrlTrack	:= ""
+Local cTransp	:= ""
+
+
+Local cUrlCorreio := Alltrim(U_MyNewSX6("EC_NCG0021",'http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_LINGUA=001&P_TIPO=001&P_COD_UNI=',"C","URL de rastreio do Correrios","","",.F. ))
+Local cUrlTra	 	:= Alltrim(U_MyNewSX6("EC_NCG0025",'https://www.rapiddo.com.br/t/',"C","URL de rastreio transp Rapiddo","","",.F. ))
+Local cUrlNfe 		:= "https://www.nfe.fazenda.gov.br/portal/FormularioDePesquisa.aspx?tipoconsulta=completa&chaveacesso="
+Local cUrl 			:= ""
+
+cDtIni 	:= DtoS(dDtIni)
+cDtFim 	:= Dtos(dDtFim)
+
+If !Empty(cDtIni) .And. !Empty(cDtFim)
+	
+	//cQuery += " SELECT SUBSTR (ZC5_PVVTEX, INSTR (ZC5_PVVTEX, '-') + 1, LENGTH (TRIM (ZC5_PVVTEX))) AS IDPEDIDO, "+CRLF
+	cQryB2W += " SELECT CASE "+CRLF
+	cQryB2W += "		WHEN UPPER(ZC5_PVVTEX) LIKE '%IBWW%'"+CRLF
+	cQryB2W += "			THEN SUBSTR(REPLACE( ZC5_PVVTEX ,'Ibww-',''), INSTR( REPLACE( ZC5_PVVTEX ,'Ibww-',''), '-')+1, LENGTH(TRIM(REPLACE( ZC5_PVVTEX ,'Ibww-',''))))"+CRLF   
+	cQryB2W += "		ELSE SUBSTR(REPLACE( ZC5_PVVTEX ,'bww-',''), INSTR( REPLACE( ZC5_PVVTEX ,'bww-',''), '-')+1, LENGTH(TRIM(REPLACE( ZC5_PVVTEX ,'bww-',''))))"+CRLF
+	cQryB2W += "		END AS IDPEDIDO,"+CRLF
+	cQuery += " 		SUBSTR(ZC5.ZC5_YMSEXP, 7,2)||  "+CRLF
+	cQuery += " 		SUBSTR(ZC5.ZC5_YMSEXP, 5,2)||  "+CRLF
+	cQuery += " 		SUBSTR(ZC5.ZC5_YMSEXP, 1,4) AS DTENVIO, "+CRLF
+	cQuery += " 		ZC6.ZC6_IDPROD AS IDSKU, "+CRLF
+	cQuery += " 		ZC5.ZC5_RASTRE AS COD_RASTREIO, "+CRLF
+	cQuery += " 		ZC5.ZC5_CODENT AS CODENT, "+CRLF
+	cQuery += " 		'6091221000107' AS CNPJ_EMISSOR, "+CRLF
+	cQuery += " 		ZC5.ZC5_NOTA AS NOTA, "+CRLF
+	cQuery += " 		ZC5.ZC5_SERIE AS SERIE, "+CRLF
+	cQuery += " 		SF2.F2_CHVNFE AS CHAVE "+CRLF
+	cQuery += " FROM "+ RetSqlName("ZC5") +" ZC5 "+CRLF
+	cQuery += " 	INNER JOIN "+ RetSqlName("SF2") +" SF2 "+CRLF
+	cQuery += "    		ON SF2.F2_FILIAL = '"+ xFilial("SF2") +"' "+CRLF
+	cQuery += "   		AND SF2.F2_DOC = ZC5.ZC5_NOTA "+CRLF
+	cQuery += "    		AND SF2.F2_SERIE = ZC5.ZC5_SERIE "+CRLF
+	cQuery += "   		AND SF2.F2_EMISSAO BETWEEN '"+ cDtIni +"' AND '"+ cDtFim +"' "+CRLF
+	cQuery += "   		AND SF2.D_E_L_E_T_ = ' ' "+CRLF
+	cQuery += " 	INNER JOIN "+ RetSqlName("ZC6") +" ZC6 "+CRLF
+	cQuery += " 		ON ZC6.ZC6_FILIAL = '"+ xFilial("ZC6") +"' "+CRLF
+	cQuery += "    		AND ZC6.ZC6_NUM = ZC5.ZC5_NUM "+CRLF
+	cQuery += "   		AND ZC6.ZC6_PVVTEX = ZC5.ZC5_PVVTEX "+CRLF
+	cQuery += "   		AND ZC6.D_E_L_E_T_ = ' ' "+CRLF
+	cQuery += " WHERE ZC5.ZC5_FILIAL = '"+ xFilial("ZC5") +"' "+CRLF
+	cQuery += " AND ZC5.ZC5_NUM = 0 "+CRLF
+	cQuery += " AND ZC5.D_E_L_E_T_ = ' ' "+CRLF
+	cQuery += " AND Upper(ZC5.ZC5_PVVTEX) LIKE '%NVP%' "+CRLF
+	cQuery += " AND ZC5.ZC5_RASTRE <> ' ' "+CRLF
+	
+	cQuery := ChangeQuery(cQuery)
+	
+	dbUseArea(.T., "TOPCONN", TCGenQry(,,cQuery), cAreaQry, .T., .F.)
+	
+	oReport:SetMeter((cAreaQry)->(LastRec()))
+	dbSelectArea(cAreaQry)
+	
+	//oReport:ThinLine() 
+	//oSection:Init()
+	
+	While (cAreaQry)->(!Eof())
+		
+		If oReport:Cancel()
+			Exit
+		EndIf
+		
+		oSection:Init()
+				
+		If Empty((cAreaQry)->DTENVIO)
+			cDtEnvio := cDtEnvio +SubStr(Time(),1,2) +SubStr(Time(),4,2) +SubStr(Time(),7,2)
+		Else
+			cDtEnvio := Alltrim((cAreaQry)->DTENVIO)+SubStr(Time(),1,2) +SubStr(Time(),4,2) +SubStr(Time(),7,2)
+		EndIf
+		
+		
+		If AllTrim((cAreaQry)->CODENT) $ "862|863|6665"
+			cTransp		:= "CORREIOS"
+			cUrlTrack	:= Alltrim(cUrlCorreio) + Alltrim((cAreaQry)->COD_RASTREIO)
+		ElseIf AllTrim((cAreaQry)->CODENT) == "861"
+			cTransp		:= "DIRECT TRANSP"
+			cUrlTrack	:= Alltrim(cUrlTra) + Alltrim((cAreaQry)->COD_RASTREIO)
+		Else
+			cTransp		:= " "
+			cUrlTrack	:= Alltrim((cAreaQry)->COD_RASTREIO)
+		EndIf
+		
+		
+		If !Empty((cAreaQry)->CHAVE)
+			cUrl := cUrlNfe+(cAreaQry)->CHAVE
+		EndIf
+		
+		oSection:Cell("DTENVIO"):SetValue(cDtEnvio)
+		oSection:Cell("URLRASTREIO"):SetValue(cUrlTrack)
+		oSection:Cell("TRANPORT"):SetValue(cTransp)
+		oSection:Cell("URLNFE"):SetValue(cUrl)
+	
+		
+		oSection:PrintLine()
+		oReport:SkipLine()		
+		
+		DbSelectArea(cAreaQry)
+		(cAreaQry)->(DbSkip())
+		
+	End
+	 
+	oSection:Finish()
+	oReport:IncMeter()
+	
+EndIf
+
+
+Return
+
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} ZC5Sx1
+// Fonte para a geração dos arquivos de importação.
+//
+// @author    Lucas Felipe
+// @version   1.xx
+// @since     14/12/2015
+/*/
+//------------------------------------------------------------------------------------------
+Static Function ZC5Sx1(cPerg)
+
+Local aArea := GetArea()
+Local aHelpP	:= {}
+
+Default cPerg		:= "ZC5PERG1  "
+
+Aadd( aHelpP, "Perguntas que definirão o tipo de relatorio a ser gerado." )
+
+PutSx1(cPerg,"01","Empresa","Compania","Company","mv_ch1","C",1,0,0,"C","","","","","mv_par01","B2W","B2W","B2W","1","CNova","CNova","CNova","","","","","","","","","",aHelpP,,)
+
+aHelpP	:= {}
+
+RestArea(aArea)
+
+Return
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} AjustaSx1
+// Fonte para a geração dos arquivos de importação.
+//
+// @author    Lucas Felipe
+// @version   1.xx
+// @since     14/12/2015
+/*/
+//------------------------------------------------------------------------------------------
+Static Function ZC5Param(cMkp)
+
+Local aArea 	:= GetArea()
+Local aParam 	:= {}
+Local aPergs 	:= {}
+Local lRet   	:= .T.
+
+Local lParam1 	:= .F.
+Local lParam2 	:= .F.
+Local lParam3 	:= .F.
+
+Default cMkp	:= 1
+
+
+If cMkp == 1
+	
+	aAdd(aPergs,{1,"Data De? "	,CtoD("//")	,"@D"	,"","","",70,.T.})
+	aAdd(aPergs,{1,"Data Até?"	,CtoD("//")	,"@D"	,"","","",70,.T.})
+	
+	aAdd( aPergs ,{9,"Marcar as opções a serem enviadas por email.",200,10,.F.})
+	aAdd( aPergs ,{5,"Nota Emitida" 				,lParam1 ,70 ,"" ,.F.})
+	aAdd( aPergs ,{5,"Nf Entregue a Transpotadora"	,lParam2 ,70 ,"" ,.F.})
+	aAdd( aPergs ,{5,"Nf Entregue ao Cliente"  		,lParam3 ,70 ,"" ,.F.})
+	
+	aAdd(aPergs,{1,"Digite Email",Space(100),"","","","",100,.T.	})
+	aAdd(aPergs,{9,"",200,10,.T.})
+	
+Elseif  cMkp == 2
+	
+	aAdd(aPergs,{1,"Data De? "	,CtoD("//")	,"@D"	,"","","",70,.T.})
+	aAdd(aPergs,{1,"Data Até?"	,CtoD("//")	,"@D"	,"","","",70,.T.})
+	aAdd(aPergs,{9,"",200,10,.T.})
+EndIf
+
+ParamBox(aPergs, "Parâmetros", aParam, , /*alButtons*/, .T.,300,600,/*oDlgWizard*/,/*clLoad*/, .T., .T.)
+
+RestArea(aArea)
+
+
+Return aParam
+
+
+//------------------------------------------------------------------------------------------
+/*/{Protheus.doc} Vt09Send
+// Função responsavel pelo envio de relatórios por email.
+//
+// @author    Lucas Felipe
+// @version   1.xx
+// @since     14/12/2015
+/*/
+//------------------------------------------------------------------------------------------
+Static Function Vt09Send(cFrom,cPara,cAssunto,cBody,aAttach)
+
+Local cUser 	:= GetNewPar("MV_RELACNT","")
+Local cPass 	:= GetNewPar("MV_RELAPSW","")
+Local cSendSrv 	:= GetNewPar("MV_RELSERV","")
+Local lMailAuth := GetNewPar("MV_RELAUTH",.F.)
+Local nSmtpPort := GetNewPar("MV_GCPPORT","")
+
+Local lSSL	:= SuperGetMv("MV_RELSSL",.F.)
+Local lTLS	:= SuperGetMv("MV_RELTLS",.F.)
+Local nPopPort
+
+Local xRet
+Local oServer, oMessage
+
+Local cFrom1 	:= "Workflow@ncgames.com.br"
+Local nI
+
+Default cPara 	:= "lfelipe@ncgames.com.br"
+Default cAssunto:= ""
+Default cBody 	:= ""
+
+If At(":",cSendSrv) > 0
+	cSendSrv := SubStr(cSendSrv,1,At(":",cSendSrv)-1)
+EndIf
+
+cFrom := IIf(Empty(cFrom),cFrom1,cFrom)
+
+oServer := TMailManager():New()
+oServer:SetUseSSL( lSSL )
+oServer:SetUseTLS( lTLS )
+
+oServer:Init( "", cSendSrv, cUser, cPass, /*nPopPort*/, nSmtpPort )
+
+// estabilish the connection with the SMTP server
+xRet := oServer:SMTPConnect()
+if xRet <> 0
+	cMsg := "Could not connect on SMTP server: " + oServer:GetErrorString( xRet )
+	conout( cMsg )
+	return
+endif
+
+// authenticate on the SMTP server (if needed)
+xRet := oServer:SmtpAuth( cUser, cPass )
+if xRet <> 0
+	cMsg := "Could not authenticate on SMTP server: " + oServer:GetErrorString( xRet )
+	conout( cMsg )
+	oServer:SMTPDisconnect()
+	return
+endif
+
+oMessage := TMailMessage():New()
+oMessage:Clear()
+
+//oMessage:cDate := cValToChar( Date() )
+oMessage:cFrom		:= cFrom
+oMessage:cTo		:= cPara
+oMessage:cSubject	:= cAssunto
+oMessage:cBody		:= cBody
+If !Empty(aAttach)
+	For nI:=1 to Len(aAttach)
+		oMessage:AttachFile( aAttach[nI] ) // Adiciona um anexo.
+	Next
+EndIf
+
+xRet := oMessage:Send( oServer )
+if xRet <> 0
+	cMsg := "Could not send message: " + oServer:GetErrorString( xRet )
+	conout( cMsg )
+endif
+
+xRet := oServer:SMTPDisconnect()
+if xRet <> 0
+	cMsg := "Could not disconnect from SMTP server: " + oServer:GetErrorString( xRet )
+	conout( cMsg )
+endif
+
+return

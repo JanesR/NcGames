@@ -1,0 +1,678 @@
+#INCLUDE "MATA540.CH"
+#Include "fivewin.ch"
+
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³ NCHISTEF ³ Autor ³ Sky			        ³ Data ³ 05/05/94 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ Manutenção das exceções fiscais                            ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³ Uso      ³ Generico                                                   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+User Function NCHISTEF(void)
+
+Local _cFiltra
+Local _aIndex	:= {}
+
+
+Private aCRA := { "Confirma","Redigita","Abandona" }
+Private aRotina := MenuDef()
+Private cCadastro
+
+cCadastro := OemToAnsi("Histórico Exce‡”es Fiscais de ICMS")
+
+dbSelectArea("PDZ")
+dbSetOrder(1)
+PDZ->(dbGoTop())
+
+_cFiltra  := 'DZ_FILIAL == "' + xFilial("PDZ")+'"'
+
+//Executa o filtro em PDZ
+bFilBrw 	:= {|| FilBrowse("PDZ",@_aIndex,@_cFiltra) }
+Eval(bFilBrw)
+ 
+mBrowse( 6, 1,22,75,"PDZ",,,,,,,,,,,,.F.)
+
+Return
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³VisHisEF³ Autor ³ Sky			        ³ Data ³ 05/05/94 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ 									                          ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³ Uso      ³ Generico                                                   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+User Function VisHisEF(cAlias,nReg,nOpcx)
+
+Local nSavRec
+Local nOpca     :=0, oDlg, oGet, cVarTmp
+Local nPSeq     := 0
+Local cSeek     := ""
+Local cWhile    := ""
+Local aNoFields := {"DZ_GRTRIB"}
+Local aInfo     := {}
+Local aPosObj   := {}
+Local aObjects  := {}
+Local aSize     := MsAdvSize() 
+Local nGd1      := 2
+Local nGd2 		:= 2
+Local nGd3 		:= 0
+Local nGd4 		:= 0
+
+Private cGrupo1 := CriaVar("DZ_GRTRIB"), cFilialEnt:= DZ_FILIAL
+Private aTELA[0][0],aGETS[0],aHeader[0]
+Private aCols := {}
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Verifica se existe algum dado no arquivo                     ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+dbSelectArea(cAlias)
+If LastRec() == 0
+	Return .T.
+Endif
+
+aObjects := {} 
+AAdd( aObjects, {100, 020, .T., .F. } )
+AAdd( aObjects, {100, 080, .T., .T. } )
+
+aInfo := { aSize[ 1 ], aSize[ 2 ], aSize[ 3 ], aSize[ 4 ], 3, 3 } 
+aPosObj := MsObjSize( aInfo, aObjects )
+
+nGd1 := 2
+nGd2 := 2
+nGd3 := aPosObj[2,3]-aPosObj[2,1]
+nGd4 := aPosObj[2,4]-aPosObj[2,2]
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Montagem do aHeader e aCols                           ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+cGrupo1 := DZ_GRTRIB
+nSavRec := RecNo()
+cSeek		:= cFilial+cGrupo1
+cWhile	:= "DZ_FILIAL+DZ_GRTRIB"
+FillGetDados(nOPcx,cAlias,1,cSeek,{|| &cWhile },{|| .T. },aNoFields,/*aYesFields*/,/*lOnlyYes*/,/*cQuery*/,/*bMontCols*/)
+
+nPSeq  := Ascan(aHeader,{|x| AllTrim(x[2]) == "DZ_SEQUEN"})
+aCols := ASort(aCols,,,{ |x, y| x[nPSeq] < y[nPSeq] })
+
+DEFINE MSDIALOG oDlg TITLE cCadastro FROM aSize[7],000 TO aSize[6],aSize[5] OF oMainWnd PIXEL   //9,0 TO 28,80 OF oMainWnd
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Aceita o cabecalho.                                  ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+@ aPosObj[1,1]+05,aPosObj[1,2] SAY OemToAnsi(STR0007) SIZE 50,10 OF oDlg PIXEL
+@ aPosObj[1,1]+15,aPosObj[1,2] MSGET cGrupo1 WHEN .F. SIZE 50,10 OF oDlg PIXEL
+
+SX5->(dbSeek(cFilial+"21"+cGrupo1))
+@ aPosObj[1,1]+15,aPosObj[1,2]+50 MSGET OemToAnsi(SUBSTR(X5Descri(),1,40)) WHEN .F. SIZE 150,10 OF oDlg PIXEL
+
+oGet := MSGetDados():New(aPosObj[2,1]+20,aPosObj[2,2],aPosObj[2,3],aPosObj[2,4],nOpcx,"u_a540LinOk","u_a540TudOk","+DZ_SEQUEN",.F.,/**/,/**/,/**/,999)
+
+ACTIVATE MSDIALOG oDlg ON INIT EnchoiceBar(oDlg,{||nOpca:=1,oDlg:End()},{||oDlg:End()})
+
+dbSelectArea(cAlias)
+dbGoTo( nSavRec )
+Return nOpca
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³IncHisEF³ Autor ³ Sky			        ³ Data ³ 05/05/94 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ 									                          ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³ Uso      ³ Generico                                                   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+User Function IncHisEF(cAlias,nReg,nOpcx)
+Local nSavReg, oDlg, oGet, nOpca:=0
+Local aNoFields := {"DZ_GRTRIB"}
+Local aInfo     := {}
+Local aPosObj   := {}
+Local aObjects  := {}
+Local aSize     := MsAdvSize(.T.) 
+Local nGd1      := 2
+Local nGd2 		:= 2
+Local nGd3 		:= 0
+Local nGd4 		:= 0
+Local lGrava    := .T.
+
+Private aTELA[0][0],aGETS[0],aHeader[0],cGrupo1:=CriaVar("DZ_GRTRIB")
+
+aObjects := {} 
+AAdd( aObjects, {100, 020, .T., .F. } )
+AAdd( aObjects, {100, 080, .T., .T. } )
+
+aInfo := { aSize[ 1 ], aSize[ 2 ], aSize[ 3 ], aSize[ 4 ], 3, 3 } 
+aPosObj := MsObjSize( aInfo, aObjects )
+
+nGd1 := 2
+nGd2 := 2
+nGd3 := aPosObj[2,3]-aPosObj[2,1]
+nGd4 := aPosObj[2,4]-aPosObj[2,2]
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Tabelas a serem utilizadas                                   ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+dbSelectArea("PDZ")
+dbSetOrder(1)
+
+dbSelectArea("SX2")
+dbSeek(cAlias)
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Montagem do aHeader e aCols                           ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+FillGetDados(nOPcx,cAlias,1,/*cSeek*/,/*{|| &cWhile }*/,{||.T.},aNoFields,/*aYesFields*/,/*lOnlyYes*/,/*cQuery*/,/*bMontCols*/,.T.)
+
+nOpca := 0
+DEFINE MSDIALOG oDlg TITLE cCadastro FROM aSize[7],000 TO aSize[6],aSize[5] OF oMainWnd PIXEL   //9,0 TO 28,80 OF oMainWnd
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Aceita o cabecalho.                                  ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+@ aPosObj[1,1]+05,aPosObj[1,2] SAY OemToAnsi(STR0007) SIZE 50,10 OF oDlg PIXEL
+@ aPosObj[1,1]+15,aPosObj[1,2] MSGET cGrupo1 F3 "21"  Valid A540Grupo() SIZE 50,10 OF oDlg PIXEL
+@ aPosObj[1,1]+15,aPosObj[1,2]+50 MSGET OemToAnsi(SUBSTR(Iif(Empty(cGrupo1),"",X5Descri()),1,40)) WHEN .F. SIZE 150,10 OF oDlg PIXEL
+
+oGet := MSGetDados():New(aPosObj[2,1]+20,aPosObj[2,2],aPosObj[2,3],aPosObj[2,4],nOpcx,"u_a540LinOk","u_a540TudOk","+DZ_SEQUEN",.T.,/**/,/**/,/**/,999)
+
+ACTIVATE MSDIALOG oDlg ON INIT EnchoiceBar(oDlg,{||nOpca:=1,if(oGet:TudoOk(),oDlg:End(),nOpca := 0)},{||oDlg:End()})
+
+IF nOpcA == 1 
+   if lGrava
+		Begin Transaction
+			A540Grava(cAlias)    
+			//Processa Gatilhos
+			EvalTrigger()
+		End Transaction
+	Endif
+Endif
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Restaura a integridade da janela                             ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+dbSelectArea(cAlias)
+Return nOpca
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³AltHisEF³ Autor ³ Sky			        ³ Data ³ 05/05/94 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ 									                          ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³ Uso      ³ Generico                                                   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+User Function AltHisEF(cAlias,nReg,nOpcx)
+Local nSavRec,nRegPDZ
+Local nOpca:=0, oDlg, oGet, cVarTmp
+Local nPSeq := 0
+Local cSeek     := ""
+Local cWhile    := ""
+Local aNoFields := {"DZ_GRTRIB"}
+Local aInfo     := {}
+Local aPosObj   := {}
+Local aObjects  := {}
+Local aSize     := MsAdvSize(.T.) 
+Local nGd1      := 2
+Local nGd2 		:= 2
+Local nGd3 		:= 0
+Local nGd4 		:= 0
+Local lGrava    := .T.
+
+Private aCols := {}
+Private cGrupo1 := CriaVar("DZ_GRTRIB"), cFilialEnt:= DZ_FILIAL
+Private aTELA[0][0],aGETS[0],aHeader[0],nOpc:=3
+
+aObjects := {} 
+AAdd( aObjects, {100, 020, .T., .F. } )
+AAdd( aObjects, {100, 080, .T., .T. } )
+
+aInfo := { aSize[ 1 ], aSize[ 2 ], aSize[ 3 ], aSize[ 4 ], 3, 3 } 
+aPosObj := MsObjSize( aInfo, aObjects )
+
+nGd1 := 2
+nGd2 := 2
+nGd3 := aPosObj[2,3]-aPosObj[2,1]
+nGd4 := aPosObj[2,4]-aPosObj[2,2]
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Verifica se existe algum dado no arquivo                     ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+dbSelectArea(cAlias)
+If LastRec() == 0
+	Return .T.
+Endif
+
+cGrupo1 := DZ_GRTRIB
+nSavRec := RecNo()
+
+dbSetOrder(1)
+dbSeek( cFilial+cGrupo1 )
+nRegPDZ := Recno()
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Montagem do aHeader e aCols                           ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+cSeek		:= cFilial+cGrupo1
+cWhile	:= "DZ_FILIAL+DZ_GRTRIB"
+FillGetDados(nOPcx,cAlias,1,cSeek,{|| &cWhile },{|| .T. },aNoFields,/*aYesFields*/,/*lOnlyYes*/,/*cQuery*/,/*bMontCols*/)
+
+nPSeq  := Ascan(aHeader,{|x| AllTrim(x[2]) == "DZ_SEQUEN"})
+aCols := ASort(aCols,,,{ |x, y| x[nPSeq] < y[nPSeq] })
+
+DEFINE MSDIALOG oDlg TITLE cCadastro FROM aSize[7],000 TO aSize[6],aSize[5] OF oMainWnd PIXEL   //9,0 TO 28,80 OF oMainWnd
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Aceita o cabecalho.                                  ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+SX5->(dbSeek(cFilial+"21"+cGrupo1))
+@ aPosObj[1,1]+05,aPosObj[1,2] SAY OemToAnsi(STR0007) SIZE 050,10 OF oDlg PIXEL
+@ aPosObj[1,1]+15,aPosObj[1,2] MSGET cGrupo1 WHEN .F. SIZE 050,10 OF oDlg PIXEL
+@ aPosObj[1,1]+15,aPosObj[1,2]+50 MSGET OemToAnsi(SUBSTR(X5Descri(),1,40)) WHEN .F. SIZE 150,10 OF oDlg PIXEL
+
+oGet := MSGetDados():New(aPosObj[2,1]+20,aPosObj[2,2],aPosObj[2,3],aPosObj[2,4],nOpcx,"u_a540LinOk","u_A540TudOk","+DZ_SEQUEN",.T.,/**/,/**/,/**/,999)
+
+dbSelectArea(cAlias)
+ACTIVATE MSDIALOG oDlg ON INIT EnchoiceBar(oDlg,{||nOpca:=1,if(oGet:TudoOk(),oDlg:End(),nOpca := 0)},{||oDlg:End()})
+
+if lGrava
+	If nOpcA == 1
+		Begin Transaction
+			A540Grava(cAlias)
+			//Processa Gatilhos
+			EvalTrigger()
+		End Transaction
+	Else
+		dbSelectArea(cAlias)
+		dbSetOrder(1)
+		dbGoTo(nRegPDZ)
+		While !EOF() .And. DZ_FILIAL+DZ_GRTRIB == cFilial+cGrupo1
+			If DZ_FILIAL != cFilialEnt
+				dbSkip()
+				Loop
+			EndIf
+			MsUnLock()
+			dbSkip()
+		End
+	Endif
+Endif
+
+dbSelectArea(cAlias)
+dbGoTo(nSavRec)
+Return nOpca
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³ExcHisEF³ Autor ³ Sky			        ³ Data ³ 05/05/94 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ 									                          ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³ Uso      ³ Generico                                                   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+User Function ExcHisEF(cAlias,nReg,nOpcx)
+Local nCnt,nSavRec,nCntItem := 1
+Local aAC := { "Abandona","Confirma" }
+Local nOpca:=0, oDlg, oGet
+Local cGrupo1:=CriaVar("DZ_GRTRIB"),cFilialEnt:= DZ_FILIAL
+Local nX := 0
+Local cGrpTrib,cGrpCli,cSequen, cVarTmp
+Local nPSeq     := 0
+Local cSeek     := ""
+Local cWhile    := ""
+Local aNoFields := {"DZ_GRTRIB"}
+Local aInfo     := {}
+Local aPosObj   := {}
+Local aObjects  := {}
+Local aSize     := MsAdvSize(.T.) 
+Local nGd1      := 2
+Local nGd2 		:= 2
+Local nGd3 		:= 0
+Local nGd4 		:= 0
+
+Private aCols   := {}
+Private aTELA[0][0],aGETS[0],aHeader[0],nOpc:=3
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Verifica se existe algum dado no arquivo                     ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+dbSelectArea(cAlias)
+If LastRec() == 0
+	Return .T.
+Endif
+
+aObjects := {} 
+AAdd( aObjects, {100, 020, .T., .F. } )
+AAdd( aObjects, {100, 080, .T., .T. } )
+
+aInfo := { aSize[ 1 ], aSize[ 2 ], aSize[ 3 ], aSize[ 4 ], 3, 3 } 
+aPosObj := MsObjSize( aInfo, aObjects )
+
+nGd1 := 2
+nGd2 := 2
+nGd3 := aPosObj[2,3]-aPosObj[2,1]
+nGd4 := aPosObj[2,4]-aPosObj[2,2]
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Montagem do aHeader e aCols                           ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+cGrupo1 := DZ_GRTRIB
+nSavRec := RecNo()
+cSeek		:= cFilial+cGrupo1
+cWhile	:= "DZ_FILIAL+DZ_GRTRIB"
+FillGetDados(nOPcx,cAlias,1,cSeek,{|| &cWhile },{|| .T. },aNoFields,/*aYesFields*/,/*lOnlyYes*/,/*cQuery*/,/*bMontCols*/)
+
+nPSeq  := Ascan(aHeader,{|x| AllTrim(x[2]) == "DZ_SEQUEN"})
+aCols := ASort(aCols,,,{ |x, y| x[nPSeq] < y[nPSeq] })
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³Verifica de ha' um MOUSE instalado o sistema.                         ³
+//³Adiciona as  HOT AREAS do mouse, Funcoes especificas em MOUSE.LIB     ³
+//³Os valores serao multiplicados por 8 por proporcao de modo grafico    ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+dbSelectArea("SX5")
+dbSeek(cFilial+"21"+cGrupo1)
+
+DEFINE MSDIALOG oDlg TITLE cCadastro FROM aSize[7],000 TO aSize[6],aSize[5] OF oMainWnd PIXEL   //9,0 TO 28,80 OF oMainWnd
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Aceita o cabecalho.                                  ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+SX5->(dbSeek(cFilial+"21"+cGrupo1))
+@ aPosObj[1,1]+05,aPosObj[1,2] SAY OemToAnsi(STR0007) SIZE 050,10 OF oDlg PIXEL
+@ aPosObj[1,1]+15,aPosObj[1,2] MSGET cGrupo1 WHEN .F. SIZE 050,10 OF oDlg PIXEL
+@ aPosObj[1,1]+15,aPosObj[1,2]+50 MSGET OemToAnsi(SUBSTR(X5Descri(),1,40)) WHEN .F. SIZE 150,10 OF oDlg PIXEL
+
+oGet := MSGetDados():New(aPosObj[2,1]+20,aPosObj[2,2],aPosObj[2,3],aPosObj[2,4],nOpcx,"u_a540LinOk","u_a540TudOk","",.F.,/**/,/**/,/**/,999)
+
+dbSelectArea(cAlias)
+
+ACTIVATE MSDIALOG oDlg ON INIT EnchoiceBar(oDlg,{||nOpca:=2,if(oGet:TudoOk(),oDlg:End(),nOpca := 0)},{||oDlg:End()})
+
+If nOpcA == 2
+	dbSelectArea(cAlias)
+	nCnt := 0
+	For nx = 1 to Len(aCols)
+		cGrpCli:=aCols[nx,Ascan(aHeader,{|x|Alltrim(x[2])=="DZ_GRPCLI"})]
+		cSequen:=aCols[nx,Ascan(aHeader,{|x|Alltrim(x[2])=="DZ_SEQUEN"})]
+		dbSeek(xFilial()+cGrupo1+cGrpCli+cSequen)
+		RecLock(cAlias,.F.,.T.)
+		dbDelete()
+		MsUnLock()
+		nCnt++
+	Next nx
+Else
+	dbSelectArea(cAlias)
+	dbGoTo( nSavRec )
+Endif
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ Restaura a integridade da janela                             ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+dbSelectArea(cAlias)
+Return nOpca
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³_A540LinOk³ Autor ³ Sky			        ³ Data ³ 05/05/94 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ 									                          ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³ Uso      ³ Generico                                                   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+User Function A540LinOk(o)
+Local nx,lRet   := .T.,cEst
+Local nTotIt	:= 0
+Local nDeletado := 0
+Local nY        := 0
+Local cItem     := "00"
+
+For nx:=1 to Len(aHeader)
+	If Trim(aHeader[nx][2]) == "DZ_EST"
+		cEst:=aCols[n][nx]
+		Exit
+	Endif
+Next nx
+
+aEval(aCols, {|x| nTotIt += If(x[Len(aHeader)+1],0,1)})
+
+If !aCols[n][Len(aCols[n])]  //se nao estiver deletado
+	For nx = 1 To Len(aHeader)
+		IF !lRet
+			Exit
+		Elseif Empty(aCols[n][nx])
+			If (Trim(aHeader[nx][2]) == "DZ_EST" .Or. Trim(aHeader[nx][2]) == "DZ_TIPOCLI") .And. n == Len(aCols)
+				lRet:=.T.
+				Exit
+			EndIf
+		Endif
+		
+		If Trim(aHeader[nx][2]) == "DZ_SEQUEN" .And. lRet
+			If n == 1
+				If Val(aCols[n][nx]) != 1 .And. Inclui
+					Help(" ",1,"A11007")
+					lRet := .F.
+				Endif
+			Else
+				For nY := 1 to len(aCols)-1
+					If !aCols[ny][Len(aCols[ny])].And. nY < n
+						cItem := aCols[nY][nX]
+					EndIf
+				Next nY
+				If aCols[n][nx] # Soma1(cItem)
+					Help(" ",1,"A11008")
+					lRet := .F.
+				Endif
+			Endif
+		Endif
+		If !lRet
+			Exit
+		Endif
+	Next nx
+EndIf
+
+Return lRet
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³_A540TudOk³ Autor ³ Sky			        ³ Data ³ 05/05/94 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ 									                          ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³ Uso      ³ Generico                                                   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+User Function A540TudOk(o)
+Return .T.
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³A540Grava ³ Autor ³ Sky			        ³ Data ³ 05/05/94 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ 									                          ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³ Uso      ³ Generico                                                   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Static Function A540Grava(cAlias)
+LOCAL nx ,ny ,nMaxArray , aAnterior := {},nCntDel := 0
+LOCAL cCntItem := "01"
+LOCAL cVar := ""
+
+dbSelectArea(cAlias)           && cAlias=="PDZ"
+
+//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+//³ verifica se o ultimo elemento do array esta em branco        ³
+//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+nMaxArray := Len(aCols)
+For nx = 1 to Len(aHeader)
+	If Empty(aCols[nMaxArray][nx]) .And. (Trim(aHeader[nx][2]) == "DZ_EST" .Or. Trim(aHeader[nx][2]) == "DZ_TIPOCLI")
+		nMaxArray--
+		Exit
+	Endif
+Next nx
+
+dbSeek( cFilial+cGrupo1 )
+If Found()
+	While !EOF() .And. DZ_FILIAL+DZ_GRTRIB == cFilial+cGrupo1
+		AADD(aAnterior,{RecNo(),DZ_SEQUEN})
+		dbSkip()
+	End
+Endif
+
+aAnterior := ASort(aAnterior,,,{ |x, y| x[2] < y[2] })
+
+For nx = 1 to nMaxArray
+	
+	If Len(aAnterior) >= nx
+		If !Inclui
+			Go aAnterior[nx,1]
+		EndIf
+		RecLock(cAlias,.F.)
+	Else
+		RecLock(cAlias,.T.)
+	Endif
+	
+	//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+	//³ verifica se tem marcacao para apagar.                          ³
+	//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+	If aCols[nx][Len(aCols[nx])]
+		RecLock("PDZ",.F.,.T.)
+		dbDelete()
+		nCntDel++
+	Else
+		Replace DZ_GRTRIB With cGrupo1
+		Replace DZ_FILIAL With cFilial
+		//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		//³ atualiza dados selecionados pelo cliente                 ³
+		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+		For ny = 1 to Len(aHeader)
+			cVar := Trim(aHeader[ny][2])
+			If aHeader[ny][10] # "V"
+				Replace &cVar. With aCols[nx][ny]
+			Endif
+		Next ny
+		//ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+		//³ Grava sempre o numero do item sequencial             ³
+		//³ Utilizo uma variavem tipo caracter, para continuar,  ³
+		//³ apos o 99, virando para A1, A2... Atraves da SOMA1() ³
+		//ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+		Replace DZ_SEQUEN With cCntItem
+		
+		dbSelectArea("PDZ")
+		cCntItem := Soma1(cCntItem)
+	Endif
+	
+Next nx
+              
+Return .T.
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Fun‡…o    ³A540Grupo ³ Autor ³ Sky			        ³ Data ³ 05/05/94 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ 									                          ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³ Uso      ³ Generico                                                   ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+Static Function A540Grupo()
+Local cVar:=ReadVar(),nReg,cAl:=Alias()
+
+dbSelectArea("PDZ")
+dbSeek(cFilial+&cVar)
+If !Eof()
+	Help(" ",1,"A540Grupo1")
+	Return .F.
+Endif
+
+dbSelectArea("SX5")
+dbSeek(cFilial+"21"+&cVar)
+If Eof()
+	Help(" ",1,"A540Grupo2")
+	dbSelectArea("PDZ")
+	Return .F.
+Endif
+
+dbSelectArea(cAl)
+Return .T.
+
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÚÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄ¿±±
+±±³Programa  ³MenuDef   ³ Autor ³ Sky		            ³ Data ³01/01/2013³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Descri‡…o ³ Utilizacao de menu Funcional                               ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Retorno   ³Array com opcoes da rotina.                                 ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³Parametros³Parametros do array a Rotina:                               ³±±
+±±³          ³1. Nome a aparecer no cabecalho                             ³±±
+±±³          ³2. Nome da Rotina associada                                 ³±±
+±±³          ³3. Reservado                                                ³±±
+±±³          ³4. Tipo de Transa‡„o a ser efetuada:                        ³±±
+±±³          ³		1 - Pesquisa e Posiciona em um Banco de Dados           ³±±
+±±³          ³    2 - Simplesmente Mostra os Campos                       ³±±
+±±³          ³    3 - Inclui registros no Bancos de Dados                 ³±±
+±±³          ³    4 - Altera o registro corrente                          ³±±
+±±³          ³    5 - Remove o registro corrente do Banco de Dados        ³±±
+±±³          ³5. Nivel de acesso                                          ³±±
+±±³          ³6. Habilita Menu Funcional                                  ³±±
+±±ÃÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´±±
+±±³          ³               ³                                            ³±±
+±±ÀÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/                                                                                     
+Static Function MenuDef()
+     
+Private aRotina := {	{STR0001,"AxPesqui"	,0,1,0,.F.},;		// "Pesquisar"
+							{STR0002,"u_VisHisEF",0,2,0,NIL},;		// "Visualizar"
+							{STR0003,"u_IncHisEF",0,3,0,NIL},;		// "Incluir"
+							{STR0004,"u_AltHisEF",0,4,0,NIL},;		// "Alterar"
+							{STR0005,"u_ExcHisEF",0,5,0,NIL} }		// "Excluir"
+
+Return(aRotina)
