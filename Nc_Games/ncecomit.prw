@@ -8,6 +8,9 @@ Observações      Código-Fonte gerado por ADVPL WSDL Client 1.120703
                  e serão perdidas caso o código-fonte seja gerado novamente.
 =============================================================================== */
 
+//url produção
+//Static cWSUrl:="https://www.ncgames.com.br/ws/wsintegracao.asmx"   //"https://www9.ciashop.com.br/ncgames/ws/wsintegracao.asmx"
+//Url de testes
 Static cWSUrl:="https://www.ncgames.com.br/ws/wsintegracao.asmx"   //"https://www9.ciashop.com.br/ncgames/ws/wsintegracao.asmx"
 
 
@@ -728,10 +731,18 @@ End Class
 ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
 */
 Method New() Class ApiCiaShop
-	Self:cToken 		:= "eyJvIjoie1wiaVwiOlwiQ2lhc2hvcFwiLFwiblwiOlwiRVJQX1Byb3RoZXVzXCIsXCJwXCI6XCI0YmEzNDFiNS1jODQ5LTQ0OTMtOGVhYS0wNGYyYWI2MjVmNzlcIn0iLCJzIjoiSEtFaWpjMkQwanZ5ZG9OZ0c1UDBlUTNSemhKMVZoVnRNczR6Q2F3ZWlNaXFPRlp5SkE1VlgvSkI0SnRnbDdSbGd5WWw3QnFFUFcxSWUrdHQ0MDJaUHlSRi9SUGJ2ZDg3bjBaQkZ6YWxjNE1pYTJaRWlVcjJOei94Z0VuZ0x3UGpCRCtxSUpGYStTNjRzdm5RTFQ3RVJmUEZ5N2VMV2dQSkFlWi9DUFpTblVBPSJ9"
-   Self:cHttp 			:= "https://www.ncgames.com.br/api/"+GetMv("NC_VER_API",.F.,"v1")+"/"
-   Self:cUrl			:= ""
-   Self:cBody			:= ""
+   
+   //Produção//Self:cToken 	:= "eyJvIjoie1wiaVwiOlwiQ2lhc2hvcFwiLFwiblwiOlwiRVJQX1Byb3RoZXVzXCIsXCJwXCI6XCI0YmEzNDFiNS1jODQ5LTQ0OTMtOGVhYS0wNGYyYWI2MjVmNzlcIn0iLCJzIjoiSEtFaWpjMkQwanZ5ZG9OZ0c1UDBlUTNSemhKMVZoVnRNczR6Q2F3ZWlNaXFPRlp5SkE1VlgvSkI0SnRnbDdSbGd5WWw3QnFFUFcxSWUrdHQ0MDJaUHlSRi9SUGJ2ZDg3bjBaQkZ6YWxjNE1pYTJaRWlVcjJOei94Z0VuZ0x3UGpCRCtxSUpGYStTNjRzdm5RTFQ3RVJmUEZ5N2VMV2dQSkFlWi9DUFpTblVBPSJ9"
+   
+   //Homologação
+   Self:cToken 		:= "eyJvIjoie1wiaVwiOlwiQ2lhc2hvcFwiLFwiblwiOlwiQVBJXCIsXCJwXCI6XCI0MzE5OTgxNi02ZThmLTQ1OWYtODczYi01ZmQwNWRjN2E4YTVcIn0iLCJzIjoiRW1qOXZoQlVMMEFNclhoMVppK2U4S1kxTzU5ZmQ3TlNzQWthRGVtVmtWeWJjNitOdENZMVVWWEdKRVkyNFRCVjliellURWxSNUNXY1J3bXNGcEwvV0Z4VkRGbzZZSkdkUWl4bVhtQ3lsNk81YXlQUmVsenRSYTBxUFZFTGJudWNXTHhHOUdzaVNDanErRkE3Q2xTL2NidUZJWFJzZmF2aHNBclM0T3p5ek5VPSJ9"
+   
+   //Produção//Self:cHttp 		:= "https://www.ncgames.com.br/api/"+GetMv("NC_VER_API",.F.,"v1")+"/"
+   
+   //homologação
+   Self:cHttp 		:= "https://homologuzgames.myciashop.com.br/api/"+GetMv("NC_VER_API",.F.,"v1")+"/"
+   Self:cUrl		:= ""
+   Self:cBody		:= ""
    Self:lSemAcento	:= .F.
    Self:lUpperCase	:= .F.
 Return Self
