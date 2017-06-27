@@ -1333,6 +1333,7 @@ ElseIf  cAcao=="VERIFICA_RASTREIO"
 					cHtmlPage := Httpget(cUrlAux)
 					
 					If !ValType(cHtmlPage)=="C"
+						(clAlias)->(DbSkip())
 						Loop
 					EndIf
 					

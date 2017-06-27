@@ -428,7 +428,9 @@ Do While (cAliasQry)->(!Eof())
 			ZC5->ZC5_EMAIL	:= aDados[nPosEmail]
 			ZC5->ZC5_CODENT	:= U_V05CodEnt(ZC5->(Recno()),aDados[nPosTransp],aDadosEnt[03])
 			ZC5->ZC5_CGC	:= SA1->A1_CGC
-			
+			//JR
+			ZC5->ZC5_TPECOM	:= "C"//DEFINE COMO PEDIDO E-COMMERCE SEMPRE EM CASOS DE PEDIDOS VINDOS DO VTEX
+
 			ZC5->(MsUnlock())
 			
 			End Transaction
@@ -2711,7 +2713,7 @@ Local cCodRast
 Local lError 		:= .F.
 Local oSite
 Local dData			:= Date()
-Local nDiaCorri		:= 60
+Local nDiaCorri		:= 20
 
 cQry := " SELECT ZC5_NUM,ZC5.R_E_C_N_O_ RecZC5, SZ1.R_E_C_N_O_ RecSZ1 "+CRLF
 cQry += " FROM "+ RetSqlName("ZC5") +" ZC5 "+CRLF

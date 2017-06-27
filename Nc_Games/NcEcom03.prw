@@ -75,7 +75,8 @@ _cQuery += " 		SB1.B1_PRV1, "+CRLF
 _cQuery += " 		SB1.B1_CONSUMI, "+CRLF
 _cQuery += " 		SB1.B1_BLQVEND, "+CRLF
 _cQuery += " 		SB1.B1_MSBLQL, "+CRLF
-_cQuery += " 		NVL(B2_QATU-B2_RESERVA,0) AS SALDO  "+CRLF
+_cQuery += " 		NVL(B2_QATU-B2_RESERVA,0) AS SALDO,  "+CRLF
+_cQuery += " 		SB2.B2_LOCAL  "+CRLF
 _cQuery += " FROM "+RetSqlName("ZC3")+" ZC3 "+CRLF
 _cQuery += " 		LEFT OUTER JOIN "+RetSqlName("SB1")+" SB1 "+CRLF
 _cQuery += " 		ON SB1.B1_COD = ZC3.ZC3_CODPRO "+CRLF
@@ -84,10 +85,11 @@ _cQuery += "	 	AND SB1.D_E_L_E_T_ = ' ' "+CRLF
 _cQuery += " 	LEFT OUTER JOIN "+RetSqlName("SB2")+" SB2 "+CRLF
 _cQuery += " 		ON SB2.B2_COD = ZC3.ZC3_CODPRO "+CRLF
 _cQuery += " 		AND SB2.B2_FILIAL = '"+xFilial("SB2")+"' "+CRLF
-_cQuery += " 		AND SB2.B2_LOCAL = '"+ cArmPad +"' "+CRLF
+_cQuery += " 		AND SB2.B2_LOCAL IN "+ FormatIn(cArmPad,';') +" "+CRLF
 _cQuery += " 		AND SB2.D_E_L_E_T_ = ' ' "+CRLF
 _cQuery += " WHERE ZC3.D_E_L_E_T_ = ' ' "+CRLF
 _cQuery += " AND ZC3.ZC3_STATUS IN ('01','03') "+CRLF
+_cQuery += " and sb2.b2_local is not null "+CRLF
 
 _cQuery := ChangeQuery(_cQuery)
 
@@ -126,12 +128,14 @@ If !TRBEST->(EoF())
 			cEstAtu := "0"
 		EndIf
 		
-		_cxml+='<update_stock xmlns="" sku="'+ALLTRIM(TRBEST->B1_COD)+'" estoque="'+cEstAtu+'" preco= "'+ALLTRIM(cPrcConsumi)+'" sale_start="2012-01-01" sale_end="2012-02-01" sale_price="'+ALLTRIM(cPrcCons)+'" />'
-		// //Monta o xml para a atualizacao de tabela de preco para amarrar o produto na tabela padrao para que assim atualize o estoque
-		// //isso tambem evita que esta rotina atualize erradamente o preco do produto para a tabela errada
-		_cxmltab+='<TabelaPrecoVariante xmlns=""  op="I" sku="'+ALLTRIM(TRBEST->B1_COD)+'" tabelapreco="1000" list_price="'+ALLTRIM(cPrcConsumi)+'" sale_price="'+ALLTRIM(cPrcCons)+'" sale_start="2012-01-01" sale_end="2012-02-01" />'
-		// //Linha acima implantada para atender parcialmente a importação do preço consumidor 28/02
-		
+
+		if ALLTRIM(TRBEST->B1_COD) == "01"
+			_cxml+='<update_stock xmlns="" sku="'+ALLTRIM(TRBEST->B1_COD)+'" estoque="'+cEstAtu+'" armazem = "'+ALLTRIM(TRBEST->B2_LOCAL) +'" sale_start="2012-01-01" sale_end="2012-02-01" sale_price="'+ALLTRIM(cPrcCons)+'" />'
+		ElseIf ALLTRIM(TRBEST->B1_COD) == "51"
+			_cxml+='<update_stock xmlns="" sku="'+ALLTRIM(TRBEST->B1_COD)+'" estoque="'+cEstAtu+'" armazem = "'+ALLTRIM(TRBEST->B2_LOCAL) +'" preco= "'+ALLTRIM(cPrcConsumi)+'" sale_start="2012-01-01" sale_end="2012-02-01" sale_price="'+ALLTRIM(cPrcCons)+'" />'
+		EndIf
+
+
 		TRBEST->(DbSkip())
 		_nCont++
 		
@@ -150,52 +154,8 @@ If !TRBEST->(EoF())
 		_cxml+=_aXml[i]
 		_cxml+='</update_stockList >'
 		
-		_cxmltab:='<?xml version="1.0" encoding="utf-8" standalone="no" ?><TabelaPrecoVarianteList xmlns="dsReceipt.xsd">'
-		_cxmltab+=_aXmlTab[i]
-		_cxmltab+='</TabelaPrecoVarianteList >'
-		
-		
 		oobj:=NC_WSWSIntegracao():new()
 		
-		//Chama a rotina de atualizacao de tabela de preco para amarrar o produto na tabela padrao para que assim atualize o estoque
-		//isso tambem evita que esta rotina atualize erradamente o preco do produto para a tabela errada
-		//chama o metodo do portal
-		//oSrv:=RpcConnect( "192.168.0.217",1242,"TOTVSHOM_ECOMMERCE","01","03" )
-		//aReturn:=(oSrv:callproc("U_M03POSTPRE",_cxmltab))
-		//RpcDisconnect (oSrv )
-		
-		//oobj:lTabelaPrecoVarianteResult:=aReturn[1]
-		//oobj:cxml					   :=aReturn[2]
-		
-		oobj:TabelaPrecoVariante(SuperGetMV("EC_NCG0010",,"wsncgames"),SuperGetMV("EC_NCG0011",,"apeei.1453"),_cxmltab)
-		
-		If oobj:lTabelaPrecoVarianteResult
-			
-			cError:=""
-			//transforma o xml do resultado em objeto
-			oXml := XmlParser( oobj:cxml, "_", @cError, @cWarning )
-			
-			//recupera o conteudo dentro do objeto xml
-			//U_NcEcoLog("NcEcom04()",oxml:_result:_resulttext:text)
-			If !Empty(cError)
-				U_COM09CAD("PRECO","PRECO","UPDATE","",cError,"")
-			Else
-				U_COM09CAD("PRECO","PRECO","UPDATE","Atualização do Preco realizada com sucesso.","","")
-			EndIf
-			
-		Else
-			//U_NcEcoLog("NcEcom04()","Erro de Execução : "+GetWSCError())
-			U_COM09CAD("PRECO","PRECO","UPDATE","",GetWSCError(),"")
-		Endif
-		
-		//	oobj:Init()
-		
-		//oSrv:=RpcConnect( "192.168.0.217",1242,"TOTVSHOM_ECOMMERCE","01","03" )
-		//aReturn:=(oSrv:callproc("U_M03POSTEST",_cxml))
-		//RpcDisconnect (oSrv )
-		
-		//oobj:lAtualizaEstoqueResult:=aReturn[1]
-		//	oobj:cxml				   :=aReturn[2]
 		
 		oobj:AtualizaEstoque(SuperGetMV("EC_NCG0010",,"wsncgames"),SuperGetMV("EC_NCG0011",,"apeei.1453"),_cxml)
 		

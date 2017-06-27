@@ -481,7 +481,7 @@ For nYnd:=1 To Len(aRecnos)
 				EndIf
 				
 				If !Empty(aNfeOrig[3])
-					AADD(aItensAux,{"D1_ITEMORI"	,aNfeOrig[3]								,Nil})
+					//AADD(aItensAux,{"D1_ITEMORI"	,aNfeOrig[3]								,Nil})
 				EndIf
 			EndIf
 			

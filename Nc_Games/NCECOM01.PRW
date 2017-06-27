@@ -49,6 +49,8 @@ User Function NCECOM01(cCodId)
 Local aArea		:= GetArea()
 Local oobj		:= nil
 Local oXml		:= nil
+Local oXmlExtr	:= nil //JR
+Local nContExtr := nil //JR
 Local _cxml		:= ""
 Local cError	:= ""
 Local cWarning := ""
@@ -101,6 +103,7 @@ oobj:=NC_WSWSIntegracao():new()
 If oobj:compradores(SuperGetMV("EC_NCG0010",,"wsncgames"),SuperGetMV("EC_NCG0011",,"apeei.1453"),"")
 	//transforma o xml do resultado em objeto
 	oXml := XmlParser( oobj:cxml, "_", @cError, @cWarning )
+	oXmlExtr := XmlParser( oobj:cxml, "_", @cError, @cWarning )
 Else
 	U_NCECOM09(0, "CLIENT","IMPORTA_CLIENTE","Erro de Execução : "+GetWSCError(),"",.T.)
 Endif
@@ -113,14 +116,17 @@ EndIf
 //Verifica se ha clientes para cadastrar
 If XmlChildCount(oXml:_SHOPPERLIST) > 4
 	
+	//Pega informações dos cliente
 	If !valtype(oXml:_SHOPPERLIST:_SHOPPER)=="A"
 		XmlNode2Arr(oXml:_SHOPPERLIST:_SHOPPER,"_SHOPPER")
 	Endif
 	nContar:=LEN(oXml:_SHOPPERLIST:_SHOPPER)
+
 	
 	For i:=nContar to 1 Step -1
 		
 		If lSimular .And. !AllTrim(cCodId)==AllTrim(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
+		//If !AllTrim(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)=="8526"
 			Loop
 		EndIf
 		
@@ -321,11 +327,38 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 		AADD(aVetor,{"A1_COMPLEM" 	,Upper(cEndereco),Nil})
 		
 		AADD(aVetor,{"A1_REGIAO" 	,u_AchaReg(oXml:_SHOPPERLIST:_SHOPPER[i]:_ESTADO:TEXT) ,Nil})
-		AADD(aVetor,{"A1_MSBLQL" 	,_cBloqueado ,Nil})
 		AADD(aVetor,{"A1_ZCODTAB" 	,_cTab ,Nil})
 		AADD(aVetor,{"A1_ZCODCIA"	,val(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT),Nil})
 		
+		//JR
+		//Replica para pegar os campos extras e depois tratar
+		//Busca os campos extras com informações adicionais no cadastro do cliente
+		If !valtype(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS)=="A"
+			XmlNode2Arr(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA,"_CAMPO_EXTRA")
+		Endif
+		nContExtr:=LEN(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA)//jr
+		//JR
+		//Adicionado em 26/06/2017 - para controle de quando o cliente
+		//cadastrado no site uz games e no site nc games
+		//buscando dos campos extras cadastrados no cliente do ambiente ciashop
+
+		for ExtRx := nContExtr to 1 Step -1
+
+			If val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA[ExtRx]:_ENTIDADE_ID:TEXT) == val(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
+				//Nome do campo extra que dirá a que site o cliente pertence.
+				if !AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA[ExtRx]:_CHAVE:TEXT) == "UZGAMES"
+					Loop
+				EndIf
+
+				If AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA[ExtRx]:_VALOR:TEXT) == "S"//PAGA UZ GAMES
+					_cBloqueado := "1"
+				EndIf
+			EndIf
+
+		Next ExtRx
 		
+		AADD(aVetor,{"A1_MSBLQL" 	,_cBloqueado ,Nil})
+
 		If lSimular
 			Simular(aVetor)
 			Exit

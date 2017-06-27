@@ -83,6 +83,9 @@ User Function NcEcom04()
 	_cQuery+=" WHERE ZC4_FILIAL='"+xFilial("ZC4")+"'"
 	_cQuery+=" And D_E_L_E_T_= ' ' "
 	_cQuery+=" AND ZC4_FLAG='2' "
+	
+	//criar parametro para as tabelas que não serão enviados ao ciashop
+	_cQuery+=" AND ZC4_CODTAB != '028' "
 
 	_cQuery := ChangeQuery(_cQuery)
 
@@ -344,7 +347,7 @@ Return
 
 Static Function Ecom04Log(aXmlLog)
 
-Local cPara		:= "lfelipe@ncgames.com.br;rciambarella@ncgames.com.br"
+Local cPara		:= "jisidoro@ncgames.com.br;rciambarella@ncgames.com.br"
 Local cAssunto  := "Integração de preço "+DtoC(MsDate())
 Local cBody     := "Email gerado automaticamente"
 Local cAttach   := ""
@@ -415,7 +418,7 @@ Local oServer, oMessage
 
 Local cFrom1 	:= "Workflow@ncgames.com.br"
 
-Default cPara 	:= "lfelipe@ncgames.com.br"
+Default cPara 	:= "jisidoro@ncgames.com.br"
 Default cAssunto:= ""
 Default cBody 	:= ""
 

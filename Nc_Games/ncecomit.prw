@@ -11,7 +11,7 @@ Observações      Código-Fonte gerado por ADVPL WSDL Client 1.120703
 //url produção
 //Static cWSUrl:="https://www.ncgames.com.br/ws/wsintegracao.asmx"   //"https://www9.ciashop.com.br/ncgames/ws/wsintegracao.asmx"
 //Url de testes
-Static cWSUrl:="https://www.ncgames.com.br/ws/wsintegracao.asmx"   //"https://www9.ciashop.com.br/ncgames/ws/wsintegracao.asmx"
+Static cWSUrl:="https://homologuzgames.myciashop.com.br/ws/wsintegracao.asmx"   //"https://www9.ciashop.com.br/ncgames/ws/wsintegracao.asmx"
 
 
 User Function _KYSBAAE(aDados)

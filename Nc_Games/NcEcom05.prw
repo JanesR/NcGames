@@ -84,6 +84,8 @@ Local nRecZC5	:= 0
 Local cCodMun	:=""
 Local cMunic	:=""
 Local cBody		:=""
+Local cTemplate :=""
+Local cArmPed  	:=""
 Local cEmailTo := U_MyNewSX6("NC_ECOM05E",;
 											"rciambarella@ncgames.com.br",;
 											"C",;
@@ -131,7 +133,8 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 	
 	For i:=1 to Len(oXml:_RECEIPTLIST:_RECEIPT)
 		
-		
+		cTemplate := ALLTRIM(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_TEMPLATE_ID:TEXT)
+
 		ZC5->(DbSetOrder(1))
 		If ZC5->(!DbSeek(xFilial("ZC5")+oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT))
 			
@@ -144,6 +147,36 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				
 				BEGIN TRANSACTION
 				
+				If !valtype(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM)=="A"
+					XmlNode2Arr(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM,"_RECEIPT_ITEM")
+				Endif
+				
+				
+				For nX := 1 To LEN(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM)
+					ZC6->(RecLock("ZC6",.T.))
+					
+					ZC6->ZC6_FILIAL:= xFilial("ZC6")
+					ZC6->ZC6_NUM	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT)
+					ZC6->ZC6_ITEM	:= StrZero(nX,2)
+					ZC6->ZC6_PRODUT:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT
+					ZC6->ZC6_QTDVEN:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_QUANTITY:TEXT)
+					ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_LIST_PRICE:TEXT)/100
+					ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_ADJUSTED_PRICE:TEXT)/100
+					
+					//JR
+					//Adicionado em 26/06/2017 para tratar pedidos do tipo B2B e B2C
+					//de pedidos de vendas originados do CiaShop.
+					//O armazem é equivaliente ao cadastrado jo Protheus.
+					//ZC6->ZC6_LOCAL	:= SuperGetMV("MV_CIAESTO",,"01")
+										
+					if !empty(alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:ERP_ID:TEXT))
+						cArmPed:= alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:ERP_ID:TEXT)
+						ZC6->ZC6_LOCAL := cArmPed
+					EndIf
+					
+					ZC6->(MsUnlock())
+				Next nX
+
 				ZC5->(Reclock("ZC5",.T.))
 				
 				ZC5->ZC5_FILIAL	:= xFilial("ZC5")
@@ -203,29 +236,17 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				CC2->(DBSETORDER(1))
 				
 				ZC5->ZC5_CODMUE:=cCodMun
-				
+				//JR
+				//Pedidos de vendas originados do CiaShop.
+				//Utilizar "C" para B2C e "B" para B2B, basendo-se no template utilizado.
+				IF cTemplate == "2" .And. cArmPed == "51"
+					ZC5->ZC5_TPECOM := "C"
+				Else
+					ZC5->ZC5_TPECOM := "B"
+				EndIf
+
 				ZC5->(MsUnlock())
 				
-				If !valtype(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM)=="A"
-					XmlNode2Arr(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM,"_RECEIPT_ITEM")
-				Endif
-				
-				
-				
-				For nX := 1 To LEN(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM)
-					ZC6->(RecLock("ZC6",.T.))
-					
-					ZC6->ZC6_FILIAL:= xFilial("ZC6")
-					ZC6->ZC6_NUM	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT)
-					ZC6->ZC6_ITEM	:= StrZero(nX,2)
-					ZC6->ZC6_PRODUT:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT
-					ZC6->ZC6_QTDVEN:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_QUANTITY:TEXT)
-					ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_LIST_PRICE:TEXT)/100
-					ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_ADJUSTED_PRICE:TEXT)/100
-					ZC6->ZC6_LOCAL	:= SuperGetMV("MV_CIAESTO",,"01")
-					
-					ZC6->(MsUnlock())
-				Next nX
 				//U_COM09PV(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT, "PV","IMPORTA_PEDIDO","Pedido Importado")
 				
 				END TRANSACTION
