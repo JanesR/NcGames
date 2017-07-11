@@ -110,7 +110,7 @@ If !Empty(aRel)
 		If aRel[nInd] .and. nInd==1 //Est Insuficiente B2C
 			
 			cArq 		:= "Estoque_insuficiente_B2C"+DtoS(MsDate())
-			cCabec	 	:= "PV_VTEX;DT_VTEX;NUM_PV;PRE_VENDA;SKU;PRODUTO;DESCRICAO;QTD_PEDIDO;QTD_RES_PV;EST_51_DISP;EST_01_DISP"
+			cCabec	 	:= "PV_VTEX;DT_VTEX;NUM_PV;PRE_VENDA;SKU;PRODUTO;DESCRICAO;QTD_PEDIDO;QTD_RES_PV;LOCAL_PV;EST_51_DISP;EST_01_DISP"
 			cQrySql 	:= ""
 			cAreaQry	:= GetNextAlias()
 			

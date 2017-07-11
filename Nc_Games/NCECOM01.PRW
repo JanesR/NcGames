@@ -18,7 +18,7 @@
 ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
 ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
 */
-User Function Ecom01Job(aDados)
+User Function ](aDados)
 
 Default aDados:={"01","03"}
 RpcSetType(3)
@@ -130,6 +130,17 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 			Loop
 		EndIf
 		
+		if XmlNodeExist(oXml:_SHOPPERLIST:_SHOPPER[i],"_CAMPOS_EXTRAS") 
+			
+			if valtype( xmlChildEx(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS,"_CAMPO_EXTRA"))=="O"
+				If val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_ENTIDADE_ID:TEXT) == val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
+					//Nome do campo extra que dirá a que site o cliente pertence.
+					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "UZGAMES" .And. AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT) == "S"
+						Loop
+					EndIf
+				EndIf
+			EndIf
+		EndIf
 		
 		If Upper(Alltrim(oXml:_SHOPPERLIST:_SHOPPER[i]:_TIPO:TEXT))=="F"
 			
@@ -331,32 +342,23 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 		AADD(aVetor,{"A1_ZCODCIA"	,val(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT),Nil})
 		
 		//JR
-		//Replica para pegar os campos extras e depois tratar
-		//Busca os campos extras com informações adicionais no cadastro do cliente
-		If !valtype(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS)=="A"
-			XmlNode2Arr(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA,"_CAMPO_EXTRA")
-		Endif
-		nContExtr:=LEN(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA)//jr
-		//JR
-		//Adicionado em 26/06/2017 - para controle de quando o cliente
-		//cadastrado no site uz games e no site nc games
-		//buscando dos campos extras cadastrados no cliente do ambiente ciashop
-
-		for ExtRx := nContExtr to 1 Step -1
-
-			If val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA[ExtRx]:_ENTIDADE_ID:TEXT) == val(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
-				//Nome do campo extra que dirá a que site o cliente pertence.
-				if !AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA[ExtRx]:_CHAVE:TEXT) == "UZGAMES"
-					Loop
-				EndIf
-
-				If AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA[ExtRx]:_VALOR:TEXT) == "S"//PAGA UZ GAMES
-					_cBloqueado := "1"
+			//Adicionado em 26/06/2017 - para controle de quando o cliente
+			//cadastrado no site uz games e no site nc games
+			//buscando dos campos extras cadastrados no cliente do ambiente ciashop
+		/*if XmlNodeExist(oXml:_SHOPPERLIST:_SHOPPER[i],"_CAMPOS_EXTRAS") 
+			
+			
+			if valtype( xmlChildEx(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS,"_CAMPO_EXTRA"))=="O"
+				If val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_ENTIDADE_ID:TEXT) == val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
+					//Nome do campo extra que dirá a que site o cliente pertence.
+					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "UZGAMES" .And. AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT) == "S"
+						_cBloqueado := "2"
+					Else
+						_cBloqueado := "1"
+					EndIf
 				EndIf
 			EndIf
-
-		Next ExtRx
-		
+		EndIf*/
 		AADD(aVetor,{"A1_MSBLQL" 	,_cBloqueado ,Nil})
 
 		If lSimular

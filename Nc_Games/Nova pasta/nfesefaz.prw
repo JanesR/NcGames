@@ -5699,7 +5699,7 @@ If  !lIssQn
 			If nBaseIcm > 0 .and. nValICM>0
 		   		If Len(cMensFis) > 0 .And. SubStr(cMensFis, Len(cMensFis), 1) <> " "
 					cMensFis += " "
-				EndIf
+				EndIfF4_ART274
 			    If SF4->F4_ART274 == "1"  .And. Upper(SM0->M0_ESTCOB) == "SP"  
 					nBaseIcm := aProd[09]*nBaseIcm
 					nValICM  := aProd[09]*nValICM										

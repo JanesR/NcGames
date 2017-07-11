@@ -577,13 +577,13 @@ User Function PvCrtAprov(lAprovado,nMargem,lAprovPromo)
 
 	If M->C5_YPERPRO <>0
 	
-		nMargem:=M->C5_YPERPRO
+		nMargem:=Round(M->C5_YPERPRO,2)
 	
 		If ( lAprovPromo:=(M->C5_YPERNOR==0) )
 			M->C5_YSTATUS := "01"
 			M->C5_YBLQPAL := " "
 			M->C5_YAPROV  :="Aprovado - Pedido Promocional"
-			M->C5_YULTMAR :=nMargem
+			M->C5_YULTMAR := nMargem
 		
 		Else
 			nMargem:=M->C5_YPERNOR

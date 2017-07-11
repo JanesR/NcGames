@@ -114,7 +114,7 @@ For i:=1 to Len(_aStatus)
 	If Alltrim(_aStatus[i][2])$("5|4")
 		
 		_cxml+=' status_shopper="Pedido realizado com sucesso"
-		_cxml+=' status_adm="PPedido realizado com sucesso"
+		_cxml+=' status_adm="Pedido realizado com sucesso"
 		_cxml+=' rastreamento=""
 		_cxml+=' sendMail="0"
 		_cxml+=' shipping_method="" />'
@@ -137,7 +137,22 @@ For i:=1 to Len(_aStatus)
 		_cxml+=' sendMail="1"
 		_cxml+=' shipping_method="" />'
 		Aadd(_aConfi,{_aStatus[i][1],"1"})
-		
+	//JR
+	ElseIf _aStatus[i][2]=="30"
+		_cxml+=' status_shopper="Enviado para o Cliente"'
+		_cxml+=' status_adm="Enviado para a Cliente"
+		_cxml+=' rastreamento="'+ZC5->ZC5_RASTRE+'"'
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+	ElseIf _aStatus[i][2]=="40"
+		_cxml+=' status_shopper="Pedido Entregue"'
+		_cxml+=' status_adm="Pedido Entregue"
+		_cxml+=' rastreamento=""'
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+	//JR
 	ElseIf _aStatus[i][2]=="90"
 		
 		_cxml+=' status_shopper="Pedido Cancelado"
@@ -226,6 +241,7 @@ For i:=1 to Len(_aXml)
 	
 Next i
 //Chama a Funcao que ira atualizar os pedidos no portal CiaShop caso haja algum pedido a ser atualizado
+
 If Len(_aConfi)>0
 	u_NcEcom06(_aConfi)
 Endif
@@ -443,7 +459,7 @@ BeginSql alias cAliasSql
 	WHERE ZC5_FILIAL = %xfilial:ZC5%
 	AND ZC5_NUM <> 0
 	AND %notDel%
-	AND ZC5_STATUS = '4'
+	AND ZC5_STATUS in( '4','5')
 	AND ZC5_ESTORN <> 'S'
 	AND ZC5_PLATAF = '01'
 	

@@ -44,8 +44,8 @@ U_NCECOM08({aDados[1],aDados[2],"VERIFICA_PAGAMENTO",.T.}) //Rotina será executa
 //PtInternal(1,"ECOM08 - VERIFICA_EXPEDICAO" )                                 
 //U_NCECOM08({aDados[1],aDados[2],"VERIFICA_EXPEDICAO",.T.})  
 
-PtInternal(1,"ECOM08 - VERIFICA_RASTREIO..." )
-U_NCECOM08({aDados[1],aDados[2],"VERIFICA_RASTREIO",.T.}) 
+//PtInternal(1,"ECOM08 - VERIFICA_RASTREIO..." )
+//U_NCECOM08({aDados[1],aDados[2],"VERIFICA_RASTREIO",.T.}) 
 
 PtInternal(1,"ECOM08 - VERIFICA_ESTORNO..." )
 U_NCECOM08({aDados[1],aDados[2],"VERIFICA_ESTORNO",.T.})

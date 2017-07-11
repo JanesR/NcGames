@@ -44,7 +44,8 @@ Local lEcommerce  := Iif(Alltrim(SC5->C5_XECOMER) == "C", .T., .F.)
 
 dbSelectArea("SC5")
 dbSetOrder(1)
-dbSeek(xFilial() + SC5->C5_NUM)
+//--dbSeek(xFilial() + SC5->C5_NUM)
+dbSeek(xFilial() + "293686")
 
 _cNum    := SC5->C5_NUM
 _cHora   := SC5->C5_TIME

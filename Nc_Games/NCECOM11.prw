@@ -67,7 +67,7 @@ AADD(aCpoZC5,"ZC5_PREVEN")
 AADD(aCpoZC5,"ZC5_CLIENT")
 AADD(aCpoZC5,"ZC5_LOJA")
 AADD(aCpoZC5,"ZC5_NOME")
-
+AADD(aCpoZC5,"ZC5_TPECOM")
 
 If !lB2B
 	AADD(aCpoZC5,"ZC5_TPPGTO")
@@ -287,7 +287,7 @@ oTimer:Activate()
 If lPgtoBol
 	oButAtuCR	:= TButton():New( (aSize[4]*65/100)-35, aSize[3]-113, "Confirma Pagamento",oWin02,{ ||LJMsgRun("Aguarde o processamento...","Aguarde...",{|| U_COM11PGTO(ZC5->ZC5_PVVTEX) })}, 50,10,,,.F.,.T.,.F.,,.F.,,,.F. )
 ElseIf ZC5->ZC5_FLAG=='4'
-	oButAtuCR	:= TButton():New( (aSize[4]*65/100)-35, aSize[3]-113, "Corrigir Dados",oWin02,{ ||LJMsgRun("Aguarde o processamento...","Aguarde...",{|| U_CorrigiCli(ZC5->ZC5_PVVTEX) })}, 50,10,,,.F.,.T.,.F.,,.F.,,,.F. )
+	oButAtuCR	:= TButton():New( (aSize[4]*65/100)-35, aSize[3]-113, "Corrigir Dados",oWin02,{ ||LJMsgRun("Aguarde o processamento...","Aguarde...",{|| IIF(ZC5->ZC5_NUM == 0 ,U_CorrigiCli(ZC5->ZC5_PVVTEX),U_CorrigiCli(ZC5->ZC5_NUM)) })}, 50,10,,,.F.,.T.,.F.,,.F.,,,.F. )
 ElseIf ZC5->ZC5_FLAG=='8'
 	oButAtuCR	:= TButton():New( (aSize[4]*65/100)-35, aSize[3]-220, "Aceitar Canc."	,oWin02,{ ||LJMsgRun("Aguarde o processamento...","Aguarde...",{|| U_PvCancel(ZC5->(Recno()),.T.) } )}, 50,10,,,.F.,.T.,.F.,,.F.,,,.F. )
 	oButLibWMS	:= TButton():New( (aSize[4]*65/100)-35, aSize[3]-167, "Rejeitar Canc.",oWin02,{ ||LJMsgRun("Aguarde o processamento...","Aguarde...",{|| U_PvCancel(ZC5->(Recno()),.F.) } )}, 50,10,,,.F.,.T.,.F.,,.F.,,,.F. )
@@ -2047,6 +2047,7 @@ If !lB2B
 	AAdd(aRotina, {"&Reprocessar"	, "Processa({|| U_VTEX05Prod(.T.,ZC5->ZC5_PVVTEX)})"			,0	,8})
 Else
 	AAdd(aRotina, {"&Gravar PV"		, "Processa({|| U_Com08Moni('GRAVA_PEDIDO',,,ZC5->ZC5_NUM,ZC5->(Recno()))})"	,0	,8})
+	AAdd(aRotina, {"&Reprocessar"	, "Processa({|| U_NCECOM05()})"			,0	,8})
 EndIf
 
 AAdd(aRotina, {"&Tracking Vendedor"		, "Processa({|| U_NCGPR138(ZC5_NUMPV)})"	,0	,8})
@@ -2513,7 +2514,7 @@ Default lB2B		:=!Empty(ZC5->ZC5_LJECOME)
 
 
 If lB2B
-	cFiltro	:= "@ZC5_FLAG In (' ','6','7') And ZC5_PLATAF IN ('  ','01')"
+	cFiltro	:= "@ZC5_FLAG In (' ','2','4','6','7') And ZC5_PLATAF IN ('  ','01')"
 Else
 	If !lPgtoBol
 		cFiltro	:="@ZC5_FLAG Not In ('2','3')
@@ -2776,7 +2777,7 @@ aAdd( aParam,  {||  } )  				//durante a transacao
 aAdd( aParam,  {|| U_COM11GrvSA1()} )      		//termino da transacao
 
 //AxAltera(cAlias,nReg,nOpc ,aAcho ,aCpos ,nColMens,cMensagem,cTudoOk,cTransact,cFunc,aButtons,aParam,aAuto,lVirtual,lMaximized,cTela,lPanelFin,oFather,aDim,uArea ] )
-If ZA1->(MsSeek(xFilial("ZA1")+cPvVtex ))
+If ZA1->(MsSeek(xFilial("ZA1")+padr(cPvVtex,AvSx3("ZA1_PVVTEX",3) )))
 	AxAltera("ZA1",ZA1->(Recno()),4 ,, ,,,,,,aButtons,aParam,,,,,,,,)
 Else
 	MsgStop("Dados Cliente não encotrado.")
