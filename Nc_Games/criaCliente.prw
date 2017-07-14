@@ -15,10 +15,10 @@
     (examples)
     @see (links_or_references)
     /*/
-user Function CriaCli(aVetor,cPed)
+user Function CriaCli(aVetor,cPed,lJaExist)
 Local aArea := GetArea()
 Local returno := .F.
-Local cError	:= ""
+Local _cError	:= ""
 Local cWarning := ""
 
 PRIVATE lMsErroAuto 		:= .F.
@@ -30,8 +30,8 @@ BEGIN TRANSACTION
 			lMsErroAuto:=.F.
 			CC2->(DBSETORDER(1))
 			SA1->(DBSETORDER(3))
-			MSExecAuto({|x,y| MATA030(x,y)},aVetor, 3)
-			_cError:=""
+			MSExecAuto({|x,y| MATA030(x,y)},aVetor, Iif(lJaExist,4,3))
+			_cError:=" "
 			
 			If lMsErroAuto
 				_cError := MemoRead(NomeAutoLog())+CRLF
@@ -39,12 +39,20 @@ BEGIN TRANSACTION
 				ExecValid(aVetor,@_cError)
 				
                 u_ENVIAEMAIL("rciambarella@ncgames.com.br;jisidoro@ncgames.com.br", "", "", "Erro no Cadastro do Cliente - Pv CiaShop:"+cPed, _cError,{})
-                GravaZA1(cPed,_cError,aVetor,{})
+				//U_NCECOM09(0,"CLIENT","IMPORTA_CLIENTE","Erro de Gravacao: "+_cError,cPed,.T.,,"Cliente","")
+				//NCECOM09(nPediSite, cPedido,cAcao,cObservacao,cStatus,lErro,cCodCiaShop,cCadastro,cPVVtex,cPlataf)
+				//U_COM09CAD(cPed,"CLIENTE","IMPORTA_CLIENTE","Erro ao "+Iif(lJaExist,"Alterar o cliente codigo Protheus:"+SA1->A1_COD,"Incluir")+" Cliente.",Iif(Empty(_cError),"error",_cError),SA1->A1_NOME)
+                U_NCECOM09(val(cPed), ,"IMPORTA_CLIENTE","Erro ao "+Iif(lJaExist,"Alterar o cliente codigo Protheus:"+SA1->A1_COD,"Incluir")+" Cliente."," ",.T.," "," ","","01")
+				
+				GravaZA1(cPed,_cError,aVetor,{})
 				RollBackSXe()
                 returno := .F.
 			Else
 				returno := .T.
 				ConfirmSX8()
+
+				//U_COM09CAD(cPed,"CLIENTE","IMPORTA_CLIENTE","Erro ao "+Iif(lJaExist,"Cliente alterado código Protheus:"+SA1->A1_COD,"Incluido")+" Cliente.",Iif(Empty(_cError),"error",_cError),SA1->A1_NOME)
+				U_NCECOM09(val(cPed), ,"IMPORTA_CLIENTE",Iif(lJaExist,"Cliente alterado código Protheus:"+SA1->A1_COD,"Incluido")+" Cliente."," ",.F.," "," ","","01")
 			Endif
 			
 	END TRANSACTION

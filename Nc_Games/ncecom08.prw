@@ -599,7 +599,7 @@ If cAcao=="GRAVA_PEDIDO"
 		
 		If !Empty(cNumCia)
 			cQuery+="  And ZC5.ZC5_NUM='"+cNumCia+"'"+CRLF
-			cQuery+=" And ZC5.ZC5_FLAG IN (' ','6','7') "+CRLF
+			cQuery+=" And ZC5.ZC5_FLAG IN (' ','2','6','7') "+CRLF
 		Else
 			cQuery+=" And ZC5.ZC5_FLAG = ' ' "+CRLF
 		EndIf

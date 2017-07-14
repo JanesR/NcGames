@@ -52,10 +52,10 @@ EndIf
 cFilBrw   += NCECFL11(aParams[1],IIf(lB2B,"",aParams[2]),lB2B,lPgtoBol,aParams)//Filtro da Mbrwse
 
 If lB2B
-	cCadastro += " B2B"
+	cCadastro += " CIASHOP"
 	AADD(aCpoZC5,"ZC5_NUM")
 Else
-	cCadastro += " B2C"
+	cCadastro += " VTEX"
 	AADD(aCpoZC5,"ZC5_NOECOM")
 	AADD(aCpoZC5,"ZC5_PVVTEX")
 	AADD(aCpoZC5,"ZC5_DTVTEX")
@@ -2910,7 +2910,7 @@ Else
 	ZA1->(MsUnLock())
 	
 	ZC5->(RecLock("ZC5",.F.))
-	ZC5->ZC5_FLAG='2'
+	ZC5->ZC5_FLAG:='2'
 	ZC5->(MsUnLock())
 	
 	MsgInfo("Cliente Cadastrado com sucesso.")

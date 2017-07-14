@@ -236,31 +236,30 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 					cMunic			:= StrTran(cMunic,"Ç","C")
 					cMunic			:= NoAcento(cMunic)
 					
-					
-					
+					DbSelectArea("SA1")
+					SA1->(MsSeek(xFilial("SA1")+_aCli[1]+_aCli[2]))
+				
+					/*
 					ZC5->ZC5_ENDENT	:= Upper( AllTrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS1:TEXT) +","+oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_STREET_NUMBER:TEXT)
 					ZC5->ZC5_BAIROE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_DISTRICT:TEXT)
 					ZC5->ZC5_CEPE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT)
 					ZC5->ZC5_MUNE	:= cMunic
 					ZC5->ZC5_ESTE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS3:TEXT)
 					ZC5->ZC5_COMPLE	:= Upper(AllTrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_STREET_COMPL:TEXT))
+					*/
+					ZC5->ZC5_ENDENT	:= SA1->A1_END
+					ZC5->ZC5_BAIROE	:= SA1->A1_BAIRRO
+					ZC5->ZC5_CEPE	:= SA1->A1_CEP
+					ZC5->ZC5_MUNE	:= SA1->A1_MUN
+					ZC5->ZC5_CODMUE := SA1->A1_COD_MUN
+					ZC5->ZC5_ESTE	:= SA1->A1_EST
+					ZC5->ZC5_COMPLE	:= SA1->A1_COMPLEM
+					ZC5->ZC5_FLAG 	:= '2'
+					DbCloseArea("SA1")
 					
 					//Prj GET
 					ZC5->ZC5_CODENT	:= U_V05CodEnt(ZC5->(Recno()),oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_METHOD:TEXT,Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT))
 					
-					cCodMun:=""
-					CC2->(DBSETORDER(2)) //CC2_FILIAL+CC2_MUN
-					CC2->(DbSeek(xFilial("CC2")+ZC5->ZC5_MUNE))
-					Do While CC2->(!Eof()) .And.  CC2->CC2_MUN==ZC5->ZC5_MUNE
-						If CC2->CC2_EST==ZC5->ZC5_ESTE
-							cCodMun	:= CC2->CC2_CODMUN
-							Exit
-						EndIf
-						CC2->(DbSkip())
-					EndDo
-					CC2->(DBSETORDER(1))
-					
-					ZC5->ZC5_CODMUE:=cCodMun
 				Else
 					ZC5->ZC5_FLAG := '4'
 				EndIf
@@ -317,7 +316,8 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				EndIf
 			Endif
 			
-			if ZC5->ZC5_FLAG == "2" .and. alltrim(ZC5->ZC5_ENDENT) == ""
+			//if ZC5->ZC5_FLAG == "2" .and. alltrim(ZC5->ZC5_ENDENT) == ""
+			if alltrim(ZC5->ZC5_ENDENT) == ""
 				_aCli:=AchaCli(oXml,cTemplate)
 				
 				if !Empty(_aCli[1])
@@ -348,40 +348,18 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				EndIf
 				if !empty(_aCli[1])
 					ZC5->ZC5_CGC := _aCli[3]
-					//ZC5->ZC5_CODENT:=	oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_METHOD:TEXT
 					
-					cMunic			:= AllTrim( Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS2:TEXT))
-					cMunic			:= StrTran(cMunic,"Ã","A")
-					cMunic			:= StrTran(cMunic,"Õ","O")
-					cMunic			:= StrTran(cMunic,"Ç","C")
-					cMunic			:= NoAcento(cMunic)
-					
-					
-					
-					ZC5->ZC5_ENDENT	:= Upper( AllTrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS1:TEXT) +","+oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_STREET_NUMBER:TEXT)
-					ZC5->ZC5_BAIROE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_DISTRICT:TEXT)
-					ZC5->ZC5_CEPE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT)
-					ZC5->ZC5_MUNE	:= cMunic
-					ZC5->ZC5_ESTE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS3:TEXT)
-					ZC5->ZC5_COMPLE	:= Upper(AllTrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_STREET_COMPL:TEXT))
-					
+					ZC5->ZC5_ENDENT	:= SA1->A1_END
+					ZC5->ZC5_BAIROE	:= SA1->A1_BAIRRO
+					ZC5->ZC5_CEPE	:= SA1->A1_CEP
+					ZC5->ZC5_MUNE	:= SA1->A1_MUN
+					ZC5->ZC5_CODMUE := SA1->A1_COD_MUN
+					ZC5->ZC5_ESTE	:= SA1->A1_EST
+					ZC5->ZC5_COMPLE	:= SA1->A1_COMPLEM
+					ZC5->ZC5_FLAG 	:= '2'
 					//Prj GET
 					ZC5->ZC5_CODENT	:= U_V05CodEnt(ZC5->(Recno()),oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_METHOD:TEXT,Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT))
 					
-					cCodMun:=""
-					CC2->(DBSETORDER(2)) //CC2_FILIAL+CC2_MUN
-					CC2->(DbSeek(xFilial("CC2")+ZC5->ZC5_MUNE))
-					Do While CC2->(!Eof()) .And.  CC2->CC2_MUN==ZC5->ZC5_MUNE
-						If CC2->CC2_EST==ZC5->ZC5_ESTE
-							cCodMun	:= CC2->CC2_CODMUN
-							Exit
-						EndIf
-						CC2->(DbSkip())
-					EndDo
-					CC2->(DBSETORDER(1))
-					
-					ZC5->ZC5_CODMUE:=cCodMun
-					ZC5->ZC5_FLAG := ' '
 				Else
 					ZC5->ZC5_FLAG := '4'
 				EndIf
@@ -439,6 +417,7 @@ Local aErro		:= {}
 Local _cError	:= ""
 Local aZA1_SA1	:= {}
 Local cCGCCli := ""
+Local lJaExist := .F.
 Default _lIncl	:= .F.
 
 _cQuery:=" SELECT A1_COD,A1_LOJA,A1_END,A1_CGC "
@@ -454,32 +433,56 @@ dbUseArea(.T., "TOPCONN", TCGenQry(,,_cQuery), cAliasQry, .T., .F.)
 
 (cAliasQry)->(DbGoTop())
 
+
+if cTemplate == "2" .And. alltrim((cAliasQry)->A1_COD) != ""
+		aAdd(_aCli,(cAliasQry)->A1_COD)
+		aAdd(_aCli,"01")
+		aAdd(_aCli,(cAliasQry)->A1_CGC)
+		(cAliasQry)->(dbCloseArea())
+		RestArea(aAreaAtu)
+		Return _aCli
+elseif cTemplate == "2"
+		aAdd(_aCli,"")
+		aAdd(_aCli,"")
+		aAdd(_aCli,"")
+		(cAliasQry)->(dbCloseArea())
+		RestArea(aAreaAtu)
+		Return _aCli
+elseif cTemplate != "2" .And. strTran( (cAliasQry)->A1_END," ","") == strTran( upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT))," ","")
+		aAdd(_aCli,(cAliasQry)->A1_COD)
+		aAdd(_aCli,"01")
+		aAdd(_aCli,(cAliasQry)->A1_CGC)
+		(cAliasQry)->(dbCloseArea())
+		RestArea(aAreaAtu)
+		Return _aCli
+endif
+
+//Verifica se existe o cliente
 IF alltrim((cAliasQry)->A1_COD) != ""
 	
-	//Verifica se existe o cliente
-	aAdd(_aCli,(cAliasQry)->A1_COD)
-	aAdd(_aCli,(cAliasQry)->A1_LOJA)
-	aAdd(_aCli,(cAliasQry)->A1_CGC)
-	
+	_cDoc = (cAliasQry)->A1_COD	
+	cCGCCli := (cAliasQry)->A1_CGC	
 	(cAliasQry)->(dbCloseArea())
+	lJaExist := .T.
+
+endif
 	
-Else
-	(cAliasQry)->(dbCloseArea())
-	
-	DbSelectArea("SA1")
-	SA1->(DbSetOrder(1))
-	SA1->(DbGoTop())
-	_cDoc := GETSXENUM("SA1","A1_COD")
-	Do While SA1->(DbSeek(xFilial("SA1") +_cDoc+"01" ))
-		ConfirmSX8()
+	if !lJaExist
+		DbSelectArea("SA1")
+		SA1->(DbSetOrder(1))
+		SA1->(DbGoTop())
 		_cDoc := GETSXENUM("SA1","A1_COD")
-	EndDo
-	DbCloseArea("SA1")
-	
+		Do While SA1->(DbSeek(xFilial("SA1") +_cDoc+"01" ))
+			ConfirmSX8()
+			_cDoc := GETSXENUM("SA1","A1_COD")
+		EndDo
+		DbCloseArea("SA1")
+	endif
+
 	docCli 	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT
 	docType :=  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_type:TEXT
 	docID 	:=  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_id:TEXT
-	_cMun 	:= NoAcento(Padr( upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_city:TEXT), AvSx3("CC2_MUN",3) ))
+	_cMun 	:= NoAcento(Padr( upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS2:TEXT), AvSx3("CC2_MUN",3) ))
 	cNPed	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT
 	cCGCCli := oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT
 	
@@ -502,17 +505,17 @@ Else
 	AADD(aVetor,{"A1_COD", _cDoc,Nil})
 	AADD(aVetor,{"A1_LOJA", "01",Nil})
 	AADD(aVetor,{"A1_PESSOA", IIF(UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) = "CPF","F","J"),Nil})
-	AADD(aVetor,{"A1_NOME",upper(NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_name:TEXT)),Nil})
-	AADD(aVetor,{"A1_NREDUZ",upper( NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_name:TEXT)),Nil})
-	AADD(aVetor,{"A1_END", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +","+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT)),Nil})
+	AADD(aVetor,{"A1_NOME",  upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
+	AADD(aVetor,{"A1_NREDUZ",upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
+	AADD(aVetor,{"A1_END", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT)),Nil})
 	AADD(aVetor,{"A1_COMPLEM",upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_compl:TEXT )) + "- Ref.:" +upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_reference:TEXT )),Nil})
 	AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CPF", "F","S"),Nil})
 	AADD(aVetor,{"A1_EST", upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
 	AADD(aVetor,{"A1_NATUREZ", "19101",Nil})
 	AADD(aVetor,{"A1_COD_MUN", _cCodMun,Nil})
 	AADD(aVetor,{"A1_MUN", Upper(NoAcento(_cMun)),Nil})
-	AADD(aVetor,{"A1_BAIRRO", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_district:TEXT)),Nil})
-	AADD(aVetor,{"A1_CEP", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_zip_code:TEXT,Nil})
+	AADD(aVetor,{"A1_BAIRRO", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_district:TEXT)),Nil})
+	AADD(aVetor,{"A1_CEP", oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address4:TEXT,Nil})
 	AADD(aVetor,{"A1_DDD", oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_ddd_phone:TEXT,Nil})
 	AADD(aVetor,{"A1_TEL", oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_phone:TEXT,Nil})
 	AADD(aVetor,{"A1_ENDCOB", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)),Nil})
@@ -529,7 +532,7 @@ Else
 	AADD(aVetor,{"A1_CGC", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT,Nil})
 	AADD(aVetor,{"A1_INSCR", iif( upper(docType) == "RG","ISENTO",docID),Nil})
 	AADD(aVetor,{"A1_PFISICA", iif( upper(docType) == "RG" ,docID," "),Nil})
-	AADD(aVetor,{"A1_VEND", "VN9901",Nil})
+	AADD(aVetor,{"A1_VEND", iif(cTemplate == "2", "VN9901","VN9902"),Nil})
 	AADD(aVetor,{"A1_CONTA", "11201010001",Nil})
 	AADD(aVetor,{"A1_TRANSP", "000002",Nil})
 	AADD(aVetor,{"A1_TPFRET", "C",Nil})
@@ -543,6 +546,7 @@ Else
 	AADD(aVetor,{"A1_XGRPCOM", "ECOMME",Nil})
 	AADD(aVetor,{"A1_CONTRIB", iif( upper(docType) == "RG","2","1")	,Nil})
 	AADD(aVetor,{"A1_RISCO" , 'E',Nil})
+	AADD(aVetor,{"A1_DTNASC" , msdate(),Nil})
 	if cTemplate == "2"
 		AADD(aVetor,{"A1_TABELA", iif(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT=="SP","018",IIf(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT$"RJ;RS;SC;PR;MG","112","107")),Nil})
 	else
@@ -559,9 +563,9 @@ Else
 	AADD(aVetor,{"A1_MSBLQL", IIF(cTemplate=="2","1","2"),Nil})
 	AADD(aVetor,{"A1_ZCODCIA", val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHOPPER_ID:TEXT),Nil})
 	AADD(aVetor,{"A1_REGIAO", U_AchaReg(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
+		
 	
-	
-	if u_CriaCli(aVetor,cNPed)
+	if u_CriaCli(aVetor,cNPed, lJaExist)
 		aAdd(_aCli,_cDoc)
 		aAdd(_aCli,"01")
 		aAdd(_aCli,cCGCCli)
@@ -572,7 +576,7 @@ Else
 	EndIf
 	
 	
-EndIf
+
 
 RestArea(aAreaAtu)
 Return _aCli
@@ -805,7 +809,7 @@ Default cComplem	:=""
 Default lConcatena:=.T.
 
 
-cQuery:=" Select ZC5_ENDENT,ZC5_BAIROE,ZC5_CEPE,ZC5_MUNE,ZC5_ESTE,ZC5_COMPLE,ZC5_CODMUE,ZC5_CLIENT,ZC5_LOJA,ZC5_PVVTEX"+CRLF
+cQuery:=" Select ZC5_ENDENT,ZC5_BAIROE,ZC5_CEPE,ZC5_MUNE,ZC5_ESTE,ZC5_COMPLE,ZC5_CODMUE,ZC5_CLIENT,ZC5_LOJA,ZC5_PVVTEX,ZC5_TPECOM"+CRLF
 cQuery+=" From "+RetSqlName("ZC5")+" ZC5"
 cQuery+=" Where ZC5.ZC5_FILIAL='"+xFilial("ZC5")+"'"+CRLF
 cQuery+=" And ZC5.ZC5_NUMPV='"+cNumPV+"'"+CRLF
@@ -816,9 +820,9 @@ DbUseArea(.T.,"TOPCONN",TcGenQry(,,cQuery),clAlias, .F., .F.)
 
 If !(clAlias)->(Eof() .And. Bof()) .And. SA1->(MsSeek(xFilial("SA1")+(clAlias)->(ZC5_CLIENT+ZC5_LOJA) ))
 	
-	
+	//JR
 	If Empty( (clAlias)->ZC5_PVVTEX )
-		lContinuar:=( SA1->A1_EST=="SP" )
+		lContinuar:= ( SA1->A1_EST=="SP" ) .and. ((clAlias)->ZC5_PVVTEX == "B2B")
 	Else
 		lContinuar:=.T.
 	EndIf

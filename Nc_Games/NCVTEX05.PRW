@@ -1039,7 +1039,7 @@ BEGIN TRANSACTION
 
 lMsErroAuto := .F.
 CC2->(DBSETORDER(1))
-MSExecAuto({|x,y| MATA030(x,y)},aVetor, Iif(lJaExiste,4,3))
+MSExecAuto({|x,y| MATA030(x,y)},aVetor, Iif(!lJaExiste,4,3))
 _cError := ""
 If lMsErroAuto
 	_cError := MemoRead(NomeAutoLog())+CRLF+cErroAdiconal+CRLF
