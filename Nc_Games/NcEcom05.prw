@@ -89,6 +89,8 @@ Local cBody		:=""
 Local cTemplate :=""
 Local cArmPed  	:=""
 Local IntB2C	:=.F.
+Local aKit		:={}
+Local nItem		:= 1
 Local cEmailTo := U_MyNewSX6("NC_ECOM05E",;
 "rciambarella@ncgames.com.br",;
 "C",;
@@ -96,7 +98,13 @@ Local cEmailTo := U_MyNewSX6("NC_ECOM05E",;
 "Define o e-mail para envio de erro (Endereço de entrega divergente).",;
 "Define o e-mail para envio de erro (Endereço de entrega divergente).",;
 .F. )
-
+Local cTempleB2B := U_MyNewSX6("NC_TMPB2B",;
+"02",;
+"C",;
+"Define o Template pertencente ao B2B.",;
+"Define o Template pertencente ao B2B.",;
+"Define o Template pertencente ao B2B.",;
+.F. )
 Local oSrv
 Local cXML
 
@@ -145,7 +153,7 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 			
 			_aCli:=AchaCli(oXml,cTemplate)
 			
-			If empty(_aCli[1]) .And. cTemplate != "2"
+			If empty(_aCli[1]) .And. !(cTemplate$cTempleB2B)
 				IntB2C := .T.
 			elseif !empty(_aCli[1])
 				IntB2C := .T.
@@ -168,30 +176,62 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				
 				
 				For nX := 1 To LEN(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM)
-					ZC6->(RecLock("ZC6",.T.))
 					
-					ZC6->ZC6_FILIAL:= xFilial("ZC6")
-					ZC6->ZC6_NUM	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT)
-					ZC6->ZC6_ITEM	:= StrZero(nX,2)
-					ZC6->ZC6_PRODUT:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT
-					ZC6->ZC6_QTDVEN:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_QUANTITY:TEXT)
-					ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_LIST_PRICE:TEXT)/100
-					ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_ADJUSTED_PRICE:TEXT)/100
 					
-					//JR
-					//Adicionado em 26/06/2017 para tratar pedidos do tipo B2B e B2C
-					//de pedidos de vendas originados do CiaShop.
-					//O armazem é equivaliente ao cadastrado jo Protheus.
-					//ZC6->ZC6_LOCAL	:= SuperGetMV("MV_CIAESTO",,"01")
-					
-					if !empty(alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text))
-						cArmPed:= alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text)
-						ZC6->ZC6_LOCAL := cArmPed
+					if upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_type:Text) != "KIT"
+						
+						ZC6->(RecLock("ZC6",.T.))
+						ZC6->ZC6_FILIAL:= xFilial("ZC6")
+						ZC6->ZC6_NUM	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT)
+						ZC6->ZC6_ITEM	:= StrZero(nItem,2)
+						ZC6->ZC6_PRODUT:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT
+						ZC6->ZC6_QTDVEN:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_QUANTITY:TEXT)
+						ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_LIST_PRICE:TEXT)/100
+						ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_ADJUSTED_PRICE:TEXT)/100
+						
+						//JR
+						//Adicionado em 26/06/2017 para tratar pedidos do tipo B2B e B2C
+						//de pedidos de vendas originados do CiaShop.
+						//O armazem é equivaliente ao cadastrado jo Protheus.
+						//ZC6->ZC6_LOCAL	:= SuperGetMV("MV_CIAESTO",,"01")
+						
+						if !empty(alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text))
+							cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text) , 5, 2)
+							ZC6->ZC6_LOCAL := cArmPed
+						EndIf
+						
+						ZC6->(MsUnlock())
+						nItem += 1
+					Else
+						//JR
+						For nXkit:= 1 to Len(OXML:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM)
+							
+							ZC6->(RecLock("ZC6",.T.))
+							ZC6->ZC6_FILIAL:= xFilial("ZC6")
+							ZC6->ZC6_NUM	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT)
+							ZC6->ZC6_ITEM	:= StrZero(nItem,2)
+							ZC6->ZC6_PRODUT:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PF_ID:TEXT
+							ZC6->ZC6_QTDVEN:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_QUANTITY:TEXT)
+							ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PRORATED_PRICE:TEXT)
+							ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PRORATED_PRICE:TEXT)*val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_QUANTITY:TEXT)
+													
+							if !empty(alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text))
+								cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text) , 5, 2)
+								ZC6->ZC6_LOCAL := cArmPed
+							EndIf
+							
+							ZC6->(MsUnlock())
+							nItem += 1
+						Next nXkit
+
+
 					EndIf
+
 					
-					ZC6->(MsUnlock())
 				Next nX
 				
+				nItem := 1
+
 				ZC5->(Reclock("ZC5",.T.))
 				
 				ZC5->ZC5_FILIAL	:= xFilial("ZC5")
@@ -220,7 +260,7 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				//JR
 				//Pedidos de vendas originados do CiaShop.
 				//Utilizar "C" para B2C e "B" para B2B, basendo-se no template utilizado.
-				IF cTemplate == "2"  // ccriar um parametro para o template
+				IF cTemplate $ cTempleB2B  // ccriar um parametro para o template
 					ZC5->ZC5_TPECOM := "B2B"
 				Else
 					ZC5->ZC5_TPECOM := "B2C"
@@ -418,6 +458,13 @@ Local _cError	:= ""
 Local aZA1_SA1	:= {}
 Local cCGCCli := ""
 Local lJaExist := .F.
+Local cTempleB2B := U_MyNewSX6("NC_TMPB2B",;
+"02",;
+"C",;
+"Define o Template pertencente ao B2B.",;
+"Define o Template pertencente ao B2B.",;
+"Define o Template pertencente ao B2B.",;
+.F. )
 Default _lIncl	:= .F.
 
 _cQuery:=" SELECT A1_COD,A1_LOJA,A1_END,A1_CGC "
@@ -434,21 +481,21 @@ dbUseArea(.T., "TOPCONN", TCGenQry(,,_cQuery), cAliasQry, .T., .F.)
 (cAliasQry)->(DbGoTop())
 
 
-if cTemplate == "2" .And. alltrim((cAliasQry)->A1_COD) != ""
+if cTemplate $ cTempleB2B .And. alltrim((cAliasQry)->A1_COD) != ""
 		aAdd(_aCli,(cAliasQry)->A1_COD)
 		aAdd(_aCli,"01")
 		aAdd(_aCli,(cAliasQry)->A1_CGC)
 		(cAliasQry)->(dbCloseArea())
 		RestArea(aAreaAtu)
 		Return _aCli
-elseif cTemplate == "2"
+elseif cTemplate $ cTempleB2B
 		aAdd(_aCli,"")
 		aAdd(_aCli,"")
 		aAdd(_aCli,"")
 		(cAliasQry)->(dbCloseArea())
 		RestArea(aAreaAtu)
 		Return _aCli
-elseif cTemplate != "2" .And. strTran( (cAliasQry)->A1_END," ","") == strTran( upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT))," ","")
+elseif (cTemplate $ cTempleB2B) .And. strTran( (cAliasQry)->A1_END," ","") == strTran( upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT))," ","")
 		aAdd(_aCli,(cAliasQry)->A1_COD)
 		aAdd(_aCli,"01")
 		aAdd(_aCli,(cAliasQry)->A1_CGC)
@@ -547,7 +594,7 @@ endif
 	AADD(aVetor,{"A1_CONTRIB", iif( upper(docType) == "RG","2","1")	,Nil})
 	AADD(aVetor,{"A1_RISCO" , 'E',Nil})
 	AADD(aVetor,{"A1_DTNASC" , msdate(),Nil})
-	if cTemplate == "2"
+	if cTemplate $ cTempleB2B
 		AADD(aVetor,{"A1_TABELA", iif(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT=="SP","018",IIf(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT$"RJ;RS;SC;PR;MG","112","107")),Nil})
 	else
 		AADD(aVetor,{"A1_TABELA", "CON",Nil})
@@ -560,7 +607,7 @@ endif
 	AADD(aVetor,{"A1_ZSEXO", iif( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_gender:TEXT == "Male","M","F"),Nil})
 	AADD(aVetor,{"A1_ZESTCIV", " ",Nil})
 	AADD(aVetor,{"A1_EMAIL", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_email:Text,Nil})
-	AADD(aVetor,{"A1_MSBLQL", IIF(cTemplate=="2","1","2"),Nil})
+	AADD(aVetor,{"A1_MSBLQL", IIF(cTemplate$cTempleB2B,"1","2"),Nil})
 	AADD(aVetor,{"A1_ZCODCIA", val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHOPPER_ID:TEXT),Nil})
 	AADD(aVetor,{"A1_REGIAO", U_AchaReg(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
 		

@@ -128,13 +128,8 @@ If !TRBEST->(EoF())
 			cEstAtu := "0"
 		EndIf
 		
-
-		if ALLTRIM(TRBEST->B2_LOCAL) == "01"
-			_cxml+='<update_stock xmlns="" sku="'+ALLTRIM(TRBEST->B1_COD)+'" estoque="'+cEstAtu+'" armazem = "'+ALLTRIM(TRBEST->B2_LOCAL) +'" sale_start="2012-01-01" sale_end="2012-02-01" sale_price="'+ALLTRIM(cPrcCons)+'" />'
-		ElseIf ALLTRIM(TRBEST->B2_LOCAL) == "51"
-			_cxml+='<update_stock xmlns="" sku="'+ALLTRIM(TRBEST->B1_COD)+'" estoque="'+cEstAtu+'" armazem = "'+ALLTRIM(TRBEST->B2_LOCAL) +'" preco= "'+ALLTRIM(cPrcConsumi)+'" sale_start="2012-01-01" sale_end="2012-02-01" sale_price="'+ALLTRIM(cPrcCons)+'" />'
-		EndIf
-
+		_cxml+='<update_stock xmlns="" sku="'+ALLTRIM(TRBEST->B1_COD)+'" estoque="'+ cEstAtu+'" armazem = "'+ALLTRIM(cEmpAnt + cFilAnt+ TRBEST->B2_LOCAL) +'" sale_start="2012-01-01" sale_end="2012-02-01" />'
+	
 
 		TRBEST->(DbSkip())
 		_nCont++
