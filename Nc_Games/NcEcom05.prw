@@ -99,7 +99,7 @@ Local cEmailTo := U_MyNewSX6("NC_ECOM05E",;
 "Define o e-mail para envio de erro (Endereço de entrega divergente).",;
 .F. )
 Local cTempleB2B := U_MyNewSX6("NC_TMPB2B",;
-"02",;
+"2",;
 "C",;
 "Define o Template pertencente ao B2B.",;
 "Define o Template pertencente ao B2B.",;
@@ -555,7 +555,7 @@ endif
 	AADD(aVetor,{"A1_NOME",  upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
 	AADD(aVetor,{"A1_NREDUZ",upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
 	AADD(aVetor,{"A1_END", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT)),Nil})
-	AADD(aVetor,{"A1_COMPLEM",upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_compl:TEXT )) + "- Ref.:" +upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_reference:TEXT )),Nil})
+	AADD(aVetor,{"A1_COMPLEM",iif(XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER,"_ship_to_street_compl"), upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_compl:TEXT ))," ") + "- Ref.:" + iif(XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER,"_REFERENCE"),upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_reference:TEXT ))," ") ,Nil})
 	AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CPF", "F","S"),Nil})
 	AADD(aVetor,{"A1_EST", upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
 	AADD(aVetor,{"A1_NATUREZ", "19101",Nil})

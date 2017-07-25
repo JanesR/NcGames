@@ -40,7 +40,8 @@ For i:=1 to Len(_aStatus)
 	_cxml+='<receipt_result xmlns="" order_id="'+alltrim(str(_aStatus[i][1]))+'" processed="'+_aStatus[i][2]+'" />'
 	_nCont++
 	
-Next i
+Next 
+
 If !Empty(Alltrim(_cxml))
 	Aadd(_aXml,_cxml)
 Endif

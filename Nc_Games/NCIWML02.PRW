@@ -680,7 +680,12 @@ For nYnd:=1 To Len(aRecnos)
 			If lDuplic
 				SF2->F2_DUPL:=SF2->F2_DOC
 			EndIf
-			SF2->F2_HORA:=(cAliasPZQ)->PZQ_HORA
+			//SF2->F2_HORA:=(cAliasPZQ)->PZQ_HORA
+
+			//SF2->F2_HORA:=substr( (cAliasPZQ)->PZQ_HORA,1,5)
+
+			SF2->F2_HORA:=substr(time(),1,5)
+			
 			SF2->(MSUnLock())
 		EndIf
 		
