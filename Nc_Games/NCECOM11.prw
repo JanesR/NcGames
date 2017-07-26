@@ -2047,7 +2047,8 @@ If !lB2B
 	AAdd(aRotina, {"&Reprocessar"	, "Processa({|| U_VTEX05Prod(.T.,ZC5->ZC5_PVVTEX)})"			,0	,8})
 Else
 	AAdd(aRotina, {"&Gravar PV"		, "Processa({|| U_Com08Moni('GRAVA_PEDIDO',,,ZC5->ZC5_NUM,ZC5->(Recno()))})"	,0	,8})
-	AAdd(aRotina, {"&Reprocessar"	, "Processa({|| U_NCECOM05()})"			,0	,8})
+	//AAdd(aRotina, {"&Reprocessar"	, "Processa({|| U_NCECOM05()})"			,0	,8})
+	AAdd(aRotina, {"&Reprocessar"	, "Processa({|| U_reprPedido(ZC5->ZC5_NUM)})",0	,8})
 EndIf
 
 AAdd(aRotina, {"&Tracking Vendedor"		, "Processa({|| U_NCGPR138(ZC5_NUMPV)})"	,0	,8})

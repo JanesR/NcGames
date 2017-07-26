@@ -2914,3 +2914,27 @@ User Function TestCTE01()
 	oWsdl := NIL
 	RestArea(aArea)
 Return
+
+user function notImportCli(aDados)
+
+Local aArea := GetArea()
+Local cQuery := "select a1_zcodcia from sa1010 where a1_zcodcia != 0"
+Local cAlias := GetNextAlias()
+Local aCli := {}
+
+Default aDados:={"01","03"}
+RpcSetType(3)
+RpcSetEnv(aDados[1],aDados[2])
+
+dbUseArea(.T., "TOPCONN", TCGenQry(,,cQuery), cAlias, .T., .F.)
+
+Do while !((cAlias)->(Eof()))
+
+aadd(aCli,{ iif( ValType( (cAlias)->a1_zcodcia) == "N",alltrim(str((cAlias)->a1_zcodcia)),(cAlias)->a1_zcodcia)  ,"1"})
+(cAlias)->(dbSkip())
+EndDo
+
+U_NCECOM02(aCli)
+
+RestArea(aArea)
+return

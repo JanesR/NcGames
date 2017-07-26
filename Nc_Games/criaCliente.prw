@@ -3,18 +3,6 @@
 #Include "XMLXFUN.CH"
 #INCLUDE "TBICONN.CH"
 
-/*/{Protheus.doc} CriaCli
-    (long_description)
-    @type  Function
-    @author user
-    @since date
-    @version version
-    @param param, param_type, param_descr
-    @return returno,return_type, return_description
-    @example
-    (examples)
-    @see (links_or_references)
-    /*/
 user Function CriaCli(aVetor,cPed,lJaExist)
 Local aArea := GetArea()
 Local returno := .F.
@@ -39,9 +27,6 @@ BEGIN TRANSACTION
 				ExecValid(aVetor,@_cError)
 				
                 u_ENVIAEMAIL("rciambarella@ncgames.com.br;jisidoro@ncgames.com.br", "", "", "Erro no Cadastro do Cliente - Pv CiaShop:"+cPed, _cError,{})
-				//U_NCECOM09(0,"CLIENT","IMPORTA_CLIENTE","Erro de Gravacao: "+_cError,cPed,.T.,,"Cliente","")
-				//NCECOM09(nPediSite, cPedido,cAcao,cObservacao,cStatus,lErro,cCodCiaShop,cCadastro,cPVVtex,cPlataf)
-				//U_COM09CAD(cPed,"CLIENTE","IMPORTA_CLIENTE","Erro ao "+Iif(lJaExist,"Alterar o cliente codigo Protheus:"+SA1->A1_COD,"Incluir")+" Cliente.",Iif(Empty(_cError),"error",_cError),SA1->A1_NOME)
                 U_NCECOM09(val(cPed), ,"IMPORTA_CLIENTE","Erro ao "+Iif(lJaExist,"Alterar o cliente codigo Protheus:"+SA1->A1_COD,"Incluir")+" Cliente."," ",.T.," "," ","","01")
 				
 				GravaZA1(cPed,_cError,aVetor,{})
@@ -50,8 +35,6 @@ BEGIN TRANSACTION
 			Else
 				returno := .T.
 				ConfirmSX8()
-
-				//U_COM09CAD(cPed,"CLIENTE","IMPORTA_CLIENTE","Erro ao "+Iif(lJaExist,"Cliente alterado código Protheus:"+SA1->A1_COD,"Incluido")+" Cliente.",Iif(Empty(_cError),"error",_cError),SA1->A1_NOME)
 				U_NCECOM09(val(cPed), ,"IMPORTA_CLIENTE",Iif(lJaExist,"Cliente alterado código Protheus:"+SA1->A1_COD,"Incluido")+" Cliente."," ",.F.," "," ","","01")
 			Endif
 			

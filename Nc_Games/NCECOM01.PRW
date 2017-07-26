@@ -126,7 +126,7 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 	For i:=nContar to 1 Step -1
 		
 		If lSimular .And. !AllTrim(cCodId)==AllTrim(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
-		//If !AllTrim(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)=="8526"
+		
 			Loop
 		EndIf
 		
@@ -364,7 +364,7 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 		If lSimular
 			Simular(aVetor)
 			Exit
-		Else
+		ElseIf EMPTY(ALLTRIM(cErroAdiconal))
 			
 			BEGIN TRANSACTION
 			                            
@@ -398,9 +398,10 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 			Endif
 			
 			END TRANSACTION
-			
+		Else
+			U_COM09CAD(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT,"CLIENTE","IMPORTA_CLIENTE","Cliente código Protheus:"+SA1->A1_COD+Iif(lJaExiste," alterarado"," incluido")+" com Sucesso.",cErroAdiconal,_cNome,{SA1->A1_CGC,SA1->A1_COD})
 		EndIf
-		//Aadd(_aStatus,{oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT,"1"})
+		Aadd(_aStatus,{oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT,"1"})
 		
 	Next i
 	

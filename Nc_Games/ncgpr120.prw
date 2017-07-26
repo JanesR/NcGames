@@ -668,16 +668,12 @@ While !((cAliasFIL)->(EOF()))
 				lOferta := .T.
 			Else
 				If !Empty(ZC4->ZC4_DTFIMO)
-					If !(StoD(ZC4->ZC4_DTFIMO) - MsDate() > 0)
+					If !((ZC4->ZC4_DTFIMO) - MsDate() > 0)
 						ZC4->ZC4_PRCCIA	:=	nVlrNew
-						ZC4->ZC4_DTINIO	:= ""
-						ZC4->ZC4_DTFIMO 	:= ""
 						ZC4->ZC4_CIAOFE 	:= 0
 					Else
 						If nVlrOfe <	nNewTole
 							ZC4->ZC4_PRCCIA	:=	nVlrNew
-							ZC4->ZC4_DTINIO	:= ""
-							ZC4->ZC4_DTFIMO 	:= ""
 							ZC4->ZC4_CIAOFE 	:= 0
 						Else
 							ZC4->ZC4_PRCCIA	:=	nVlrNew
@@ -691,18 +687,14 @@ While !((cAliasFIL)->(EOF()))
 			If lOferta
 				If 	nVlrAnt ==	nVlrNew
 					ZC4->ZC4_PRCCIA	:=	nVlrNew
-					ZC4->ZC4_DTINIO	:= ""
-					ZC4->ZC4_DTFIMO 	:= ""
 					ZC4->ZC4_CIAOFE 	:= 0
 				ElseIf nVlrAnt < nNewTole
 					ZC4->ZC4_PRCCIA	:=	nVlrNew
-					ZC4->ZC4_DTINIO	:= ""
-					ZC4->ZC4_DTFIMO 	:= ""
 					ZC4->ZC4_CIAOFE 	:= 0
 				Else
 					ZC4->ZC4_PRCCIA	:=	nVlrNew
-					ZC4->ZC4_DTINIO	:= DtoS(MsDate())
-					ZC4->ZC4_DTFIMO 	:= DtoS(MsDate() + nDiasVenc)
+					ZC4->ZC4_DTINIO	:= MsDate()
+					ZC4->ZC4_DTFIMO 	:= MsDate() + nDiasVenc
 					ZC4->ZC4_CIAOFE 	:= nVlrAnt
 				EndIf
 			EndIf
