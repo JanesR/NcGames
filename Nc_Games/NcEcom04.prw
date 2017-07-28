@@ -59,6 +59,7 @@ User Function NcEcom04()
 	Local _nCont		:= 0
 	Local cWSUser		:= Alltrim(U_MyNewSX6("EC_NCG0010","wsncgames","C","Usuário com acesso a Integração(WS)","","",.F. )   )
 	Local cWSPass		:= Alltrim(U_MyNewSX6("EC_NCG0011","apeei.1453","C","Senha do Usuário com acesso a Integração(WS)","","",.F. )   )
+	Local cTabNotEnv	:= Alltrim(U_MyNewSX6("NC_TABNENV","028;","C","Tabelas de Preço que não serão enviadas","","",.F. )   )
 	Local nVlrOfer
 	Local dDtIOfer	:= "2012-01-01"
 	Local dDtFOfer	:= "2012-02-01"
@@ -78,14 +79,15 @@ User Function NcEcom04()
 	EndIf
 
 
-	_cQuery:=" SELECT ZC4_CODTAB, ZC4_CODPRO, ZC4_PRCCIA, ZC4.* "
-	_cQuery+=" FROM "+RetSqlName("ZC4")+" ZC4"
-	_cQuery+=" WHERE ZC4_FILIAL='"+xFilial("ZC4")+"'"
-	_cQuery+=" And D_E_L_E_T_= ' ' "
-	_cQuery+=" AND ZC4_FLAG='2' "
+	_cQuery:=" SELECT ZC4_CODTAB, ZC4_CODPRO, ZC4_PRCCIA, ZC4.* "+ CRLF
+	_cQuery+=" FROM "+RetSqlName("ZC4")+" ZC4"+ CRLF
+	_cQuery+=" WHERE ZC4_FILIAL='"+xFilial("ZC4")+"'"+ CRLF
+	_cQuery+=" And D_E_L_E_T_= ' ' "+ CRLF
+	_cQuery+=" AND ZC4_FLAG='2' "+ CRLF
 	
 	//criar parametro para as tabelas que não serão enviados ao ciashop
-	_cQuery+=" AND ZC4_CODTAB != '028' "
+	//_cQuery+=" AND ZC4_CODTAB != '028' "
+	_cQuery+=" AND ZC4_CODTAB not in "+ FormatIn(cTabNotEnv,";") + CRLF
 
 	_cQuery := ChangeQuery(_cQuery)
 
