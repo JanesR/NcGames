@@ -744,7 +744,7 @@ If At(cProduto,oApiSite:cResponse)==0
 	
 	cBody+='{
 	cBody+='  "name": "'+AllTrim(SB1->B1_XDESC)+' ",
-	cBody+='  "shortDescription": "'+StrTran(Left(AllTrim(SB5->B5_VSINTIT),255),'"','')+'",
+	cBody+='  "shortDescription": "'+StrTran(Left(AllTrim(SB5->B5_VSINTIT),255),'"','')+'", 
 	cBody+='  "blocked": true,
 	cBody+='  "sortOrder": 888888,
 	cBody+='  "erpId": "'+cProduto+'",
@@ -770,7 +770,10 @@ If At(cProduto,oApiSite:cResponse)==0
 	oApiSite:cBody:=EnCodeUtf8(cBody)
 	oApiSite:cUrl:='products'
 	oApiSite:HttpPost()
-	If At("errors",oApiSite:cResponse)>0
+	
+	If valtype(oApiSite:cResponse)=="U" //At("errors",oApiSite:cResponse)>0
+		cMensagem:="Erro na gravaçao do Produto."
+	elseif At("errors",oApiSite:cResponse)>0
 		cMensagem:="Erro na gravaçao do Produto."
 	Else
 		cMensagem:="Produto gravado com sucesso."
@@ -781,6 +784,9 @@ Else
 EndIf
 
 RestArea(aAreaAtu)
+
+
+
 Return
 
 

@@ -115,6 +115,8 @@ If clFil $ FormatIN(cFiliais,"|")
 		EndIf
 		
 		U_NCVTEX03(aCols[nI,GDFieldPos("D1_COD")])
+		//JR
+		u_sndPrdUnic(aCols[nI,GDFieldPos("D1_COD")],aCols[nI,GDFieldPos("D1_LOCAL")])
 		
 	Next nI
 	

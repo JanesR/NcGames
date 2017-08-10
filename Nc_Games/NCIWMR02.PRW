@@ -358,6 +358,7 @@ EndIf
 
 oConectDB:= U_DBWebManager() //Funcao encontrada no NCIWMF02
 If oConectDB:OpenConnection()	
+	
 	cQuery:=" SELECT COD_LOJA,DATA_CADASTROU,NUMERO_ECF,SUM(VALOR_OPERACAO) AS VALOR_TOTAL,Count(1) Cupom"
 	cQuery+=" FROM INTEGRACAO_MOVIMENTO_FINANCEIRO "
 	cQuery+=" WHERE DATA_MOVIMENTO Between '"+cDataIni+"' And '"+cDataFim+"'"
@@ -365,12 +366,23 @@ If oConectDB:OpenConnection()
 	cQuery+=" AND TIPO_OPERACAO in('VE','TRV')"
 	cQuery+=" 	GROUP BY COD_LOJA,DATA_CADASTROU,NUMERO_ECF "
 	cQuery+=" ORDER BY COD_LOJA, NUMERO_ECF,DATA_CADASTROU "
+
+
+/*	cQuery:=" 	select COD_LOJA,DATA_CADASTROU, replicate('0', 3-len(numero_ecf))+convert(varchar,NUMERO_ECF) as NUMERO_ECF, SUM(VALOR_TOTAL) as VALOR_TOTAL, sum(cupom) as cupom FROM "
+	cQuery+=" 	( "
+	cQuery+="select COD_LOJA,CONVERT(VARCHAR(10), DATA_EMISSAO, 103) AS DATA_CADASTROU, NUMERO_ECF ,SUM(TOTAL)/count(COD_MOVIMENTO) AS VALOR_TOTAL,Count(1) Cupom  "
+	cQuery+="from integracao_movimento_fiscal  "
+	cQuery+=" WHERE DATA_EMISSAO Between '"+cDataIni+"' And '"+cDataFim+"'" 
+	cQuery+=" AND COD_LOJA IN "+FormatIn(cCodWM,"/")
+	cQuery+="group by COD_LOJA,COD_MOVIMENTO,CONVERT(VARCHAR(10), DATA_EMISSAO, 103), NUMERO_ECF   "
+	cQuery+=")CONSULTA GROUP BY COD_LOJA,DATA_CADASTROU, replicate('0', 3-len(numero_ecf))+convert(varchar,NUMERO_ECF) "
+*/
 	oConectDB:NewAlias( cQuery, cQryAlias )
 	Do While (cQryAlias)->(!Eof())
 		nAscan:=Ascan(aCodLojas,{|a|a[2]==AllTrim(Str((cQryAlias)->COD_LOJA))} )
 		If nAscan>0
 			(cQryAlias)->(AADD(aDadosWM,{aCodLojas[nAscan,1],CTOD(DATA_CADASTROU),NUMERO_ECF,VALOR_TOTAL,aCodLojas[nAscan,2],CUPOM}))
-		EndIf	
+		EndIf		
 		(cQryAlias)->(DbSkip())
 	EndDo
 	oConectDB:CloseConnection() //Fecha Conexao e o cQryAlias

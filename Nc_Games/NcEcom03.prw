@@ -251,36 +251,33 @@ Return
 User Function sndPrdUnic(cCodProd, cLocal)
 
 Local aArea := GetArea()
-Local cArmPad
-Local oApiSite
-Local cBody := ""
+Local _cxml := ""
+Local cArmEcom := SuperGetMv("MV_CIAESTO",,"01")
 
-If Empty(cCodProd)
-	Return
-EndIf
+If !Empty(alltrim(cCodProd)) .And. !Empty( alltrim(cLocal) ) .And. cLocal$cArmEcom
 
-If !Empty(alltrim(cCodProd)) .And. !Empty( alltrim(cLocal) )
-	
 	DbSelectArea("SB2")
 	DbSetOrder(1)
 	If MsSeek( xFilial("SB2") + Padr(cCodProd, AvSx3("B2_COD",3) ) + cLocal)
-		
-		cArmPad := cEmpAnt + xFilial("SB2") + cLocal
-		oApiSite := ApiCiaShop():New()
-		cBody := '{ "quantity": '+ alltrim(Str(SB2->B2_QATU - SB2->B2_RESERVA))  +' }'	
-		oApiSite:cUrl := "variants/"+ cCodProd +"/warehouses/"+ cArmPad +"/inventory"
-		oApiSite:cBody := EnCodeUtf8(cBody)
-		oApiSite:HttpPost()
 
-		If At("errors",oApiSite:cResponse)>0
-			cMensagem:="Erro no envio do estoque!"
-			MsgInfo(cMensagem)
+		_cxml:='<?xml version="1.0" encoding="utf-8" standalone="no" ?><update_stockList xmlns="dsReceipt.xsd">'
+		_cxml+='<update_stock xmlns="" sku="'+ALLTRIM(SB2->B2_COD)+'" estoque="'+ alltrim(Str(SB2->B2_QATU - SB2->B2_RESERVA)) +'" armazem = "'+ALLTRIM(cEmpAnt + cFilAnt +  cLocal) +'" sale_start="2012-01-01" sale_end="2012-02-01" />'
+		_cxml+='</update_stockList >'
+			
+		oobj:=NC_WSWSIntegracao():new()
+			
+		oobj:AtualizaEstoque(SuperGetMV("EC_NCG0010",,"wsncgames"),SuperGetMV("EC_NCG0011",,"apeei.1453"),_cxml)
+			
+		//chama o metodo do portal
+		If oobj:lAtualizaEstoqueResult
+			U_COM09CAD("ESTOQUE","ESTOQUE","UPDATE","Atualização do Estoque realizada com sucesso.","","")
 		Else
-			cMensagem := "Envio de estoque finalizado!"
-			MsgInfo(cMensagem)
-		EndIf
+			U_COM09CAD("ESTOQUE","ESTOQUE","UPDATE","",GetWSCError(),"")
+		Endif
+
 	EndIf
 	DbCloseArea("SB2")
 EndIf
+
 RestArea(aArea)
 Return

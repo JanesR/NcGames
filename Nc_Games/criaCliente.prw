@@ -26,7 +26,7 @@ BEGIN TRANSACTION
 				
 				ExecValid(aVetor,@_cError)
 				
-                u_ENVIAEMAIL("rciambarella@ncgames.com.br;jisidoro@ncgames.com.br", "", "", "Erro no Cadastro do Cliente - Pv CiaShop:"+cPed, _cError,{})
+                u_ENVIAEMAIL("rciambarella@ncgames.com.br;jisidoro@ncgames.com.br", "", "", "Erro no Cadastro do Cliente - Pv CiaShop:"+cPed, "Verifique o cliente do pedido:"+cPed,{})
                 U_NCECOM09(val(cPed), ,"IMPORTA_CLIENTE","Erro ao "+Iif(lJaExist,"Alterar o cliente codigo Protheus:"+SA1->A1_COD,"Incluir")+" Cliente."," ",.T.," "," ","","01")
 				
 				GravaZA1(cPed,_cError,aVetor,{})

@@ -601,7 +601,7 @@ If cAcao=="GRAVA_PEDIDO"
 			cQuery+="  And ZC5.ZC5_NUM='"+cNumCia+"'"+CRLF
 			cQuery+=" And ZC5.ZC5_FLAG IN (' ','2','6','7') "+CRLF
 		Else
-			cQuery+=" And ZC5.ZC5_FLAG = ' ' "+CRLF
+			cQuery+=" And ZC5.ZC5_FLAG in(' ','2') "+CRLF
 		EndIf
 		
 		If cBloqLib=="S" .Or. cBloqEcom=="S"
@@ -672,7 +672,16 @@ If cAcao=="GRAVA_PEDIDO"
 			SA1->(MsSeek(xFilial("SA1")+cCliEcom+ZC5->ZC5_PLATAF+Trim(ZC5->ZC5_SALES)))
 			
 			cVendedor	:= SA1->A1_VEND
+			
+			//JR
 			cCanal		:= "990001"
+			if ZC5->ZC5_TPECOM := "B2B"
+				cCanal		:= "990000"
+			Elseif ZC5->ZC5_TPECOM := "B2C"
+				cCanal		:= "990001"
+			ELSE
+				cCanal		:= "990001"
+			Endif
 			cTransp	:= "000002"
 			
 		ElseIf lWMPedido
@@ -697,7 +706,15 @@ If cAcao=="GRAVA_PEDIDO"
 			SA1->(DbSeek(xFilial("SA1")+ZC5->ZC5_CLIENT+ZC5->ZC5_LOJA))
 			
 			cVendedor	:= SA1->A1_VEND
-			cCanal		:= "990000"
+			
+			if ZC5->ZC5_TPECOM == "B2B"
+				cCanal		:= "990000"
+			Elseif ZC5->ZC5_TPECOM == "B2C"
+				cCanal		:= "990001"
+			ELSE
+				cCanal		:= "990001"
+			Endif
+			
 			cTransp	:= "000002"
 			
 		EndIf
@@ -885,6 +902,10 @@ If cAcao=="GRAVA_PEDIDO"
 				If SC6->( DbSeek(xFilial("SC6")+SC5->C5_NUM+ZC6->(ZC6_ITEM+ZC6_PRODUTO)   ) ) .And.   SC0->( DbSeek( xFilial("SC0") +SC6->(C6_RESERVA+C6_PRODUTO+C6_LOCAL)   )   )
 					If lPvVtex
 						U_NCVTEX03(SC6->C6_PRODUTO)
+					
+					//JR\\
+					ElseIf !lWMPedido
+						u_sndPrdUnic(SC6->C6_PRODUTO, SC6->C6_LOCAL)
 					EndIf
 					
 					ZC6->ZC6_QTDRES := SC0->C0_QTDPED
@@ -1104,6 +1125,8 @@ ElseIf  cAcao=="VERIFICA_CANCELAMENTO"
 			aRecZC6 := {}
 			Do While (clAlias)->(!Eof() ) .And. ZC6->ZC6_NUM == ZC5->ZC5_NUM
 				U_NCVTEX03(ZC6->ZC6_PRODUT)
+				//JR
+				u_sndPrdUnic(ZC6->ZC6_PRODUT, ZC6->ZC6_LOCAL)
 				aadd(aRecZC6, ZC6->(Recno()) )
 				
 				ZC6->(DbSkip())

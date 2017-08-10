@@ -13,6 +13,11 @@ Return
 
 
 User Function ECOM11B2C()
+U_NCECOM11(.T.)
+Return
+
+
+User Function ECOM11VTEX()
 U_NCECOM11(.F.)
 Return
 
@@ -68,6 +73,7 @@ AADD(aCpoZC5,"ZC5_CLIENT")
 AADD(aCpoZC5,"ZC5_LOJA")
 AADD(aCpoZC5,"ZC5_NOME")
 AADD(aCpoZC5,"ZC5_TPECOM")
+AADD(aCpoZC5,"ZC5_KIT")
 
 If !lB2B
 	AADD(aCpoZC5,"ZC5_TPPGTO")
@@ -700,6 +706,10 @@ If !Empty(ZC5->ZC5_PVVTEX)
 	cArmPad		:= Alltrim(U_MyNewSX6("VT_000005","51" ,"C","Armazem de Venda Protheus","","",.F. ))
 	aCpoItPV   	:= {"ZC5_PVVTEX", "ZC5_NUMPV", "C6_PRODUTO", "C6_DESCRI", "C6_QTDVEN", "C0_QTDPED", "C0_QTDPED","C6_PRCVEN", "C6_VALOR", "C6_PRCTAB", "C6_TES", "ZC5_VDESCO", "ZC5_PDESCO"}
 	aCpoItPVSt	:= {"ZC6_NUM", "ZC6_ITEM", "ZC6_PRODUT", "B1_XDESC","ZC6_IDPROD","ZC6_DESCRI","ZC6_QTDVEN", "B2_QATU", "ZC6_VLRUNI", "ZC6_VLRTOT", "B1_MSBLQL", "B1_BLQVEND" }
+Else
+	cArmPad		:= Alltrim(U_MyNewSX6("VT_000005","51" ,"C","Armazem de Venda Protheus","","",.F. ))
+	aCpoItPV   	:= {"ZC5_NUM", "ZC5_NUMPV","ZC6_KIT", "C6_PRODUTO", "C6_DESCRI", "C6_QTDVEN", "C0_QTDPED", "C0_QTDPED","C6_PRCVEN", "C6_VALOR", "C6_PRCTAB", "C6_TES", "ZC5_VDESCO", "ZC5_PDESCO"}
+	aCpoItPVSt	:= {"ZC6_NUM", "ZC6_ITEM","ZC6_KIT", "ZC6_PRODUT", "B1_XDESC","ZC6_IDPROD","ZC6_DESCRI","ZC6_QTDVEN", "B2_QATU", "ZC6_VLRUNI", "ZC6_VLRTOT", "B1_MSBLQL", "B1_BLQVEND" }
 EndIf
 
 aHeadCbPV	 	:= CriaHeader(aCpoCabPV)
@@ -1375,12 +1385,18 @@ Local aAcolsRt 	:= {}
 
 Default cNumPedProt := ""
 
-cQuery   := " SELECT ZC5_NUM, ZC5_NUMPV, C6_PRODUTO, C6_DESCRI, C6_QTDVEN, C6_PRCVEN,C6_ITEM,C6_VALOR, C6_PRCTAB, C6_TES, C0_QTDPED, ZC5_VDESCO, ZC5_PDESCO,C6_QTDRESE,ZC5_PVVTEX,ZC5_SEQUEN  "
+cQuery   := " SELECT ZC5_NUM, ZC5_NUMPV,zc6_kit, C6_PRODUTO, C6_DESCRI, C6_QTDVEN, C6_PRCVEN,C6_ITEM,C6_VALOR, C6_PRCTAB, C6_TES, C0_QTDPED, ZC5_VDESCO, ZC5_PDESCO,C6_QTDRESE,ZC5_PVVTEX,ZC5_SEQUEN  "
 cQuery   += "  FROM "+RetSqlName("ZC5")+" ZC5 "+CRLF
 cQuery   += "  INNER JOIN "+RetSqlName("SC6")+" SC6 "+CRLF
 cQuery   += "  ON SC6.D_E_L_E_T_ = ' ' "+CRLF
 cQuery   += "  AND SC6.C6_FILIAL = ZC5.ZC5_FILIAL "+CRLF
 cQuery   += "  AND SC6.C6_NUM = ZC5.ZC5_NUMPV "+CRLF
+
+cQuery   += "  left join "+RetSqlName("ZC6")+" zc6 "+CRLF
+cQuery   += "    on zc5.zc5_filial = zc6.ZC6_FILIAL "+CRLF
+cQuery   += "    and ZC5.ZC5_NUM = zc6.ZC6_NUM "+CRLF
+cQuery   += "    and ZC5.ZC5_PVVTEX = zc6.ZC6_PVVTEX "+CRLF
+cQuery   += "  and sc6.c6_produto = zc6.ZC6_PRODUT "+CRLF
 
 cQuery   += "  LEFT JOIN "+RetSqlName("SC0")+" SC0 "+CRLF
 cQuery   += "  ON SC0.D_E_L_E_T_ = ' ' "+CRLF
@@ -1412,6 +1428,7 @@ While (cArqTmp)->(!Eof())
 	aAdd(aAcolsRt,;
 	{Iif(!Empty((cArqTmp)->ZC5_PVVTEX),AllTrim((cArqTmp)->ZC5_PVVTEX)+"("+AllTrim((cArqTmp)->ZC5_SEQUEN)+")",(cArqTmp)->ZC5_NUM) ,;
 	(cArqTmp)->ZC5_NUMPV,;
+	(cArqTmp)->ZC6_KIT,;
 	(cArqTmp)->C6_PRODUTO,;
 	(cArqTmp)->C6_DESCRI,;
 	(cArqTmp)->C6_QTDVEN,;
@@ -1485,7 +1502,7 @@ Else
 	cQuery   += " INNER JOIN "+RetSqlName("SB2")+" SB2 "
 	cQuery   += " ON SB2.B2_FILIAL = '"+xFilial("SB2")+"' "
 	cQuery   += " AND SB2.B2_COD =  ZC6.ZC6_PRODUT "
-	cQuery   += " AND SB2.B2_LOCAL = '"+cArmPad+"' "
+	cQuery   += " AND SB2.B2_LOCAL in "+ FormatIn(cArmPad,';')
 	cQuery   += " AND SB2.D_E_L_E_T_ = ' ' "
 	
 	cQuery   += " WHERE ZC6.ZC6_FILIAL = '"+xFilial("ZC6")+"' "
@@ -2919,11 +2936,13 @@ Else
 Endif
 
 END TRANSACTION
-
+/*
 If !lMsErroAuto
-	StartJob( "U_VTEX05Job", GetEnvServer(), .F.)
-EndIf
 
+	 StartJob( "U_VTEX05Job", GetEnvServer(), .F.)
+
+EndIf
+*/
 RestArea(aAreaZC5)
 RestArea(aAreaAtu)
 

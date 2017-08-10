@@ -91,6 +91,7 @@ Local cArmPed  	:=""
 Local IntB2C	:=.F.
 Local aKit		:={}
 Local nItem		:= 1
+Local lPossuiKit:= .F.
 Local cEmailTo := U_MyNewSX6("NC_ECOM05E",;
 "rciambarella@ncgames.com.br",;
 "C",;
@@ -174,7 +175,8 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 					XmlNode2Arr(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM,"_RECEIPT_ITEM")
 				Endif
 				
-				
+				lPossuiKit := .F.
+
 				For nX := 1 To LEN(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM)
 					
 					
@@ -195,15 +197,25 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 						//O armazem é equivaliente ao cadastrado jo Protheus.
 						//ZC6->ZC6_LOCAL	:= SuperGetMV("MV_CIAESTO",,"01")
 						
-						if !empty(alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text))
+						if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES,"_WAREHOUSE_ITEM:_ERP_ID"))
 							cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text) , 5, 2)
+							ZC6->ZC6_LOCAL := cArmPed
+						elseif cTemplate $ cTempleB2B
+							cArmPed:= "01"
+							ZC6->ZC6_LOCAL := cArmPed
+						else
+							cArmPed:= "51"
 							ZC6->ZC6_LOCAL := cArmPed
 						EndIf
 						
+						ZC6->ZC6_TPPROD := "N"
 						ZC6->(MsUnlock())
 						nItem += 1
 					Else
 						//JR
+
+						lPossuiKit := .T.
+
 						For nXkit:= 1 to Len(OXML:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM)
 							
 							ZC6->(RecLock("ZC6",.T.))
@@ -215,15 +227,28 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 							ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PRORATED_PRICE:TEXT)
 							ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PRORATED_PRICE:TEXT)*val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_QUANTITY:TEXT)
 													
-							if !empty(alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text))
+							if XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES,"_WAREHOUSE_ITEM:_ERP_ID")
 								cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text) , 5, 2)
+								ZC6->ZC6_LOCAL := cArmPed
+							elseif cTemplate $ cTempleB2B
+								cArmPed:= "01"
+								ZC6->ZC6_LOCAL := cArmPed
+							else
+								cArmPed:= "51"
 								ZC6->ZC6_LOCAL := cArmPed
 							EndIf
 							
+							if XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit],UPPER("_receipt_item_id"))
+								ZC6->ZC6_TPPROD := "K"
+								ZC6->ZC6_KIT := oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_receipt_item_id:TEXT
+							else
+								ZC6->ZC6_TPPROD := "N"
+								ZC6->ZC6_KIT := " "
+							endif
+
 							ZC6->(MsUnlock())
 							nItem += 1
 						Next nXkit
-
 
 					EndIf
 
@@ -266,6 +291,11 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 					ZC5->ZC5_TPECOM := "B2C"
 				EndIf
 				
+				if lPossuiKit
+					ZC5->ZC5_KIT := "SIM"
+				else
+					ZC5->ZC5_KIT := "NÃO"
+				endif
 
 				//Prj GET
 				ZC5->ZC5_CODENT	:= U_V05CodEnt(ZC5->(Recno()),oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_METHOD:TEXT,Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT))
