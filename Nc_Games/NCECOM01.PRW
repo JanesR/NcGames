@@ -135,7 +135,7 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 			if valtype( xmlChildEx(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS,"_CAMPO_EXTRA"))=="O"
 				If val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_ENTIDADE_ID:TEXT) == val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
 					//Nome do campo extra que dirá a que site o cliente pertence.
-					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "UZGAMES" .And. AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT) == "S"
+					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "LOJAS" .And. UPPER(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT)) == "CLIENTEUZGAMES"
 						Loop
 					EndIf
 				EndIf
@@ -340,25 +340,6 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 		AADD(aVetor,{"A1_REGIAO" 	,u_AchaReg(oXml:_SHOPPERLIST:_SHOPPER[i]:_ESTADO:TEXT) ,Nil})
 		AADD(aVetor,{"A1_ZCODTAB" 	,_cTab ,Nil})
 		AADD(aVetor,{"A1_ZCODCIA"	,val(oXml:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT),Nil})
-		
-		//JR
-			//Adicionado em 26/06/2017 - para controle de quando o cliente
-			//cadastrado no site uz games e no site nc games
-			//buscando dos campos extras cadastrados no cliente do ambiente ciashop
-		/*if XmlNodeExist(oXml:_SHOPPERLIST:_SHOPPER[i],"_CAMPOS_EXTRAS") 
-			
-			
-			if valtype( xmlChildEx(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS,"_CAMPO_EXTRA"))=="O"
-				If val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_ENTIDADE_ID:TEXT) == val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
-					//Nome do campo extra que dirá a que site o cliente pertence.
-					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "UZGAMES" .And. AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT) == "S"
-						_cBloqueado := "2"
-					Else
-						_cBloqueado := "1"
-					EndIf
-				EndIf
-			EndIf
-		EndIf*/
 		AADD(aVetor,{"A1_MSBLQL" 	,_cBloqueado ,Nil})
 
 		If lSimular

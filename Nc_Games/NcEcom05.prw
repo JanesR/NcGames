@@ -287,6 +287,8 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				//Utilizar "C" para B2C e "B" para B2B, basendo-se no template utilizado.
 				IF cTemplate $ cTempleB2B  // ccriar um parametro para o template
 					ZC5->ZC5_TPECOM := "B2B"
+				ElseIf UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) != "CPF"
+					ZC5->ZC5_TPECOM := "B2B"
 				Else
 					ZC5->ZC5_TPECOM := "B2C"
 				EndIf
@@ -495,12 +497,12 @@ endif
 		DbCloseArea("SA1")
 	endif
 
-	docCli 	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT
-	docType :=  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_type:TEXT
-	docID 	:=  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_id:TEXT
+	docCli 	:= iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_document_type") , oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT, " ") 
+	docType := iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_regional_document_type"),  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_type:TEXT, " ") 
+	docID 	:= iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_regional_document_id"), oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_id:TEXT, " ") 
 	_cMun 	:= NoAcento(Padr( upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS2:TEXT), AvSx3("CC2_MUN",3) ))
-	cNPed	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT
-	cCGCCli := oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT
+	cNPed	:= iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_ORDER_ID"), oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT, " ") 
+	cCGCCli := iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_document_id"), oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT, " ") 
 	
 	DbSelectArea("CC2")
 	CC2->(DBSETORDER(2)) //CC2_FILIAL+CC2_MUN
@@ -555,7 +557,7 @@ endif
 	AADD(aVetor,{"A1_GRPTRIB", iif(upper(docCli) == "CPF","CFS",iif(upper(docType) == "RG","CFI","SOL")),Nil})
 	AADD(aVetor,{"A1_SATIV1", "000037",Nil})
 	AADD(aVetor,{"A1_GRPVEN", "990000",Nil})
-	AADD(aVetor,{"A1_CODPAIS", "01058",Nil})
+AADD(aVetor,{"A1_CODPAIS", "01058",Nil})
 	AADD(aVetor,{"A1_FRETE", "1",Nil})
 	AADD(aVetor,{"A1_TEMODAL", "2",Nil})
 	AADD(aVetor,{"A1_YCANAL", iif(cTemplate=="2","990000","990001") ,Nil})
@@ -576,7 +578,18 @@ endif
 	AADD(aVetor,{"A1_ZSEXO", iif( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_gender:TEXT == "Male","M","F"),Nil})
 	AADD(aVetor,{"A1_ZESTCIV", " ",Nil})
 	AADD(aVetor,{"A1_EMAIL", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_email:Text,Nil})
-	AADD(aVetor,{"A1_MSBLQL", IIF(cTemplate$cTempleB2B,"1","2"),Nil})
+
+	if cTemplate$cTempleB2B .And. lJaExist
+		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
+	elseif cTemplate$cTempleB2B .And. !lJaExist
+		AADD(aVetor,{"A1_MSBLQL", "1",Nil})
+	elseif UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) == "CPF"
+		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
+	else
+		AADD(aVetor,{"A1_MSBLQL", "1",Nil})
+	endif
+
+	
 	AADD(aVetor,{"A1_ZCODCIA", val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHOPPER_ID:TEXT),Nil})
 	AADD(aVetor,{"A1_REGIAO", U_AchaReg(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
 		

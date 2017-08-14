@@ -675,9 +675,9 @@ If cAcao=="GRAVA_PEDIDO"
 			
 			//JR
 			cCanal		:= "990001"
-			if ZC5->ZC5_TPECOM := "B2B"
+			if ZC5->ZC5_TPECOM == "B2B"
 				cCanal		:= "990000"
-			Elseif ZC5->ZC5_TPECOM := "B2C"
+			Elseif ZC5->ZC5_TPECOM == "B2C"
 				cCanal		:= "990001"
 			ELSE
 				cCanal		:= "990001"

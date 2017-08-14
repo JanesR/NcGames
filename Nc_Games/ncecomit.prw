@@ -848,8 +848,7 @@ AAdd(aHeadStr ,'Authorization: Bearer '+cToken)
 AAdd(aHeadStr ,'Content-Type: application/json; charset=utf-8')
 
 Self:cResponse:=HTTPQuote( cUrl, "POST", cParms, cBody, nTimeOut, aHeadStr, @cHeaderRet )
-//Self:cResponse:=HttpPost( cUrl, "POST", cParms, cBody, nTimeOut, aHeadStr, @ )
-//Self:cResponse:=HttpCPost( cUrl , cBody , nTimeOut , aHeadStr , @cHeaderRet )
+
 If Self:lUpperCase
 	Self:cResponse:=Upper(Self:cResponse)
 EndIf	
