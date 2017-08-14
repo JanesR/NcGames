@@ -150,7 +150,7 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 			_cTipo		:="F"
 			_GrpCli		:="CFIE"
 			_cContrib	:="2"
-			_cBloqueado	:="1"
+			_cBloqueado	:="2"
 			
 			_cTab		:=AchaTab(oXml:_SHOPPERLIST:_SHOPPER[i]:_ESTADO:TEXT,"F")
 			_cEstCiv	:=" "
