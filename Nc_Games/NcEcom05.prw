@@ -197,10 +197,10 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 						//O armazem é equivaliente ao cadastrado jo Protheus.
 						//ZC6->ZC6_LOCAL	:= SuperGetMV("MV_CIAESTO",,"01")
 						
-						if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES,"_WAREHOUSE_ITEM:_ERP_ID"))
-							cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text) , 5, 2)
+						if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSEINTEG,"_ERP_ID"))
+							cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSEINTEG:_ERP_ID:Text) , 5, 2)
 							ZC6->ZC6_LOCAL := cArmPed
-						elseif cTemplate $ cTempleB2B
+						elseif cTemplate $ cTempleB2B .Or. UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) != "CPF"
 							cArmPed:= "01"
 							ZC6->ZC6_LOCAL := cArmPed
 						else
@@ -227,10 +227,10 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 							ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PRORATED_PRICE:TEXT)
 							ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PRORATED_PRICE:TEXT)*val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_QUANTITY:TEXT)
 													
-							if XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES,"_WAREHOUSE_ITEM:_ERP_ID")
-								cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text) , 5, 2)
+							if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSEINTEG,"_ERP_ID"))
+								cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSEINTEG:_ERP_ID:Text) , 5, 2)
 								ZC6->ZC6_LOCAL := cArmPed
-							elseif cTemplate $ cTempleB2B
+							elseif cTemplate $ cTempleB2B .Or. UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) != "CPF" 
 								cArmPed:= "01"
 								ZC6->ZC6_LOCAL := cArmPed
 							else

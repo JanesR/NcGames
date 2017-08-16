@@ -137,6 +137,14 @@ For i:=1 to Len(_aStatus)
 		_cxml+=' sendMail="1"
 		_cxml+=' shipping_method="" />'
 		Aadd(_aConfi,{_aStatus[i][1],"1"})
+	ElseIf _aStatus[i][2]=="16"
+		
+		_cxml+=' status_shopper="Enviado para a Expedição Pedido Venda ERP:'+ZC5->ZC5_NUMPV+'| Nota Fiscal '+ZC5->ZC5_NOTA+'/'+ZC5->ZC5_SERIE+'"'
+		_cxml+=' status_adm="Enviado para a Expedição"
+		_cxml+=' rastreamento=""
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
 	//JR
 	ElseIf _aStatus[i][2]=="30"
 		_cxml+=' status_shopper="Enviado para o Cliente"'
