@@ -2533,6 +2533,18 @@ Default lB2B		:=!Empty(ZC5->ZC5_LJECOME)
 
 If lB2B
 	cFiltro	:= "@ZC5_FLAG In (' ','2','4','6','7') And ZC5_PLATAF IN ('  ','01')"
+
+	Do Case 
+		Case aParametros[2] == "01"
+			cFiltro	+= " and ZC5_TPECOM ='B2B' "
+		Case aParametros[2] == "02"
+			cFiltro	+= " and ZC5_TPECOM ='B2C' "
+		Case aParametros[2] == "03"
+			cFiltro	+= " and ZC5_TPECOM = 'B2B' AND ZC5_COND = 'FAT'"
+		OtherWise
+			cFiltro	+= " and ZC5_TPECOM in('B2B','B2C') "
+	endCase
+
 Else
 	If !lPgtoBol
 		cFiltro	:="@ZC5_FLAG Not In ('2','3')
@@ -2626,6 +2638,7 @@ Local llRet			:= .T.
 Local aParamBox	:= {}
 Local aFilt			:= {}
 Local aLojas	:= {}
+Local aCanal :={}
 
 If lPgtoBol
 	AADD(aFilt,"0=Todos")
@@ -2674,6 +2687,12 @@ If !lB2B
 	AADD(aOpcao,"03=Todos")
 	
 	aAdd(aParamBox,{2,"Origem","1", aOpcao	,120,".T."					,.F.})
+Else
+	aadd(aCanal,"01=Pedidos B2B")
+	aadd(aCanal,"02=Pedidos B2C")
+	aadd(aCanal,"03=Pedidos B2B Faturado")
+	aadd(aCanal,"04=Todos")
+	aAdd(aParamBox,{2,"Pedido","1", aCanal	,120,".T."					,.F.})
 EndIf
 
 

@@ -264,6 +264,7 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				ZC5->ZC5_CLIENT	:= iif(empty(_aCli[1])," ",_aCli[1])
 				ZC5->ZC5_LOJA	:= iif(empty(_aCli[2])," ",_aCli[2])
 				ZC5->ZC5_COND	:= AchaCond(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_COD_PG:TEXT)
+				ZC5->ZC5_CODPAG := ALLTRIM(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_COD_PG:TEXT)
 				ZC5->ZC5_PLATAF	:= '01'
 				ZC5->ZC5_STATUS	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_PASSO:TEXT
 				ZC5->ZC5_ATUALI	:= "S"
@@ -740,10 +741,12 @@ CARTÃO DE CRÉDITO-CC
 */
 If _cCond$"080/081/082/083"
 	_cRet:="DC"
-ElseIf _cCond$"084"
+ElseIf _cCond$"024/084"
 	_cRet:="BOL"
 ElseIf _cCond$"075/076/077/078/079"
 	_cRet:="CC"
+ElseIf  _cCond$"054"
+	_cRet:="FAT"
 Endif
 
 Return _cRet
