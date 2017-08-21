@@ -4,6 +4,20 @@
 #INCLUDE "RWMAKE.CH"
 #include "ap5mail.ch" 
 #Define Enter Chr(13)+Chr(10)
+
+#DEFINE FILIAL_NOTA 1
+#DEFINE NOTA 2
+#define SERIE_NF 3
+#define CLIENTE 4
+#define LOJA_CLI 5
+#define LOJA_ORI 6
+#define LOJA_DEST 7
+#define ORI 8
+#define DESTINO 9
+#define EMP_ORI 10
+#define FIL_ORI 11
+#define CODMW 12
+
 /*
 ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
 ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
@@ -194,7 +208,7 @@ static function GeraTela()
 	cQry += "  sa1.A1_YCODWM,"  +CRLF
 	cQry += "  sa1.A1_YEMPDES,"  +CRLF
 	cQry += "  sa1.A1_YFILDES,"  +CRLF
-	cQry += "  SF2.F2_DOC NOTA,"  +CRLF
+	cQry += "  SF2.F2_DOC NF,"  +CRLF
 	cQry += "  SF2.F2_SERIE SERIE,"  +CRLF
 	cQry += "  SF2.F2_EMISSAO EMISSAO,"  +CRLF
 	cQry += "  decode(f2_fimp, ' ','Gerada','S','Autorizada','T','Transmitida','D','Denegado','N','Nao autorizada') SITUACAO,"  +CRLF
@@ -273,7 +287,7 @@ static function GeraTela()
 			(cAlias01)->TB_LJDEST 	:= (cAlias02)->A1_YCODWM	//08
 			(cAlias01)->TB_EMPDEST 	:= (cAlias02)->A1_YEMPDES	//09
 			(cAlias01)->TB_FILDEST 	:= (cAlias02)->A1_YFILDES	//10
-			(cAlias01)->TB_NFISCAL	:= (cAlias02)->NOTA			//11
+			(cAlias01)->TB_NFISCAL	:= (cAlias02)->NF			//11
 			(cAlias01)->TB_SERIE 	:= (cAlias02)->SERIE		//12
 			(cAlias01)->TB_EMISS 	:= StoD((cAlias02)->EMISSAO)//13
 			(cAlias01)->TB_STATUS 	:= (cAlias02)->SITUACAO		//14
@@ -452,7 +466,7 @@ user function TRFDanfe01()
 			if LEN(infTransf) > 2
 				cClient := infTransf[1]
 				cLoja:= infTransf[2]
-				aadd(aNotasPrt,{cFilNota,cNota,cSerie,cClient,cLoja,(cAlias01)->TB_LOJAORI,(cAlias01)->TB_LJDEST,(cAlias01)->TB_ORIGEM,(cAlias01)->TB_DESTI})
+				aadd(aNotasPrt,{cFilNota,cNota,cSerie,cClient,cLoja,(cAlias01)->TB_LOJAORI,(cAlias01)->TB_LJDEST,(cAlias01)->TB_ORIGEM,(cAlias01)->TB_DESTI,(cAlias01)->TB_EMPORI,(cAlias01)->TB_FILORI,(cAlias01)->TB_DOC})
 			endif
 		elseif !(empty(alltrim((cAlias01)->TB_OK)))
 			MsgInfo("A Nota "+ alltrim((cAlias01)->TB_NFISCAL) + " não poderá ser impressa, poís não está autorizada."+CRLF+"O sistema passará para a proxima nota selecionada.","Nota não autorizada!")
@@ -484,30 +498,28 @@ user function TRFDanfe01()
 
 	for nxTCount := 1 to len(aNotasPrt)
 
-		cNome := "NF_"+aNotasPrt[nxTCount][2] + " LOJA " + aNotasPrt[nxTCount][6] + " para " + aNotasPrt[nxTCount][7]
+		cNome := "NF_"+aNotasPrt[nxTCount][NOTA] + " LOJA " + aNotasPrt[nxTCount][LOJA_ORI] + " para " + aNotasPrt[nxTCount][LOJA_DEST]
 
-		U_PrTRFDanf(aNotasPrt[nxTCount][1],aNotasPrt[nxTCount][2],aNotasPrt[nxTCount][3],aNotasPrt[nxTCount][4],aNotasPrt[nxTCount][5],cNome,aParams[1],cPrint,.F.,.T.)
+		U_PrTRFDanf(aNotasPrt[nxTCount][FILIAL_NOTA],aNotasPrt[nxTCount][NOTA],aNotasPrt[nxTCount][SERIE_NF],aNotasPrt[nxTCount][CLIENTE],aNotasPrt[nxTCount][LOJA_CLI],cNome,aParams[1],cPrint,.F.,.T.)
 		cLog += "Nota fiscal "+aNotasPrt[nxTCount][2] + " LOJA " + aNotasPrt[nxTCount][6] + " - " + aNotasPrt[nxTCount][8] + " PARA LOJA " + aNotasPrt[nxTCount][7] + " - " + aNotasPrt[nxTCount][9] +CRLF 
 
 		if aParams[2] == "1"
 
 			_MSG := "Nota fiscal de transferencia emitida."   +CRLF+CRLF
-			_MSG += "Da loja:" + aNotasPrt[nxTCount][6] + " - " + aNotasPrt[nxTCount][8] +CRLF 
-			_MSG += "Para loja:" + aNotasPrt[nxTCount][7] + " - " + aNotasPrt[nxTCount][9] +CRLF
+			_MSG += "Da loja:" + aNotasPrt[nxTCount][LOJA_ORI] + " - " + aNotasPrt[nxTCount][ORI] +CRLF 
+			_MSG += "Para loja:" + aNotasPrt[nxTCount][LOJA_DEST] + " - " + aNotasPrt[nxTCount][DESTINO] +CRLF
 
-			cAssunto:= "Transferência - Nota fiscal:"+aNotasPrt[nxTCount][2] + " enviada em " + DtoC(Date()) +" - " + time()
+			cAssunto:= "Transferência Mov Web " +aNotasPrt[nxTCount][CODMW]+ " - Nota fiscal:"+aNotasPrt[nxTCount][NOTA] + " enviada em " + DtoC(Date()) +" - " + time()
 			cArqEnv := "C:\relatorios\DANFE\"+cNome+".PDF"
 
 			if file(cArqEnv)
 				CpyT2S(cArqEnv,clDir,.T.)
 
-				dbSelectArea("SA1")
-				dbSetOrder(1)
-				if DbSeek(xFilial("SA1")+aNotasPrt[nxTCount][4]+aNotasPrt[nxTCount][5])
-					cPARA := alltrim(SA1->A1_EMAIL)
-					aadd(aFiles,{cAssunto,clDir+cNome+".PDF",cPARA}) 
-				endif
-				DbCloseArea("SA1")
+				cPARA :=Alltrim( getEmailTo(aNotasPrt[nxTCount][EMP_ORI], aNotasPrt[nxTCount][FIL_ORI]) )
+
+				if cPARA != ""
+					aadd(aFiles,{cAssunto,clDir+cNome+".PDF",cPARA,_MSG}) 
+				EndIf
 			endIF
 		endIf
 
@@ -515,8 +527,7 @@ user function TRFDanfe01()
 
 	for nxtrf:= 1 to len(aFiles)
 		if aParams[2] == "1"
-			U_ENVIAEMAIL(aFiles[nxtrf][3], "", "", aFiles[nxtrf][1], _MSG, {aFiles[nxtrf][2]})
-
+			U_ENVIAEMAIL(aFiles[nxtrf][3], "", "", aFiles[nxtrf][1],  aFiles[nxtrf][4], {aFiles[nxtrf][2]})
 		endif
 	next nxtrf
 
@@ -574,6 +585,28 @@ Static Function LogNotas(texto)
 	RestArea(aArea)
 Return
 
+
+static function getEmailTo(cEmp, cFil)
+Local aArea := GetArea()
+Local cQry := ""
+Local cAliasEnv := GetNextAlias()
+Local cRet := ""
+
+cQry := "select A1_EMAIL from "+ RetSqlName("SA1") +"  where A1_YEMPDES = '"+cEmp+"' and A1_YFILDES ='"+cFil+"'"
+
+cQry := ChangeQuery(cQry)
+
+dbUseArea(.T.,"TOPCONN",TcGenQry(,,cQry),cAliasEnv,.F.,.F.)
+
+while (cAliasEnv)->(!EOF())
+	cRet := (cAliasEnv)->A1_EMAIL
+	(cAliasEnv)->(DbSkip())
+endDo
+
+(cAliasEnv)->(dbCloseArea())
+
+RestArea(aArea)
+return cRet
 
 user function trfCLIFLG()
 
