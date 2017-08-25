@@ -2535,11 +2535,11 @@ If lB2B
 	cFiltro	:= "@ZC5_FLAG In (' ','2','4','6','7') And ZC5_PLATAF IN ('  ','01')"
 
 	Do Case 
-		Case aParametros[2] == "01"
-			cFiltro	+= " and ZC5_TPECOM ='B2B' "
 		Case aParametros[2] == "02"
-			cFiltro	+= " and ZC5_TPECOM ='B2C' "
+			cFiltro	+= " and ZC5_TPECOM ='B2B' "
 		Case aParametros[2] == "03"
+			cFiltro	+= " and ZC5_TPECOM ='B2C' "
+		Case aParametros[2] == "04"
 			cFiltro	+= " and ZC5_TPECOM = 'B2B' AND ZC5_COND = 'FAT'"
 		OtherWise
 			cFiltro	+= " and ZC5_TPECOM in('B2B','B2C') "
@@ -2688,10 +2688,16 @@ If !lB2B
 	
 	aAdd(aParamBox,{2,"Origem","1", aOpcao	,120,".T."					,.F.})
 Else
-	aadd(aCanal,"01=Pedidos B2B")
+	/*aadd(aCanal,"01=Pedidos B2B")
 	aadd(aCanal,"02=Pedidos B2C")
 	aadd(aCanal,"03=Pedidos B2B Faturado")
-	aadd(aCanal,"04=Todos")
+	aadd(aCanal,"04=Todos")*/
+	
+	aadd(aCanal,"01=Todos")
+	aadd(aCanal,"02=Pedidos B2B")
+	aadd(aCanal,"03=Pedidos B2C")
+	aadd(aCanal,"04=Pedidos B2B Faturado")
+	
 	aAdd(aParamBox,{2,"Pedido","1", aCanal	,120,".T."					,.F.})
 EndIf
 

@@ -197,17 +197,25 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 						//O armazem é equivaliente ao cadastrado jo Protheus.
 						//ZC6->ZC6_LOCAL	:= SuperGetMV("MV_CIAESTO",,"01")
 						
-						if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSEINTEG,"_ERP_ID"))
-							cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSEINTEG:_ERP_ID:Text) , 5, 2)
-							ZC6->ZC6_LOCAL := cArmPed
-						elseif cTemplate $ cTempleB2B .Or. UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) != "CPF"
-							cArmPed:= "01"
-							ZC6->ZC6_LOCAL := cArmPed
-						else
-							cArmPed:= "51"
-							ZC6->ZC6_LOCAL := cArmPed
-						EndIf
-						
+						if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX],"_RECEIPT_ITEM_WAREHOUSES"))
+							if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM,"_ERP_ID"))
+								cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text) , 5, 2)
+								ZC6->ZC6_LOCAL := cArmPed
+							elseif cTemplate $ cTempleB2B
+								cArmPed:= "01"
+								ZC6->ZC6_LOCAL := cArmPed
+							else
+								cArmPed:= "51"
+								ZC6->ZC6_LOCAL := cArmPed
+							EndIf
+						elseif cTemplate $ cTempleB2B
+								cArmPed:= "01"
+								ZC6->ZC6_LOCAL := cArmPed
+							else
+								cArmPed:= "51"
+								ZC6->ZC6_LOCAL := cArmPed
+						endif
+
 						ZC6->ZC6_TPPROD := "N"
 						ZC6->(MsUnlock())
 						nItem += 1
@@ -288,8 +296,8 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				//Utilizar "C" para B2C e "B" para B2B, basendo-se no template utilizado.
 				IF cTemplate $ cTempleB2B  // ccriar um parametro para o template
 					ZC5->ZC5_TPECOM := "B2B"
-				ElseIf UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) != "CPF"
-					ZC5->ZC5_TPECOM := "B2B"
+				//ElseIf UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) != "CPF"
+				//	ZC5->ZC5_TPECOM := "B2B"
 				Else
 					ZC5->ZC5_TPECOM := "B2C"
 				EndIf
