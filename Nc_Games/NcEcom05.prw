@@ -296,8 +296,6 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				//Utilizar "C" para B2C e "B" para B2B, basendo-se no template utilizado.
 				IF cTemplate $ cTempleB2B  // ccriar um parametro para o template
 					ZC5->ZC5_TPECOM := "B2B"
-				//ElseIf UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) != "CPF"
-				//	ZC5->ZC5_TPECOM := "B2B"
 				Else
 					ZC5->ZC5_TPECOM := "B2C"
 				EndIf

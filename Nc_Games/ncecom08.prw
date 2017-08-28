@@ -735,6 +735,13 @@ If cAcao=="GRAVA_PEDIDO"
 		aadd(aCabec,{"C5_XCODENT"  	,ZC5->ZC5_CODENT				,Nil})
 		aadd(aCabec,{"C5_TRANSP"   	,cTransp						,Nil})
 		
+		//JR
+		if     (ZC5->ZC5_TPECOM) == "B2B"
+			aadd(aCabec,{"C5_TABELA"   	,SA1->A1_TABELA	,Nil})
+		ElseIf (ZC5->ZC5_TPECOM) == "B2C"
+			aadd(aCabec,{"C5_TABELA"   	,"CON"	,Nil})
+		Endif
+
 		if !Empty(ZC5->ZC5_COND)
 			aadd(aCabec,{"C5_XFORMPG"  	,ZC5->ZC5_COND					,Nil})
 		EndIf
