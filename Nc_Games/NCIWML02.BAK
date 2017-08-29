@@ -398,6 +398,8 @@ For nYnd:=1 To Len(aRecnos)
 			cTESVenda:="783"
 			If (cAliasPZR)->PZR_ALICMS==-2.00
 				cTESVenda:="633"
+			ElseIf (cAliasPZR)->PZR_ALICMS==-4.00
+				cTESVenda:="805"
 			EndIf
 			
 			If lTransf
@@ -448,10 +450,15 @@ For nYnd:=1 To Len(aRecnos)
 			EndIf
 			cLocalPad:="01"
 			
-			If (cAliasPZR)->PZR_LJDEST=="3001"
+			If AllTrim((cAliasPZR)->PZR_LJORIG)=="3001" .And. (cAliasPZR)->PZR_OPER == "TLE"
 				cLocalPad:="90"
 				If !SB2->(DbSeek(xFilial("SB2")+cProduto+"90"))
 					CriaSB2(cProduto,"90")
+				EndIf
+			ElseIf Alltrim((cAliasPZR)->PZR_LJORIG)=="3000" .And. (cAliasPZR)->PZR_OPER == "TLE"
+				cLocalPad:="03"
+				If !SB2->(DbSeek(xFilial("SB2")+cProduto+"03"))
+					CriaSB2(cProduto,"03")
 				EndIf
 			EndIf
 			                                            
@@ -1552,6 +1559,9 @@ AADD(aVetor,{"A2_EMAIL" 	,(cAliasPZR)->PZR_EMAIL ,Nil})
 AADD(aVetor,{"A2_COMPLEM" 	,Upper(AllTrim((cAliasPZR)->PZR_COMPLE)),Nil})
 AADD(aVetor,{"A2_CGC" 		,(cAliasPZR)->PZR_CPFCGC ,Nil})
 AADD(aVetor,{"A2_INSCR" 	,IIf(!Empty((cAliasPZR)->PZR_IE),(cAliasPZR)->PZR_IE,"ISENTO"  ) ,Nil})
+
+AADD(aVetor,{"A2_CONTRIB" 	,IIf(!Empty((cAliasPZR)->PZR_IE),"1","2"  ) ,Nil})
+AADD(aVetor,{"A2_GRPTRIB" 	,IIf(!Empty((cAliasPZR)->PZR_IE),"CFI","CFS"  ) ,Nil})
 
 AADD(aVetor,{"A2_NATUREZ" 	,SA2->A2_NATUREZ ,Nil})
 AADD(aVetor,{"A2_CONTA" 	,SA2->A2_CONTA ,Nil})

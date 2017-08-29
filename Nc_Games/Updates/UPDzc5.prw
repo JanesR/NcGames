@@ -17,16 +17,16 @@
 "    border-bottom-width: 3px }"
 
 //--------------------------------------------------------------------
-/*/{Protheus.doc} ZC5ENDE
+/*/{Protheus.doc} UPDZC5
 Função de update de dicionários para compatibilização
 
 @author TOTVS Protheus
-@since  11/12/2014
-@obs    Gerado por EXPORDIC - V.4.22.10.7 EFS / Upd. V.4.19.12 EFS
+@since  28/08/17
+@obs    Gerado por EXPORDIC - V.5.4.1.2 EFS / Upd. V.4.21.17 EFS
 @version 1.0
 /*/
 //--------------------------------------------------------------------
-User Function Updzc5( cEmpAmb, cFilAmb )
+User Function UPDZC5( cEmpAmb, cFilAmb )
 
 Local   aSay      := {}
 Local   aButton   := {}
@@ -77,6 +77,11 @@ If lOk
 	If lAuto
 		aMarcadas :={{ cEmpAmb, cFilAmb, "" }}
 	Else
+
+		If !FWAuthAdmin()
+			Final( "Atualização não Realizada." )
+		EndIf
+
 		aMarcadas := EscEmpresa()
 	EndIf
 
@@ -87,26 +92,26 @@ If lOk
 
 			If lAuto
 				If lOk
-					MsgStop( "Atualização Realizada.", "ZC5ENDE" )
+					MsgStop( "Atualização Realizada.", "UPDZC5" )
 				Else
-					MsgStop( "Atualização não Realizada.", "ZC5ENDE" )
+					MsgStop( "Atualização não Realizada.", "UPDZC5" )
 				EndIf
 				dbCloseAll()
 			Else
 				If lOk
-					Final( "Atualização Concluída." )
+					Final( "Atualização Realizada." )
 				Else
 					Final( "Atualização não Realizada." )
 				EndIf
 			EndIf
 
 		Else
-			MsgStop( "Atualização não Realizada.", "ZC5ENDE" )
+			Final( "Atualização não Realizada." )
 
 		EndIf
 
 	Else
-		MsgStop( "Atualização não Realizada.", "ZC5ENDE" )
+		Final( "Atualização não Realizada." )
 
 	EndIf
 
@@ -120,8 +125,8 @@ Return NIL
 Função de processamento da gravação dos arquivos
 
 @author TOTVS Protheus
-@since  11/12/2014
-@obs    Gerado por EXPORDIC - V.4.22.10.7 EFS / Upd. V.4.19.12 EFS
+@since  28/08/17
+@obs    Gerado por EXPORDIC - V.5.4.1.2 EFS / Upd. V.4.21.17 EFS
 @version 1.0
 /*/
 //--------------------------------------------------------------------
@@ -221,7 +226,9 @@ If ( lOpen := MyOpenSm0(.T.) )
 
 			oProcess:SetRegua1( 8 )
 
-
+			//------------------------------------
+			// Atualiza o dicionário SX3
+			//------------------------------------
 			FSAtuSX3()
 
 			oProcess:IncRegua1( "Dicionário de dados" + " - " + SM0->M0_CODIGO + " " + SM0->M0_NOME + " ..." )
@@ -306,8 +313,8 @@ Return lRet
 Função de processamento da gravação do SX3 - Campos
 
 @author TOTVS Protheus
-@since  11/12/2014
-@obs    Gerado por EXPORDIC - V.4.22.10.7 EFS / Upd. V.4.19.12 EFS
+@since  28/08/17
+@obs    Gerado por EXPORDIC - V.5.4.1.2 EFS / Upd. V.4.21.17 EFS
 @version 1.0
 /*/
 //--------------------------------------------------------------------
@@ -342,18 +349,412 @@ aEstrut := { { "X3_ARQUIVO", 0 }, { "X3_ORDEM"  , 0 }, { "X3_CAMPO"  , 0 }, { "X
              { "X3_PROPRI" , 0 }, { "X3_BROWSE" , 0 }, { "X3_VISUAL" , 0 }, { "X3_CONTEXT", 0 }, { "X3_OBRIGAT", 0 }, { "X3_VLDUSER", 0 }, { "X3_CBOX"   , 0 }, ;
              { "X3_CBOXSPA", 0 }, { "X3_CBOXENG", 0 }, { "X3_PICTVAR", 0 }, { "X3_WHEN"   , 0 }, { "X3_INIBRW" , 0 }, { "X3_GRPSXG" , 0 }, { "X3_FOLDER" , 0 }, ;
              { "X3_CONDSQL", 0 }, { "X3_CHKSQL" , 0 }, { "X3_IDXSRV" , 0 }, { "X3_ORTOGRA", 0 }, { "X3_TELA"   , 0 }, { "X3_POSLGT" , 0 }, { "X3_IDXFLD" , 0 }, ;
-             { "X3_AGRUP"  , 0 }, { "X3_PYME"   , 0 } }
+             { "X3_AGRUP"  , 0 }, { "X3_MODAL"  , 0 }, { "X3_PYME"   , 0 } }
 
 aEval( aEstrut, { |x| x[2] := SX3->( FieldPos( x[1] ) ) } )
 
 
-aAdd( aSX3, {'ZC5','36','ZC5_ENDENT','C',50,0,'End.Entrega','End.Entrega','End.Entrega','End.de entr. do cliente','End.de entr. do cliente','End.de entr. do cliente','','',Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160),'','',0,Chr(254) + Chr(192),'','','U','N','V','R','','','','','','','','','','','','','','N','','','N','',''} )
-aAdd( aSX3, {'ZC5','37','ZC5_BAIROE','C',20,0,'Bairro Entr.','Bairro Entr.','Bairro Entr.','Bairro de Entrega','Bairro de Entrega','Bairro de Entrega','','',Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160),'','',0,Chr(254) + Chr(192),'','','U','N','V','R','','','','','','','','','','','','','','N','','','N','',''} )
-aAdd( aSX3, {'ZC5','38','ZC5_CEPE','C',8,0,'Cep Entr','Cep Entr','Cep Entr','Cep Entrega','Cep Entrega','Cep Entrega','@R 99999-999','',Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160),'','',0,Chr(254) + Chr(192),'','','U','N','V','R','','','','','','','','','','','','','','N','','','N','',''} )
-aAdd( aSX3, {'ZC5','39','ZC5_MUNE','C',60,0,'Mun. entr','Mun. entr','Mun. entr','Municipio de Entrega','Municipio de Entrega','Municipio de Entrega','','',Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160),'','',0,Chr(254) + Chr(192),'','','U','N','V','R','','','','','','','','','','','','','','N','','','N','',''} )
-aAdd( aSX3, {'ZC5','40','ZC5_CODMUE','C',5,0,'Cod.Mun.Entr','Cod.Mun.Entr','Cod.Mun.Entr','Codigo Municipio Entrega','Codigo Municipio Entrega','Codigo Municipio Entrega','','',Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160),'','',0,Chr(254) + Chr(192),'','','U','N','V','R','','','','','','','','','','','','','','N','','','N','',''} )
-aAdd( aSX3, {'ZC5','41','ZC5_ESTE','C',2,0,'Uf Entr','Uf Entr','Uf Entr','Estado de Entrega','Estado de Entrega','Estado de Entrega','','',Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160),'','',0,Chr(254) + Chr(192),'','','U','N','V','R','','','','','','','','','','','','','','N','','','N','',''} )
-aAdd( aSX3, {'ZC5','42','ZC5_COMPLE','C',50,0,'Compl.Entreg','Compl.Entreg','Compl.Entreg','Complemento Entrega','Complemento Entrega','Complemento Entrega','','',Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) +Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160),'','',0,Chr(254) + Chr(192),'','','U','N','V','R','','','','','','','','','','','','','','N','','','N','',''} )
+//
+// Campos Tabela SE4
+//
+aAdd( aSX3, { ;
+	'SE4'																	, ; //X3_ARQUIVO
+	'28'																	, ; //X3_ORDEM
+	'E4_XPARCFA'															, ; //X3_CAMPO
+	'N'																		, ; //X3_TIPO
+	2																		, ; //X3_TAMANHO
+	0																		, ; //X3_DECIMAL
+	'Parc Faturad'															, ; //X3_TITULO
+	'Parc Faturad'															, ; //X3_TITSPA
+	'Parc Faturad'															, ; //X3_TITENG
+	'Parc Faturad'															, ; //X3_DESCRIC
+	'Parc Faturad'															, ; //X3_DESCSPA
+	'Parc Faturad'															, ; //X3_DESCENG
+	'99'																	, ; //X3_PICTURE
+	''																		, ; //X3_VALID
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160)					, ; //X3_USADO
+	''																		, ; //X3_RELACAO
+	''																		, ; //X3_F3
+	0																		, ; //X3_NIVEL
+	Chr(254) + Chr(192)														, ; //X3_RESERV
+	''																		, ; //X3_CHECK
+	''																		, ; //X3_TRIGGER
+	'U'																		, ; //X3_PROPRI
+	'N'																		, ; //X3_BROWSE
+	'A'																		, ; //X3_VISUAL
+	'R'																		, ; //X3_CONTEXT
+	''																		, ; //X3_OBRIGAT
+	''																		, ; //X3_VLDUSER
+	''																		, ; //X3_CBOX
+	''																		, ; //X3_CBOXSPA
+	''																		, ; //X3_CBOXENG
+	''																		, ; //X3_PICTVAR
+	''																		, ; //X3_WHEN
+	''																		, ; //X3_INIBRW
+	''																		, ; //X3_GRPSXG
+	''																		, ; //X3_FOLDER
+	''																		, ; //X3_CONDSQL
+	''																		, ; //X3_CHKSQL
+	''																		, ; //X3_IDXSRV
+	'N'																		, ; //X3_ORTOGRA
+	''																		, ; //X3_TELA
+	''																		, ; //X3_POSLGT
+	'N'																		, ; //X3_IDXFLD
+	''																		, ; //X3_AGRUP
+	''																		, ; //X3_MODAL
+	''																		} ) //X3_PYME
+
+//
+// Campos Tabela ZC5
+//
+aAdd( aSX3, { ;
+	'ZC5'																	, ; //X3_ARQUIVO
+	'59'																	, ; //X3_ORDEM
+	'ZC5_TPECOM'															, ; //X3_CAMPO
+	'C'																		, ; //X3_TIPO
+	3																		, ; //X3_TAMANHO
+	0																		, ; //X3_DECIMAL
+	'E-COMMERCE'															, ; //X3_TITULO
+	'E-COMMERCE'															, ; //X3_TITSPA
+	'E-COMMERCE'															, ; //X3_TITENG
+	'TIPO DO PEDIDO ECOMMERCE'												, ; //X3_DESCRIC
+	'TIPO DO PEDIDO ECOMMERCE'												, ; //X3_DESCSPA
+	'TIPO DO PEDIDO ECOMMERCE'												, ; //X3_DESCENG
+	'@!'																	, ; //X3_PICTURE
+	''																		, ; //X3_VALID
+	Chr(132) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128)					, ; //X3_USADO
+	''																		, ; //X3_RELACAO
+	''																		, ; //X3_F3
+	0																		, ; //X3_NIVEL
+	Chr(254) + Chr(192)														, ; //X3_RESERV
+	''																		, ; //X3_CHECK
+	''																		, ; //X3_TRIGGER
+	'U'																		, ; //X3_PROPRI
+	'S'																		, ; //X3_BROWSE
+	'A'																		, ; //X3_VISUAL
+	'R'																		, ; //X3_CONTEXT
+	''																		, ; //X3_OBRIGAT
+	''																		, ; //X3_VLDUSER
+	''																		, ; //X3_CBOX
+	''																		, ; //X3_CBOXSPA
+	''																		, ; //X3_CBOXENG
+	''																		, ; //X3_PICTVAR
+	''																		, ; //X3_WHEN
+	''																		, ; //X3_INIBRW
+	''																		, ; //X3_GRPSXG
+	''																		, ; //X3_FOLDER
+	''																		, ; //X3_CONDSQL
+	''																		, ; //X3_CHKSQL
+	''																		, ; //X3_IDXSRV
+	'N'																		, ; //X3_ORTOGRA
+	''																		, ; //X3_TELA
+	''																		, ; //X3_POSLGT
+	'N'																		, ; //X3_IDXFLD
+	''																		, ; //X3_AGRUP
+	''																		, ; //X3_MODAL
+	''																		} ) //X3_PYME
+
+aAdd( aSX3, { ;
+	'ZC5'																	, ; //X3_ARQUIVO
+	'60'																	, ; //X3_ORDEM
+	'ZC5_KIT'																, ; //X3_CAMPO
+	'C'																		, ; //X3_TIPO
+	3																		, ; //X3_TAMANHO
+	0																		, ; //X3_DECIMAL
+	'Possui Kit'															, ; //X3_TITULO
+	'Possui Kit'															, ; //X3_TITSPA
+	'Possui Kit'															, ; //X3_TITENG
+	'Possui Kit'															, ; //X3_DESCRIC
+	'Possui Kit'															, ; //X3_DESCSPA
+	'Possui Kit'															, ; //X3_DESCENG
+	'@!'																	, ; //X3_PICTURE
+	''																		, ; //X3_VALID
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160)					, ; //X3_USADO
+	''																		, ; //X3_RELACAO
+	''																		, ; //X3_F3
+	0																		, ; //X3_NIVEL
+	Chr(254) + Chr(192)														, ; //X3_RESERV
+	''																		, ; //X3_CHECK
+	''																		, ; //X3_TRIGGER
+	'U'																		, ; //X3_PROPRI
+	'S'																		, ; //X3_BROWSE
+	'A'																		, ; //X3_VISUAL
+	'R'																		, ; //X3_CONTEXT
+	''																		, ; //X3_OBRIGAT
+	''																		, ; //X3_VLDUSER
+	''																		, ; //X3_CBOX
+	''																		, ; //X3_CBOXSPA
+	''																		, ; //X3_CBOXENG
+	''																		, ; //X3_PICTVAR
+	''																		, ; //X3_WHEN
+	''																		, ; //X3_INIBRW
+	''																		, ; //X3_GRPSXG
+	''																		, ; //X3_FOLDER
+	''																		, ; //X3_CONDSQL
+	''																		, ; //X3_CHKSQL
+	''																		, ; //X3_IDXSRV
+	'N'																		, ; //X3_ORTOGRA
+	''																		, ; //X3_TELA
+	''																		, ; //X3_POSLGT
+	'N'																		, ; //X3_IDXFLD
+	''																		, ; //X3_AGRUP
+	''																		, ; //X3_MODAL
+	''																		} ) //X3_PYME
+
+aAdd( aSX3, { ;
+	'ZC5'																	, ; //X3_ARQUIVO
+	'61'																	, ; //X3_ORDEM
+	'ZC5_CODPAG'															, ; //X3_CAMPO
+	'C'																		, ; //X3_TIPO
+	5																		, ; //X3_TAMANHO
+	0																		, ; //X3_DECIMAL
+	'Cond Pag Cia'															, ; //X3_TITULO
+	'Cond Pag Cia'															, ; //X3_TITSPA
+	'Cond Pag Cia'															, ; //X3_TITENG
+	'Condição de pagamento Cia'												, ; //X3_DESCRIC
+	'Condição de pagamento Cia'												, ; //X3_DESCSPA
+	'Condição de pagamento Cia'												, ; //X3_DESCENG
+	''																		, ; //X3_PICTURE
+	''																		, ; //X3_VALID
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160)					, ; //X3_USADO
+	''																		, ; //X3_RELACAO
+	''																		, ; //X3_F3
+	0																		, ; //X3_NIVEL
+	Chr(254) + Chr(192)														, ; //X3_RESERV
+	''																		, ; //X3_CHECK
+	''																		, ; //X3_TRIGGER
+	'U'																		, ; //X3_PROPRI
+	'N'																		, ; //X3_BROWSE
+	'A'																		, ; //X3_VISUAL
+	'R'																		, ; //X3_CONTEXT
+	''																		, ; //X3_OBRIGAT
+	''																		, ; //X3_VLDUSER
+	''																		, ; //X3_CBOX
+	''																		, ; //X3_CBOXSPA
+	''																		, ; //X3_CBOXENG
+	''																		, ; //X3_PICTVAR
+	''																		, ; //X3_WHEN
+	''																		, ; //X3_INIBRW
+	''																		, ; //X3_GRPSXG
+	''																		, ; //X3_FOLDER
+	''																		, ; //X3_CONDSQL
+	''																		, ; //X3_CHKSQL
+	''																		, ; //X3_IDXSRV
+	'N'																		, ; //X3_ORTOGRA
+	''																		, ; //X3_TELA
+	''																		, ; //X3_POSLGT
+	'N'																		, ; //X3_IDXFLD
+	''																		, ; //X3_AGRUP
+	''																		, ; //X3_MODAL
+	''																		} ) //X3_PYME
+
+aAdd( aSX3, { ;
+	'ZC5'																	, ; //X3_ARQUIVO
+	'62'																	, ; //X3_ORDEM
+	'ZC5_VEND'																, ; //X3_CAMPO
+	'C'																		, ; //X3_TIPO
+	6																		, ; //X3_TAMANHO
+	0																		, ; //X3_DECIMAL
+	'Vendedor'																, ; //X3_TITULO
+	'Vendedor'																, ; //X3_TITSPA
+	'Vendedor'																, ; //X3_TITENG
+	'Vendedor'																, ; //X3_DESCRIC
+	'Vendedor'																, ; //X3_DESCSPA
+	'Vendedor'																, ; //X3_DESCENG
+	''																		, ; //X3_PICTURE
+	''																		, ; //X3_VALID
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160)					, ; //X3_USADO
+	''																		, ; //X3_RELACAO
+	''																		, ; //X3_F3
+	0																		, ; //X3_NIVEL
+	Chr(254) + Chr(192)														, ; //X3_RESERV
+	''																		, ; //X3_CHECK
+	''																		, ; //X3_TRIGGER
+	'U'																		, ; //X3_PROPRI
+	'S'																		, ; //X3_BROWSE
+	'A'																		, ; //X3_VISUAL
+	'R'																		, ; //X3_CONTEXT
+	''																		, ; //X3_OBRIGAT
+	''																		, ; //X3_VLDUSER
+	''																		, ; //X3_CBOX
+	''																		, ; //X3_CBOXSPA
+	''																		, ; //X3_CBOXENG
+	''																		, ; //X3_PICTVAR
+	''																		, ; //X3_WHEN
+	''																		, ; //X3_INIBRW
+	''																		, ; //X3_GRPSXG
+	''																		, ; //X3_FOLDER
+	''																		, ; //X3_CONDSQL
+	''																		, ; //X3_CHKSQL
+	''																		, ; //X3_IDXSRV
+	'N'																		, ; //X3_ORTOGRA
+	''																		, ; //X3_TELA
+	''																		, ; //X3_POSLGT
+	'N'																		, ; //X3_IDXFLD
+	''																		, ; //X3_AGRUP
+	''																		, ; //X3_MODAL
+	''																		} ) //X3_PYME
+
+aAdd( aSX3, { ;
+	'ZC5'																	, ; //X3_ARQUIVO
+	'63'																	, ; //X3_ORDEM
+	'ZC5_PREVDA'															, ; //X3_CAMPO
+	'C'																		, ; //X3_TIPO
+	1																		, ; //X3_TAMANHO
+	0																		, ; //X3_DECIMAL
+	'Pré-venda ?'															, ; //X3_TITULO
+	'Pré-venda ?'															, ; //X3_TITSPA
+	'Pré-venda ?'															, ; //X3_TITENG
+	'Pré-venda ?'															, ; //X3_DESCRIC
+	'Pré-venda ?'															, ; //X3_DESCSPA
+	'Pré-venda ?'															, ; //X3_DESCENG
+	''																		, ; //X3_PICTURE
+	''																		, ; //X3_VALID
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160)					, ; //X3_USADO
+	''																		, ; //X3_RELACAO
+	''																		, ; //X3_F3
+	0																		, ; //X3_NIVEL
+	Chr(254) + Chr(192)														, ; //X3_RESERV
+	''																		, ; //X3_CHECK
+	''																		, ; //X3_TRIGGER
+	'U'																		, ; //X3_PROPRI
+	'S'																		, ; //X3_BROWSE
+	'A'																		, ; //X3_VISUAL
+	'R'																		, ; //X3_CONTEXT
+	''																		, ; //X3_OBRIGAT
+	''																		, ; //X3_VLDUSER
+	''																		, ; //X3_CBOX
+	''																		, ; //X3_CBOXSPA
+	''																		, ; //X3_CBOXENG
+	''																		, ; //X3_PICTVAR
+	''																		, ; //X3_WHEN
+	''																		, ; //X3_INIBRW
+	''																		, ; //X3_GRPSXG
+	''																		, ; //X3_FOLDER
+	''																		, ; //X3_CONDSQL
+	''																		, ; //X3_CHKSQL
+	''																		, ; //X3_IDXSRV
+	'N'																		, ; //X3_ORTOGRA
+	''																		, ; //X3_TELA
+	''																		, ; //X3_POSLGT
+	'N'																		, ; //X3_IDXFLD
+	''																		, ; //X3_AGRUP
+	''																		, ; //X3_MODAL
+	''																		} ) //X3_PYME
+
+//
+// Campos Tabela ZC6
+//
+aAdd( aSX3, { ;
+	'ZC6'																	, ; //X3_ARQUIVO
+	'15'																	, ; //X3_ORDEM
+	'ZC6_TPPROD'															, ; //X3_CAMPO
+	'C'																		, ; //X3_TIPO
+	1																		, ; //X3_TAMANHO
+	0																		, ; //X3_DECIMAL
+	'Tipo Produto'															, ; //X3_TITULO
+	'Tipo Produto'															, ; //X3_TITSPA
+	'Tipo Produto'															, ; //X3_TITENG
+	'Produto de Kit'														, ; //X3_DESCRIC
+	'Produto de Kit'														, ; //X3_DESCSPA
+	'Produto de Kit'														, ; //X3_DESCENG
+	'@!'																	, ; //X3_PICTURE
+	''																		, ; //X3_VALID
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160)					, ; //X3_USADO
+	''																		, ; //X3_RELACAO
+	''																		, ; //X3_F3
+	0																		, ; //X3_NIVEL
+	Chr(254) + Chr(192)														, ; //X3_RESERV
+	''																		, ; //X3_CHECK
+	''																		, ; //X3_TRIGGER
+	'U'																		, ; //X3_PROPRI
+	'S'																		, ; //X3_BROWSE
+	'A'																		, ; //X3_VISUAL
+	'R'																		, ; //X3_CONTEXT
+	''																		, ; //X3_OBRIGAT
+	''																		, ; //X3_VLDUSER
+	''																		, ; //X3_CBOX
+	''																		, ; //X3_CBOXSPA
+	''																		, ; //X3_CBOXENG
+	''																		, ; //X3_PICTVAR
+	''																		, ; //X3_WHEN
+	''																		, ; //X3_INIBRW
+	''																		, ; //X3_GRPSXG
+	''																		, ; //X3_FOLDER
+	''																		, ; //X3_CONDSQL
+	''																		, ; //X3_CHKSQL
+	''																		, ; //X3_IDXSRV
+	'N'																		, ; //X3_ORTOGRA
+	''																		, ; //X3_TELA
+	''																		, ; //X3_POSLGT
+	'N'																		, ; //X3_IDXFLD
+	''																		, ; //X3_AGRUP
+	''																		, ; //X3_MODAL
+	''																		} ) //X3_PYME
+
+aAdd( aSX3, { ;
+	'ZC6'																	, ; //X3_ARQUIVO
+	'16'																	, ; //X3_ORDEM
+	'ZC6_KIT'																, ; //X3_CAMPO
+	'C'																		, ; //X3_TIPO
+	15																		, ; //X3_TAMANHO
+	0																		, ; //X3_DECIMAL
+	'KIT PRODUTO'															, ; //X3_TITULO
+	'KIT PRODUTO'															, ; //X3_TITSPA
+	'KIT PRODUTO'															, ; //X3_TITENG
+	'KIT PRODUTO'															, ; //X3_DESCRIC
+	'KIT PRODUTO'															, ; //X3_DESCSPA
+	'KIT PRODUTO'															, ; //X3_DESCENG
+	'@!'																	, ; //X3_PICTURE
+	''																		, ; //X3_VALID
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(128) + ;
+	Chr(128) + Chr(128) + Chr(128) + Chr(128) + Chr(160)					, ; //X3_USADO
+	''																		, ; //X3_RELACAO
+	''																		, ; //X3_F3
+	0																		, ; //X3_NIVEL
+	Chr(254) + Chr(192)														, ; //X3_RESERV
+	''																		, ; //X3_CHECK
+	''																		, ; //X3_TRIGGER
+	'U'																		, ; //X3_PROPRI
+	'S'																		, ; //X3_BROWSE
+	'A'																		, ; //X3_VISUAL
+	'R'																		, ; //X3_CONTEXT
+	''																		, ; //X3_OBRIGAT
+	''																		, ; //X3_VLDUSER
+	''																		, ; //X3_CBOX
+	''																		, ; //X3_CBOXSPA
+	''																		, ; //X3_CBOXENG
+	''																		, ; //X3_PICTVAR
+	''																		, ; //X3_WHEN
+	''																		, ; //X3_INIBRW
+	''																		, ; //X3_GRPSXG
+	''																		, ; //X3_FOLDER
+	''																		, ; //X3_CONDSQL
+	''																		, ; //X3_CHKSQL
+	''																		, ; //X3_IDXSRV
+	'N'																		, ; //X3_ORTOGRA
+	''																		, ; //X3_TELA
+	''																		, ; //X3_POSLGT
+	'N'																		, ; //X3_IDXFLD
+	''																		, ; //X3_AGRUP
+	''																		, ; //X3_MODAL
+	''																		} ) //X3_PYME
+
 
 //
 // Atualizando dicionário
@@ -544,7 +945,7 @@ oButMarc:SetCss( CSSBOTAO )
 @ 128, 80 Button oButDMar   Prompt "&Desmarcar" Size 32, 12 Pixel Action ( MarcaMas( oLbx, aVetor, cMascEmp, .F. ), VerTodos( aVetor, @lChk, oChkMar ) ) ;
 Message "Desmarcar usando" + CRLF + "máscara ( ?? )" Of oDlg
 oButDMar:SetCss( CSSBOTAO )
-@ 112, 157  Button oButOk   Prompt "Processar"  Size 32, 12 Pixel Action (  RetSelecao( @aRet, aVetor ), oDlg:End()  ) ;
+@ 112, 157  Button oButOk   Prompt "Processar"  Size 32, 12 Pixel Action (  RetSelecao( @aRet, aVetor ), IIf( Len( aRet ) > 0, oDlg:End(), MsgStop( "Ao menos um grupo deve ser selecionado", "UPDZC5" ) ) ) ;
 Message "Confirma a seleção e efetua" + CRLF + "o processamento" Of oDlg
 oButOk:SetCss( CSSBOTAO )
 @ 128, 157  Button oButCanc Prompt "Cancelar"   Size 32, 12 Pixel Action ( IIf( lTeveMarc, aRet :=  aMarcadas, .T. ), oDlg:End() ) ;
@@ -700,13 +1101,12 @@ Return NIL
 Função de processamento abertura do SM0 modo exclusivo
 
 @author TOTVS Protheus
-@since  11/12/2014
-@obs    Gerado por EXPORDIC - V.4.22.10.7 EFS / Upd. V.4.19.12 EFS
+@since  28/08/17
+@obs    Gerado por EXPORDIC - V.5.4.1.2 EFS / Upd. V.4.21.17 EFS
 @version 1.0
 /*/
 //--------------------------------------------------------------------
 Static Function MyOpenSM0(lShared)
-
 Local lOpen := .F.
 Local nLoop := 0
 
@@ -736,8 +1136,8 @@ Return lOpen
 Função de leitura do LOG gerado com limitacao de string
 
 @author TOTVS Protheus
-@since  11/12/2014
-@obs    Gerado por EXPORDIC - V.4.22.10.7 EFS / Upd. V.4.19.12 EFS
+@since  28/08/17
+@obs    Gerado por EXPORDIC - V.5.4.1.2 EFS / Upd. V.4.21.17 EFS
 @version 1.0
 /*/
 //--------------------------------------------------------------------

@@ -1298,7 +1298,7 @@ cQry += " 	AND SZ1.Z1_FILIAL='"+xFilial("SZ1")+"' "+CRLF
 cQry += " 	AND ZC5.ZC5_NUMPV = SZ1.Z1_PEDIDO  "+CRLF
 cQry += " 	AND ZC5.ZC5_NOTA = SZ1.Z1_DOC "+CRLF
 cQry += " 	AND ZC5.ZC5_SERIE = SZ1.Z1_SERIE "+CRLF
-cQry += " WHERE ZC5.ZC5_FILIAL='"+xFilial("ZC5")+"' "+CRLF       
+cQry += " WHERE ZC5.ZC5_FILIAL='"+xFilial("ZC5")+"' "+CRLF
 cQry += " AND ZC5.D_E_L_E_T_=' ' "+CRLF
 cQry += " AND ZC5.ZC5_STATUS IN ('16','15','30') "+CRLF
 //cQry += " AND ZC5.ZC5_ATUALI <> 'N' "+CRLF
@@ -2676,3 +2676,262 @@ Else
 EndIf
 
 Return(lRet)
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCVTEX05  บAutor  ณMicrosiga           บ Data ณ  08/10/16   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ Rotina para atualizar os status dos pedidos no sistema Vtex บฑฑ
+ฑฑบ          ณ atualizar para status FATURADO                              บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+User Function Vt05Fatu()
+
+Local aAreaAtu		:= GetArea()
+Local cAliasQry	:= GetNextAlias()
+Local cQry 	  		:= ""
+Local cItem 		:= ""
+Local cBody			:= ""
+Local cResp			:= ""
+
+Local cUrl			:= Alltrim(U_MyNewSX6("EC_NCG0021",'http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_LINGUA=001&P_TIPO=001&P_COD_UNI=',"C","URL Correrios","","",.F. ))
+Local cTranspo		:= Alltrim(U_MyNewSX6("EC_NCG0013","864","C","Codigos Transportadora","Codigos Transportadora","Codigos Transportadora",.F. ))
+Local cUrlTra		:= Alltrim(U_MyNewSX6("EC_NCG0025",'https://www.rapiddo.com.br/t/',"C","URL de para montagem do link transportadora","","",.F. ))
+Local cPedido 		:= ""
+
+Local nValNf 		:= 0
+Local cCodRast
+Local lError 		:= .F.
+Local oSite
+Local dData			:= Date()
+Local nDiaCorri		:= 10
+
+cQry := " SELECT ZC5_NUM,ZC5.R_E_C_N_O_ RecZC5, SZ1.R_E_C_N_O_ RecSZ1 "+CRLF
+cQry += " FROM "+ RetSqlName("ZC5") +" ZC5 "+CRLF
+cQry += " 	INNER JOIN "+ RetSqlName("SZ1") +" SZ1 "+CRLF
+cQry += " 	ON SZ1.D_E_L_E_T_=' ' "+CRLF
+cQry += " 	AND SZ1.Z1_FILIAL='"+xFilial("SZ1")+"' "+CRLF
+cQry += " 	AND ZC5.ZC5_NUMPV = SZ1.Z1_PEDIDO  "+CRLF
+cQry += " 	AND ZC5.ZC5_NOTA = SZ1.Z1_DOC "+CRLF
+cQry += " 	AND ZC5.ZC5_SERIE = SZ1.Z1_SERIE "+CRLF
+cQry += " WHERE ZC5.ZC5_FILIAL='"+xFilial("ZC5")+"' "+CRLF
+cQry += " AND ZC5.D_E_L_E_T_=' ' "+CRLF
+cQry += " AND ZC5.ZC5_STATUS IN ('10','16','15','30') "+CRLF
+//cQry += " AND ZC5.ZC5_ATUALI <> 'N' "+CRLF
+cQry += " AND ZC5.ZC5_YMSEXP = ' ' "+CRLF
+//cQry += " AND ZC5.ZC5_RASTRE <> ' ' "+CRLF
+cQry += " AND ZC5.ZC5_ESTORN = ' ' "+CRLF
+cQry += " AND ZC5.ZC5_PLATAF = '00'  "+CRLF
+//cQry += " AND (SUBSTR(ZC5.ZC5_DTVTEX,5,2) < '" + cMes + "' OR SUBSTR(ZC5.ZC5_DTVTEX,0,4) < '" + cAno + "') "+CRLF
+cQry += " AND ZC5.ZC5_DTVTEX < '"+ Dtos(DaySub(dData, nDiaCorri))+"' "+CRLF
+cQry += " AND ZC5.ZC5_FLAG <> '8' "+CRLF
+cQry += " ORDER BY ZC5_STATUS,ZC5_NUMPV"+CRLF
+
+cQry	:= ChangeQuery(cQry)
+
+DbUseArea(.T.,"TOPCONN",TcGenQry(,,cQry),cAliasQry, .F., .F.)
+
+
+Do While (cAliasQry)->(!Eof())
+	
+	oSite:=Nil
+	
+	ZC5->(DbGoTo( (cAliasQry)->RecZC5 ))
+	SZ1->(DbGoTo( (cAliasQry)->RecSZ1 ))
+
+	
+	If !("I" $ ZC5->ZC5_PVVTEX)
+		//Atualizara a numera็ใo da NF e Serie caso ainda 
+		U_V05STATU()
+		
+		If ZC5->ZC5_PLATAF=="00"
+			oSite:=ApiVtex():New("NcGames")
+		ElseIf ZC5->ZC5_PLATAF=="02"
+			oSite:=ApiVtex():New("ProximoGames")
+		ElseIf ZC5->ZC5_PLATAF=="03"
+			oSite:=ApiVtex():New("UzGames")
+		EndIf
+		
+		
+		MyMensagem(ProcName(0)+" Atualizando Status PV VTEX: "+Alltrim(ZC5->ZC5_PVVTEX)+" PV "+ZC5->ZC5_NUMPV  )
+		cStatus := Alltrim(Upper(U_Vt05Status(ZC5->ZC5_PVVTEX)))
+		
+		
+		If cStatus == Upper("ready-for-handling")
+		MyMensagem(ProcName(0)+" Atualizando Status PV VTEX: "+Alltrim(ZC5->ZC5_PVVTEX) +" PV "+ZC5->ZC5_NUMPV+" - Pronto para Entrega")
+			
+			oSite:cPedido := AllTrim(ZC5->ZC5_PVVTEX)
+			oSite:PedidoStartHandling()
+			
+			cResp := oSite:cResponse
+			
+			If Valtype(cResp) == "U"
+				cResp := "ERROR"
+			EndIf
+			
+			lError :=  At("ERROR",Upper(cResp))>0
+			
+		EndIf
+		
+		If !lError .And. cStatus == Upper("handling")
+			
+			MyMensagem(ProcName(0)+" Atualizando Status PV VTEX: "+Alltrim(ZC5->ZC5_PVVTEX) +" PV "+ZC5->ZC5_NUMPV+" - Faturado")
+			
+			If Alltrim(ZC5->ZC5_CODENT) == "681"
+				cCodRast:=AllTrim(ZC5->ZC5_RASTRE)
+			Else
+				
+				cCodRast:=AllTrim(ZC5->ZC5_RASTRE)
+				
+				If !Empty(cCodRast) .And. Right(cCodRast,2)<>"BR"
+					cCodRast+="BR"
+				EndIf
+			EndIf
+			
+			SF2->(DbSetOrder(1))
+			If SF2->(MsSeek(xFilial("SF2")+ZC5->(ZC5_NOTA+ZC5_SERIE+ZC5_CLIENTE+ZC5_LOJA) ))
+				SD2->(DbSetOrder(3))//D2_FILIAL+D2_DOC+D2_SERIE+D2_CLIENTE+D2_LOJA+D2_COD+D2_ITEM
+				cFilSD2:=xFilial("SD2")
+				
+				nValNf := IIf(ZC5->ZC5_TOTAL == SF2->F2_VALFAT,SF2->F2_VALFAT,ZC5->ZC5_TOTAL) //Vtex05NF(ZC5->ZC5_NOTA,ZC5->ZC5_SERIE,ZC5->ZC5_CLIENTE,ZC5->ZC5_LOJA)
+				
+				cBody:='{'+CRLF
+				cBody+='	"invoiceNumber": "'+AllTrim(SF2->F2_DOC)+AllTrim(SF2->F2_SERIE)+'",'+CRLF
+				cBody+='	"invoiceValue": "'+AllTrim(Str(nValNf*100))+'",'+CRLF // Adicionar o frete
+				cBody+='	"invoiceKey":"'+AllTrim(SF2->F2_CHVNFE)+'",'+CRLF
+				cBody+='	"courier": "Correios",'+CRLF
+				cBody+='	"issuanceDate": "'+StrZero(Year(SF2->F2_EMISSAO),4)+"-"+StrZero(Month(SF2->F2_EMISSAO),2)+"-"+StrZero(Day(SF2->F2_EMISSAO),2)+'",'+CRLF
+				
+				//cBody+='	"trackingNumber": "'+AllTrim(ZC5->ZC5_RASTRE)+'",'+CRLF
+				If empty(AllTrim(ZC5->ZC5_RASTRE))
+					cBody+='	"trackingNumber": null,'+CRLF
+					cBody+='	"trackingUrl": null,'+CRLF
+				Else
+					cBody+='	"trackingNumber": "'+AllTrim(ZC5->ZC5_RASTRE)+'",'+CRLF
+					If Alltrim(ZC5->ZC5_CODENT) == "681"
+						cBody+='	"trackingUrl": "'+ AllTrim(cUrlTra) + AllTrim(ZC5->ZC5_RASTRE) +'",'+CRLF
+					EndIf
+					
+				Endif					
+				
+				cBody+='	"items": ['+CRLF
+				
+				cItem:=""
+				SD2->(MsSeek(cFilSD2+SF2->(F2_DOC+F2_SERIE+F2_CLIENTE+F2_LOJA)))
+				Do While SD2->(!Eof()) .And. SD2->(D2_FILIAL+D2_DOC+D2_SERIE+D2_CLIENTE+D2_LOJA)==(cFilSD2+SF2->(F2_DOC+F2_SERIE+F2_CLIENTE+F2_LOJA))
+					If ZC5->ZC5_PLATAF == "00"
+						cItem+='{"id": "'+AllTrim(u_VTEX01PROD(SD2->D2_COD,.F.))+'", '
+					Else
+						cItem+='{"id": "'+AllTrim(U_VTEXPROD(SD2->D2_COD,ZC5->ZC5_PLATAF,.F.))+'", '
+					EndIf
+					cItem+=' "price":'+AllTrim(Str(SD2->D2_TOTAL *100))+','
+					cItem+='  "quantity": '+AllTrim(TransForm(SD2->D2_QUANT,'@E 99999999.99'))+'},'
+					SD2->(DbSkip())
+				EndDo
+				cItem:=Left(cItem,Len(cItem)-1)//Retirar ultima virgula
+				cBody+=cItem
+				cBody+=']'+CRLF
+				cBody+='}'+CRLF
+				
+				oSite:cPedido	:= AllTrim(ZC5->ZC5_PVVTEX)
+				oSite:cBody	:= cBody
+				oSite:PreparandoEntrega()
+				
+				cResp := oSite:cResponse
+				
+				If Valtype(cResp) == "U"
+					cResp := "ERROR"
+				EndIf
+				
+				If At("ERROR",Upper(cResp))>0
+					
+					oSite:cBody	:= cBody
+					oSite:cHttp	:= ""
+					oSite:cUrl		:= "http://oms.vtexcommerce.com.br/api/oms/pvt/orders/"+AllTrim(ZC5->ZC5_PVVTEX)+"/invoice/?an="+oSite:cLoja
+					
+					oSite:HttpPost()
+					
+					cResp := oSite:cResponse
+				EndIf
+				
+				If Valtype(cResp) == "U"
+					cResp := "ERROR"
+				EndIf
+				
+				If At("ERROR",Upper(cResp))==0
+					ZC5->(RecLock("ZC5",.F.))
+					
+					ZC5->ZC5_STATUS	:= '30'
+					ZC5->ZC5_MSEXP 	:= Dtos(MsDate())
+					ZC5->ZC5_YMSEXP 	:= MsDate()
+					ZC5->ZC5_ATUALI	:= 'N'
+					ZC5->ZC5_CODINT	:= "007"
+					
+					ZC5->(MsUnLock())
+					
+					//U_NcEcom07(ZC5->ZC5_NUMPV)
+					U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,"Pedido Enviado com o rastreio "+AllTrim(ZC5->ZC5_RASTRE),"Executado com sucesso",ZC5->ZC5_STATUS,.F.,,,ZC5->ZC5_PVVTEX)
+					
+				EndIf
+			EndIf
+			
+		ElseIf cStatus == Upper("invoiced")
+			
+			ZC5->(RecLock("ZC5",.F.))
+			
+			ZC5->ZC5_STATUS	:= '30'
+			ZC5->ZC5_MSEXP 	:= Dtos(MsDate())
+			ZC5->ZC5_YMSEXP 	:= MsDate()
+			ZC5->ZC5_ATUALI	:= 'N'
+			ZC5->ZC5_CODINT	:= "007"
+			
+			ZC5->(MsUnLock())
+		Else
+			cOutStatus := U_V05STATU(ZC5->ZC5_PVVTEX)
+		EndIf
+		
+	ElseIf "I" $ ZC5->ZC5_PVVTEX .And. !Empty(ZC5->ZC5_RASTRE)
+		ZC5->(RecLock("ZC5",.F.))
+		
+		ZC5->ZC5_STATUS	:= '30'
+		ZC5->ZC5_MSEXP 	:= Dtos(MsDate())
+		ZC5->ZC5_YMSEXP 	:= MsDate()
+		ZC5->ZC5_ATUALI	:= 'N'
+		ZC5->ZC5_CODINT	:= "007"
+		
+		ZC5->(MsUnLock())
+		*/
+	
+	EndIf
+	
+	(cAliasQry)->(DbSkip())
+EndDo
+
+Return
+
+User function V05STATU()
+
+if Empty(Alltrim(ZC5->ZC5_NOTA))
+
+	dbSelectArea("SZ1")
+	dbSetOrder(2)
+	if dbSeek(xFilial("SZ1")+ZC5->ZC5_NUMPV)
+		ZC5->(RecLock("ZC5",.F.))
+		
+		ZC5->ZC5_NOTA := Z1_DOC
+		ZC5->ZC5_SERIE:= Z1_SERIE
+		ZC5->ZC5_STATUS:='15'
+		ZC5->ZC5_ATUALI:='S'
+		
+		ZC5->(MsUnLock())	
+	EndIf
+
+EndIf 
+Return

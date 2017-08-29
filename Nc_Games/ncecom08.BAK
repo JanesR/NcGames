@@ -965,8 +965,13 @@ If cAcao=="GRAVA_PEDIDO"
 				//Atualiza o status atual do pedido (Pedido gerado, aguardando pagamento)
 				U_NCEC10CI(ZC5->ZC5_NUM, "008",ZC5->ZC5_PVVTEX)
 				
+				IF ZC5->ZC5_NUM != 0
 				//Chama a rotina para gravar log de produto bloqeuado por venda no monitor
-				U_VNcPrdBlq(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV)
+					U_VNcPrdBlq(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV, 'B2C')
+				Else
+					//Chama a rotina para gravar log de produto bloqeuado por venda no monitor
+					U_VNcPrdBlq(ZC5->ZC5_PVVTEX, ZC5->ZC5_NUMPV, 'B2B')
+				EndIF
 				
 				lEstornar:=.F.
 				If lPvParcial
@@ -1419,7 +1424,7 @@ ElseIf  cAcao=="VERIFICA_RASTREIO"
 	While (clAlias)->(!Eof())
 		
 		ZC5->(DbGoTo((clAlias)->RecZC5))
-		ZC1->(DbGoTo((clAlias)->RecSZ1))
+		SZ1->(DbGoTo((clAlias)->RecSZ1))
 		
 		If !Empty(ZC5->ZC5_NUMPV)
 			MyMensagem("Atualiza entrega NC x Ciashop Pv="+ZC5->ZC5_NUMPV)

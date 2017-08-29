@@ -347,7 +347,7 @@ For nYnd:=1 To Len(aRecnos)
 		If (cAliasPZR)->PZR_ALICMS==-2.00
 			cTESVenda:="633"
 		ElseIf (cAliasPZR)->PZR_ALICMS==-4.00
-			cTESVenda:="805"
+			cTESVenda:="803"
 		EndIf
 		
 		aAdd(aItem,{"LR_PRODUTO"		,	PadR(AllTrim(cProduto), TamSX3("LR_PRODUTO")[1]),	Nil })	// Cod. do Produto

@@ -178,38 +178,32 @@ USER FUNCTION PE01NFESEFAZ()
 
 			if (SA1->A1_YCODWM != ' ') .AND. (SA1->A1_YEMPDES == FWCodEmp()) .And. !(SA1->A1_YFILDES == '01')
 
-				cMensCli+="ENTRE LOJAS: DA LOJA:"+ (cAliasZX5)->CHAVE + " " + (cAliasZX5)->DESCRI + CRLF + " PARA A LOJA:"+ SA1->A1_YCODWM + " " + SA1->A1_NREDUZ
-
-				cMensCli+= SA1->A1_YCODWM +" "+  GetDescLoja(SA1->A1_YCODWM)
-
+				cMensCli+="TRANSFERENCIA ENTRE LOJAS "
 				if !empty(alltrim(SF2->F2_YCODMOV))
-					cMensCli+=" Operacao WM:"+SF2->F2_YTOPER+" WM:"+SF2->F2_YCODMOV
+					cMensCli+="WM:"+SF2->F2_YCODMOV
 				endIf
+				cMensCli+=" - DA LOJA:"+ (cAliasZX5)->CHAVE + " " + (cAliasZX5)->DESCRI + CRLF + " P/ A LOJA:"+ SA1->A1_YCODWM + " " + SA1->A1_NREDUZ
+
+				//cMensCli+= SA1->A1_YCODWM +" "+  GetDescLoja(SA1->A1_YCODWM)
 
 			elseif (SA1->A1_YCODWM != ' ') .And. (SF2->F2_YTOPER=="TLS") .AND. (SA1->A1_YFILDES == '01') .And. (SA1->A1_YEMPDES == "03")
-				cMensCli+="TRANSFERENCIA RMA - DA LOJA:"+(cAliasZX5)->CHAVE+ " " + GetDescLoja((cAliasZX5)->CHAVE)
+				cMensCli+="TRANSFERENCIA DA LOJA:"+(cAliasZX5)->CHAVE+ " " + GetDescLoja((cAliasZX5)->CHAVE)
 				if alltrim(SA1->A1_YCODWM) == "3001"
-					cMensCli+="PARA LOJA: 3001 NC STORE ARMAZEM 90."
+					cMensCli+="P/ NC STORE WM " + SF2->F2_YCODMOV + " ARMAZEM 04 RMA."
 				elseif alltrim(SA1->A1_YCODWM) == "3000"
-					cMensCli+="PARA LOJA: 3000 NC STORE ARMAZEM 03."
+					cMensCli+="P/  NC STORE WM " + SF2->F2_YCODMOV + " ARMAZEM 03 QUALIDADE."
 				endif
 
-
-				if empty(alltrim(SF2->F2_YCODMOV))
-					cMensCli+="OPERAÇÃO: TLS - WM:"+SF2->F2_YCODMOV
-				endIF
-			Elseif SA1->A1_YCODWM != ' ' .And. SF2->F2_YTOPER=="TLS"
+			Elseif SA1->A1_YCODWM != ' ' //.And. SF2->F2_YTOPER=="TLS"
 				DBSelectArea("ZX5")
 				DBSetOrder(1)
 				DbSeek(xFilial("ZX5")+"00006"+SA1->A1_YCODWM)
 
-				cMensCli+= "Transferencia para loja:"+ SUBSTR(ZX5->ZX5_DESCRI,7, LEN(ALLTRIM(ZX5->ZX5_DESCRI)))
+				cMensCli+= "TRANSFERENCIA NC STORE P/ LOJA:"+ SUBSTR(ZX5->ZX5_DESCRI,7, LEN(ALLTRIM(ZX5->ZX5_DESCRI)))
 				dbCloseArea("ZX5")
 			endif
 			DbCloseArea(cAliasZX5)
 		EndIf
-
-
 
 		If IsInCallStack("U_NCGPR118")
 			cMensCli+=" Gerado pelo Lote "+P07->P07_LOTE+"("+AllTrim(P07->P07_USLOTE)+")"

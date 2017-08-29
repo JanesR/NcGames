@@ -429,8 +429,7 @@ Do While (cAliasQry)->(!Eof())
 			ZC5->ZC5_CODENT	:= U_V05CodEnt(ZC5->(Recno()),aDados[nPosTransp],aDadosEnt[03])
 			ZC5->ZC5_CGC	:= SA1->A1_CGC
 			//JR
-			ZC5->ZC5_TPECOM	:= "C"//DEFINE COMO PEDIDO E-COMMERCE SEMPRE EM CASOS DE PEDIDOS VINDOS DO VTEX
-
+			ZC5->ZC5_TPECOM	:= "B2C"//DEFINE COMO PEDIDO E-COMMERCE SEMPRE EM CASOS DE PEDIDOS VINDOS DO VTEX			
 			ZC5->(MsUnlock())
 			
 			End Transaction
@@ -1039,7 +1038,7 @@ BEGIN TRANSACTION
 
 lMsErroAuto := .F.
 CC2->(DBSETORDER(1))
-MSExecAuto({|x,y| MATA030(x,y)},aVetor, Iif(!lJaExiste,4,3))
+MSExecAuto({|x,y| MATA030(x,y)},aVetor, Iif(lJaExiste,4,3))
 _cError := ""
 If lMsErroAuto
 	_cError := MemoRead(NomeAutoLog())+CRLF+cErroAdiconal+CRLF
@@ -2713,7 +2712,7 @@ Local cCodRast
 Local lError 		:= .F.
 Local oSite
 Local dData			:= Date()
-Local nDiaCorri		:= 20
+Local nDiaCorri		:= 10
 
 cQry := " SELECT ZC5_NUM,ZC5.R_E_C_N_O_ RecZC5, SZ1.R_E_C_N_O_ RecSZ1 "+CRLF
 cQry += " FROM "+ RetSqlName("ZC5") +" ZC5 "+CRLF

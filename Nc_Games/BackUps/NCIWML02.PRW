@@ -398,8 +398,6 @@ For nYnd:=1 To Len(aRecnos)
 			cTESVenda:="783"
 			If (cAliasPZR)->PZR_ALICMS==-2.00
 				cTESVenda:="633"
-			ElseIf (cAliasPZR)->PZR_ALICMS==-4.00
-				cTESVenda:="805"
 			EndIf
 			
 			If lTransf
@@ -450,15 +448,10 @@ For nYnd:=1 To Len(aRecnos)
 			EndIf
 			cLocalPad:="01"
 			
-			If AllTrim((cAliasPZR)->PZR_LJORIG)=="3001" .And. (cAliasPZR)->PZR_OPER == "TLE"
-				cLocalPad:="04"
-				If !SB2->(DbSeek(xFilial("SB2")+cProduto+"04"))
-					CriaSB2(cProduto,"04")
-				EndIf
-			ElseIf Alltrim((cAliasPZR)->PZR_LJORIG)=="3000" .And. (cAliasPZR)->PZR_OPER == "TLE"
-				cLocalPad:="03"
-				If !SB2->(DbSeek(xFilial("SB2")+cProduto+"03"))
-					CriaSB2(cProduto,"03")
+			If (cAliasPZR)->PZR_LJDEST=="3001"
+				cLocalPad:="90"
+				If !SB2->(DbSeek(xFilial("SB2")+cProduto+"90"))
+					CriaSB2(cProduto,"90")
 				EndIf
 			EndIf
 			                                            
@@ -488,7 +481,7 @@ For nYnd:=1 To Len(aRecnos)
 				EndIf
 				
 				If !Empty(aNfeOrig[3])
-					AADD(aItensAux,{"D1_ITEMORI"	,aNfeOrig[3]								,Nil})
+					//AADD(aItensAux,{"D1_ITEMORI"	,aNfeOrig[3]								,Nil})
 				EndIf
 			EndIf
 			
@@ -678,7 +671,7 @@ For nYnd:=1 To Len(aRecnos)
 					EndIf
 				Next
 			EndIf
-			                                                     
+			
 			SF2->(RecLock("SF2",.F.))
 			SF2->F2_PDV := cPDV
 			SF2->F2_YCODMOV:=cCodWMMov
@@ -687,7 +680,12 @@ For nYnd:=1 To Len(aRecnos)
 			If lDuplic
 				SF2->F2_DUPL:=SF2->F2_DOC
 			EndIf
-			SF2->F2_HORA:="01:00"
+			//SF2->F2_HORA:=(cAliasPZQ)->PZQ_HORA
+
+			//SF2->F2_HORA:=substr( (cAliasPZQ)->PZQ_HORA,1,5)
+
+			SF2->F2_HORA:=substr(time(),1,5)
+			
 			SF2->(MSUnLock())
 		EndIf
 		

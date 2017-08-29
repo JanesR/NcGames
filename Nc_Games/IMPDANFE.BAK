@@ -206,10 +206,10 @@ user Function PrTRFDanf(cEmpNota,cFilNota,cNota,cSerieNf,cCliente,cCliLoja,cNome
 						oPrinter	:= FWMSPrinter():New(cNameArq,IMP_PDF,lAdjustToLegacy,/*cPathInServer*/,lDisableSetup,.F.,Nil,/*cPrinter*/,.T.,.F.,.F.,lViewPDF)
 						case cTPIMP == "2"
 						//oPrinter	:= FWMSPrinter():New(cNameArq,IMP_SPOOL,lAdjustToLegacy,/*cPathInServer*/,lDisableSetup,.F.,Nil,/*cPrinter*/,.T.,.F.,.F.,lViewPDF)
-						oPrinter2	:= FWMSPrinter():New(cNameArq,IMP_SPOOL,lAdjustToLegacy,cDirDanfe + cEndArq,.T.,.F.,Nil,cPrinter,.T.,.F.,.F.,.F.,001)
+						oPrinter2	:= FWMSPrinter():New(cNameArq,IMP_SPOOL,lAdjustToLegacy,cDirSystem + cEndArq,.T.,.F.,Nil,cPrinter,.T.,.F.,.F.,.F.,001)
 						case cTPIMP == "3"
 						oPrinter	:= FWMSPrinter():New(cNameArq,IMP_PDF,lAdjustToLegacy,/*cPathInServer*/,lDisableSetup,.F.,Nil,/*cPrinter*/,.T.,.F.,.F.,lViewPDF)
-						oPrinter2	:= FWMSPrinter():New(cNameArq,IMP_SPOOL,lAdjustToLegacy,cDirDanfe + cEndArq,.T.,.F.,Nil,cPrinter,.T.,.F.,.F.,.F.,001)
+						oPrinter2	:= FWMSPrinter():New(cNameArq,IMP_SPOOL,lAdjustToLegacy,cDirSystem + cEndArq,.T.,.F.,Nil,cPrinter,.T.,.F.,.F.,.F.,001)
 					endCase
 
 					Pergunte(Padr("NFSIGW",Len(SX1->X1_GRUPO)),.F.)

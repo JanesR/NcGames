@@ -87,7 +87,7 @@ Method New(cSistema) Class ApiVtex
 Default cSistema:=""
 
 If "UZ" $ Upper(cSistema)
-  	Self:cHttp 		:= "http://uzgamesold.vtexcommercestable.com.br/"
+  	Self:cHttp 		:= "http://www.uzgamesold.vtexcommercestable.com.br/"
    	Self:cKey		:= 'x-vtex-api-appKey: vtexappkey-uzgames-IFGPTV'
   	Self:cToken		:= 'x-vtex-api-appToken: IFGPTVJTASUYQELXULRECWPWHRCQHPULHJZNMYHVSSGOHPCPDVITRVFMPJICSTLLXJQHFYKWDVMJPBPROMMMGBTMDNYDQEDYHVQXYVKFKLPWJWWNUQOGGZEWPEDSAHFZ'
    	Self:cLoja		:= "uzgamesold"

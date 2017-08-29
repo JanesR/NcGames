@@ -1851,6 +1851,9 @@ local cFile		:= cPath+"ArqErrorEcom.txt"
 Local nH 
 
 nH := fCreate(cFile)
+
+iif(valtype(cXml) == "U" , cXml := " " , cXml := cXml)
+
 fWrite(nH,cXml)
 fClose(nH) 
 

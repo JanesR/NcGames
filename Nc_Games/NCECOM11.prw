@@ -2679,6 +2679,7 @@ If !lB2B
 	AADD(aLojas,"12=MARKETPLACE MEGAMAMUTE")
 	AADD(aLojas,"13=MARKETPLACE SHOPFACIL")
 	AADD(aLojas,"14=MARKETPLACE MAGAZINE LUIZA")
+	AADD(aLojas,"15=MARKETPLACE CARREFOUR")
 	
 	aAdd(aParamBox,{2,"Loja"			,"1"	, aLojas	,120,".T."					,.F.})
 	aOpcao:={}

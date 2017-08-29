@@ -2913,28 +2913,29 @@ User Function TestCTE01()
 	alert(cRet)
 	oWsdl := NIL
 	RestArea(aArea)
-Return
+Return       
 
-user function notImportCli(aDados)
+User Function SPFCLOSE()
 
+SPF_CLOSE("SIGAPSS.SPF")
+
+Return( Nil )
+
+user function atuCliCia()
 Local aArea := GetArea()
-Local cQuery := "select a1_zcodcia from sa1010 where a1_zcodcia != 0"
-Local cAlias := GetNextAlias()
-Local aCli := {}
+Local cQry := "select A1_ZCODCIA codcia  from sa1010 where A1_ZCODCIA != 0 order by A1_ZCODCIA"
+Local cAliasQry := GetNextAlias()
+Local _Cli := {}
+dbUseArea(.T., "TOPCONN", TCGenQry(,,cQry), cAliasQry, .T., .F.)
+While !(cAliasQry)->(Eof())
+	aadd(_Cli, { str((cAliasQry)->CODCIA),"1"})
 
-Default aDados:={"01","03"}
-RpcSetType(3)
-RpcSetEnv(aDados[1],aDados[2])
+	(cAliasQry)->(DbSkip())
+End
 
-dbUseArea(.T., "TOPCONN", TCGenQry(,,cQuery), cAlias, .T., .F.)
-
-Do while !((cAlias)->(Eof()))
-
-aadd(aCli,{ iif( ValType( (cAlias)->a1_zcodcia) == "N",alltrim(str((cAlias)->a1_zcodcia)),(cAlias)->a1_zcodcia)  ,"1"})
-(cAlias)->(dbSkip())
-EndDo
-
-U_NCECOM02(aCli)
+If Len(_Cli)>0
+	U_NCECOM02(_Cli)
+EndIf
 
 RestArea(aArea)
 return

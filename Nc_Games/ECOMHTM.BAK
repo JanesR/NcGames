@@ -1921,6 +1921,8 @@ Local cSendSrv := GetNewPar("MV_RELSERV","")
 Local lMailAuth := GetNewPar("MV_RELAUTH",.F.) 
 Local nSmtpPort := GetNewPar("MV_GCPPORT","")
 Local nPopPort
+Local lSSL	:= SuperGetMv("MV_RELSSL",.F.)
+Local lTLS	:= SuperGetMv("MV_RELTLS",.F.)
 
 Local xRet 
 Local oServer, oMessage
@@ -1935,8 +1937,8 @@ If At(":",cSendSrv) > 0
 EndIf
 
 oServer := TMailManager():New()
-//oServer:SetUseSSL( .T. ) //ADD 26/05/2015 -- configuração de gmail
-oServer:SetUseTLS( .T. ) //ADD 23/06/2016 -- configuração de gmail
+oServer:SetUseSSL( lSSL ) //ADD 26/05/2015 -- configuração de gmail
+oServer:SetUseTLS( lTLS ) //ADD 23/06/2016 -- configuração de gmail
 oServer:Init( "", cSendSrv, cUser, cPass,/*nPopPort*/,nSmtpPort)
 
 // estabilish the connection with the SMTP server
@@ -2435,8 +2437,8 @@ cHtml += '        type="text/css">
 cHtml += '    </head>
 cHtml += '    <body bgcolor="#FFFFFF" style="font-size: 16px; margin: 0px; padding: 0px; background-repeat: repeat-x; background-position: top; background-color: #FFF; color: #000000; font-family: Tahoma; text-shadow: 0px 0px #FFFFFF; border: #FFFFFF;">
 cHtml += '        <center>
-cHtml += '            <div id="principal" style="margin: 20px auto; width: 1212px; padding: 15px; background-color: #FFF; border: #FFFFFF; border-top-color: #FFFFFF; border-bottom-color: #FFFFFF; border-left-color: #FFFFFF; font-size: 9px;">
-cHtml += '                <table style="border-radius: 20px; background: #ececec;" cellpadding="0"
+cHtml += '            <div id="principal" style="margin: 20px auto; width: 90%; padding: 15px; background-color: #FFF; border: #FFFFFF; border-top-color: #FFFFFF; border-bottom-color: #FFFFFF; border-left-color: #FFFFFF; font-size: 9px;">
+cHtml += '                <table style="border-radius: 20px; background: #ececec;" cellpadding="0" width: 90%'
 cHtml += '                cellspacing="0" width="119%">
 cHtml += '                    <tbody>
 cHtml += '                        <tr align="center" valign="middle">
@@ -2532,7 +2534,7 @@ cHtml += '                </style>
 cHtml += '                <table style="width: 70%; text-align: center;" border="0">
 cHtml += '                    <tbody>
 cHtml += '                        <tr>
-cHtml += '                            <th style="background: #3399ff; border-radius: 25px 25px 0 0;" colspan="4">
+cHtml += '                            <th style="background: #3399ff; border-radius: 25px 25px 0 0;" colspan="5">
 cHtml += '                                <div>
 cHtml += '                                    <span style="font-family:Arial, Helvetica, sans-serif; font-size:16px; font-weight:bold; color:#FFF;">
 cHtml += '                                        Dados do Pedido
@@ -2541,23 +2543,23 @@ cHtml += '                                </div>
 cHtml += '                            </th>
 cHtml += '                        </tr>
 cHtml += '                        <tr>
-cHtml += '                            <td style="width: 25%;" class="box1">
+cHtml += '                            <td style="width: 20%;" class="box1">
 cHtml += '                                Loja</td>
-cHtml += '                            <td style="width: 25%;" class="box1">
+cHtml += '                            <td style="width: 20%;" class="box1">
 cHtml += '                                <div>
 cHtml += '                                    Pedido Site
 cHtml += '                                    <div>
 cHtml += '                            </td>
-cHtml += '                            <td style="width: 25%;" class="box1">
+cHtml += '                            <td style="width: 20%;" class="box1">
 cHtml += '                                <div>
 cHtml += '                                    Pedido Protheus
 cHtml += '                                    <div>
 cHtml += '                            </td>
-cHtml += '                            <td style="width: 25%;" class="box1">
+cHtml += '                            <td style="width: 20%;" class="box1">
 cHtml += '                                <div>
 cHtml += '                                    Emissão</div>
 cHtml += '                            </td>
-cHtml += '                            <td style="width: 25%;" class="box1">
+cHtml += '                            <td style="width: 20%;" class="box1">
 cHtml += '                                <div>
 cHtml += '                                    Valor do pedido
 cHtml += '                                </div>

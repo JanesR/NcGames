@@ -2874,13 +2874,6 @@ User Function TestCTE01()
 
 
 	oWsdl := TWsdlManager():New()
-	/*
-	oWsdl:cSSLCACertFile := "\certs\000051_ca.pem"
-	oWsdl:cSSLCertFile := "\certs\000051_cert.pem"
-	oWsdl:cSSLKeyFile := "\certs\000051_key.pem"
-	oWsdl:cSSLKeyPwd := "01455929"
-	oWsdl:nTimeout := 120
-	*/
 
 	xRet := oWsdl:ParseURL( "http://192.168.0.200:8080/NFESBRA.apw?WSDL" )
 	if xRet == .F.
@@ -2895,18 +2888,7 @@ User Function TestCTE01()
 		conout("Erro SetOperation: " + oWsdl:cError)
 		return
 	EndIf
-	/*
-	cMsg += '<?xml version="1.0" encoding="UTF-8"?>'
-	cMsg += '<consSitCTe versao="2.00" xmlns="http://www.portalfiscal.inf.br/cte/wsdl/CteRecepcaoCT>'
-	cMsg += '<tpAmb>2</tpAmb>'
-	cMsg += '<xServ>'
-	cMsg += 'CONSULTA'
-	cMsg += '</xServ>'
-	cMsg += '<chCTe>'
-	cMsg += '35170207177745000170570010000337151003749837'
-	cMsg += '</chCTe>'
-	cMsg += '</consSitCTe>'
-	*/
+
 	cMsg += '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:nfs="http://webservices.totvs.com.br/nfsebra.apw">
 	cMsg += '<soapenv:Header/>
 	cMsg += '<soapenv:Body>
@@ -2927,7 +2909,7 @@ User Function TestCTE01()
 	endif
 
 	cRet := oWsdl:GetSoapResponse()
-
+    cRet
 	alert(cRet)
 	oWsdl := NIL
 	RestArea(aArea)
