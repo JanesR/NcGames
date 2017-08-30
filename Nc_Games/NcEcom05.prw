@@ -218,6 +218,16 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 
 						ZC6->ZC6_TPPROD := "N"
 						ZC6->(MsUnlock())
+						
+						DbSelectArea("SB2")
+						SB2->(DBSETORDER(1))
+
+						If !SB2->(DbSeek(xFilial("SB2") + PADR(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT,TAMSX3("B1_COD")[1]) + cArmPed,.T.))
+							CriaSB2(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT,cArmPed)
+						EndIf
+
+						SB2->(dbCloseArea())
+
 						nItem += 1
 					Else
 						//JR
@@ -255,6 +265,16 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 							endif
 
 							ZC6->(MsUnlock())
+
+							DbSelectArea("SB2")
+							SB2->(DBSETORDER(1))
+
+							If !SB2->(DbSeek(xFilial("SB2") + PADR(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT,TAMSX3("B1_COD")[1]) + cArmPed,.T.))
+								CriaSB2(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT,cArmPed)
+							EndIf
+
+							SB2->(dbCloseArea())
+
 							nItem += 1
 						Next nXkit
 
@@ -529,12 +549,21 @@ endif
 	AADD(aVetor,{"A1_FILIAL", xFilial("SA1") ,Nil})
 	AADD(aVetor,{"A1_COD", _cDoc,Nil})
 	AADD(aVetor,{"A1_LOJA", "01",Nil})
-	AADD(aVetor,{"A1_PESSOA", IIF(UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) = "CPF","F","J"),Nil})
-	AADD(aVetor,{"A1_NOME",  upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
-	AADD(aVetor,{"A1_NREDUZ",upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
+
+	if !lJaExist
+		AADD(aVetor,{"A1_NOME",  upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
+		AADD(aVetor,{"A1_NREDUZ",upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
+		AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CPF", "F","S"),Nil})
+		AADD(aVetor,{"A1_PESSOA", IIF(UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) = "CPF","F","J"),Nil})
+		AADD(aVetor,{"A1_CGC", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT,Nil})
+		AADD(aVetor,{"A1_INSCR", iif( upper(docType) == "RG","ISENTO",docID),Nil})
+		AADD(aVetor,{"A1_PFISICA", iif( upper(docType) == "RG" ,docID," "),Nil})
+		AADD(aVetor,{"A1_GRPTRIB", iif(upper(docCli) == "CPF","CFS",iif(upper(docType) == "RG","CFI","SOL")),Nil})
+		AADD(aVetor,{"A1_CONTRIB", iif( upper(docType) == "RG","2","1")	,Nil})
+	endif
+
 	AADD(aVetor,{"A1_END", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT)),Nil})
 	AADD(aVetor,{"A1_COMPLEM",iif(XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER,"_ship_to_street_compl"), upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_compl:TEXT ))," ") + "- Ref.:" + iif(XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER,"_REFERENCE"),upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_reference:TEXT ))," ") ,Nil})
-	AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CPF", "F","S"),Nil})
 	AADD(aVetor,{"A1_EST", upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
 	AADD(aVetor,{"A1_NATUREZ", "19101",Nil})
 	AADD(aVetor,{"A1_COD_MUN", _cCodMun,Nil})
@@ -554,30 +583,20 @@ endif
 	AADD(aVetor,{"A1_MUNE", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_city:TEXT)),Nil})
 	AADD(aVetor,{"A1_X_LOCZ", "C",Nil})
 	AADD(aVetor,{"A1_ESTE", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT)),Nil})
-	AADD(aVetor,{"A1_CGC", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT,Nil})
-	AADD(aVetor,{"A1_INSCR", iif( upper(docType) == "RG","ISENTO",docID),Nil})
-	AADD(aVetor,{"A1_PFISICA", iif( upper(docType) == "RG" ,docID," "),Nil})
 	AADD(aVetor,{"A1_VEND", iif(cTemplate == "2", "VN9901","VN9902"),Nil})
 	AADD(aVetor,{"A1_CONTA", "11201010001",Nil})
 	AADD(aVetor,{"A1_TRANSP", "000002",Nil})
 	AADD(aVetor,{"A1_TPFRET", "C",Nil})
-	AADD(aVetor,{"A1_GRPTRIB", iif(upper(docCli) == "CPF","CFS",iif(upper(docType) == "RG","CFI","SOL")),Nil})
+	
 	AADD(aVetor,{"A1_SATIV1", "000037",Nil})
 	AADD(aVetor,{"A1_GRPVEN", "990000",Nil})
-AADD(aVetor,{"A1_CODPAIS", "01058",Nil})
+	AADD(aVetor,{"A1_CODPAIS", "01058",Nil})
 	AADD(aVetor,{"A1_FRETE", "1",Nil})
 	AADD(aVetor,{"A1_TEMODAL", "2",Nil})
 	AADD(aVetor,{"A1_YCANAL", iif(cTemplate=="2","990000","990001") ,Nil})
 	AADD(aVetor,{"A1_XGRPCOM", "ECOMME",Nil})
-	AADD(aVetor,{"A1_CONTRIB", iif( upper(docType) == "RG","2","1")	,Nil})
 	AADD(aVetor,{"A1_RISCO" , 'E',Nil})
 	AADD(aVetor,{"A1_DTNASC" , msdate(),Nil})
-	if cTemplate $ cTempleB2B
-		AADD(aVetor,{"A1_TABELA", iif(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT=="SP","018",IIf(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT$"RJ;RS;SC;PR;MG","112","107")),Nil})
-	else
-		AADD(aVetor,{"A1_TABELA", "CON",Nil})
-	EndIf
-	
 	AADD(aVetor,{"A1_COND", "WEB",Nil})
 	AADD(aVetor,{"A1_XSORTER", "1",Nil})
 	AADD(aVetor,{"A1_AGEND", "2",Nil})
@@ -585,21 +604,25 @@ AADD(aVetor,{"A1_CODPAIS", "01058",Nil})
 	AADD(aVetor,{"A1_ZSEXO", iif( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_gender:TEXT == "Male","M","F"),Nil})
 	AADD(aVetor,{"A1_ZESTCIV", " ",Nil})
 	AADD(aVetor,{"A1_EMAIL", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_email:Text,Nil})
+	AADD(aVetor,{"A1_ZCODCIA", val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHOPPER_ID:TEXT),Nil})
+	AADD(aVetor,{"A1_REGIAO", U_AchaReg(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
+
+	if cTemplate $ cTempleB2B
+		AADD(aVetor,{"A1_TABELA", iif(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT=="SP","018",IIf(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT$"RJ;RS;SC;PR;MG","112","107")),Nil})
+	else
+		AADD(aVetor,{"A1_TABELA", "CON",Nil})
+	EndIf
+	
 
 	if cTemplate$cTempleB2B .And. lJaExist
 		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
 	elseif cTemplate$cTempleB2B .And. !lJaExist
 		AADD(aVetor,{"A1_MSBLQL", "1",Nil})
-	elseif UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) == "CPF"
-		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
+	//elseif UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) == "CPF"
+	//	AADD(aVetor,{"A1_MSBLQL", "2",Nil})
 	else
-		AADD(aVetor,{"A1_MSBLQL", "1",Nil})
+		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
 	endif
-
-	
-	AADD(aVetor,{"A1_ZCODCIA", val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHOPPER_ID:TEXT),Nil})
-	AADD(aVetor,{"A1_REGIAO", U_AchaReg(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
-		
 	
 	if u_CriaCli(aVetor,cNPed, lJaExist)
 		aAdd(_aCli,_cDoc)

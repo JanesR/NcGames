@@ -8,8 +8,8 @@ Observações      Código-Fonte gerado por ADVPL WSDL Client 1.120703
                  e serão perdidas caso o código-fonte seja gerado novamente.
 =============================================================================== */
 
-Static cWSUrl:="https://www.ncgames.com.br/ws/wsintegracao.asmx"   //"https://www9.ciashop.com.br/ncgames/ws/wsintegracao.asmx"
-//Static cWSUrl:="homologuzgames.myciashop.com.br/ws/wsintegracao.asmx"
+//Static cWSUrl:="https://www.ncgames.com.br/ws/wsintegracao.asmx"   //"https://www9.ciashop.com.br/ncgames/ws/wsintegracao.asmx"
+Static cWSUrl:="https://homologuzgames.myciashop.com.br/ws/wsintegracao.asmx"
 
 
 User Function _KYSBAAE(aDados)
