@@ -211,15 +211,15 @@ Static Function M030GTrb()
 	
 	Local cMsg 		:= ""
 
-	If !AllTrim(SA1->A1_INSCR)=="ISENTO" .And. SA1->A1_TIPO=="S"
+	If !AllTrim(SA1->A1_INSCR)=="ISENTO" .And. SA1->A1_TIPO=="S"//SOLIDARIO
 		cConTrib:="1"
 		cGrpTrib:="SOL"
 		cMsg := "Cliente Solidário, contribuinte SIM"
-	ElseIf AllTrim(SA1->A1_INSCR)=="ISENTO" .And. SA1->A1_TIPO=="F"
+	ElseIf AllTrim(SA1->A1_INSCR)=="ISENTO" .And. SA1->A1_TIPO=="F"//PESSOAL FISICA
 		cConTrib:="2"
 		cGrpTrib:="CFS"
 		cMsg := "Cliente Cons.Final, contribuinte NÃO"
-	ElseIf !AllTrim(SA1->A1_INSCR)=="ISENTO" .And. SA1->A1_TIPO=="F"
+	ElseIf !AllTrim(SA1->A1_INSCR)=="ISENTO" .And. SA1->A1_TIPO=="F"//PESSOA FISICA
 		cConTrib:="1"
 		cGrpTrib:="CFI"
 		cMsg := "Cliente Cons.Final, contribuinte SIM"

@@ -444,9 +444,9 @@ Local _cDoc		:= ""
 Local cNPed		:= ""
 Local cAliasQry:= GetNextAlias()
 Local docCli := ""
-Local docType := ""
-Local docID := ""
+Local personType := ""
 Local _GrpCli := ""
+Local docID := ""
 Local _cCodMun := ""
 Local _cMun
 Local aVetor := {}
@@ -525,7 +525,7 @@ endif
 	endif
 
 	docCli 	:= iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_document_type") , oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT, " ") 
-	docType := iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_regional_document_type"),  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_type:TEXT, " ") 
+	personType := upper(iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_customer_type"),  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_customer_type:TEXT, " ") )
 	docID 	:= iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_regional_document_id"), oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_id:TEXT, " ") 
 	_cMun 	:= NoAcento(Padr( upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS2:TEXT), AvSx3("CC2_MUN",3) ))
 	cNPed	:= iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_ORDER_ID"), oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT, " ") 
@@ -553,13 +553,23 @@ endif
 	if !lJaExist
 		AADD(aVetor,{"A1_NOME",  upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
 		AADD(aVetor,{"A1_NREDUZ",upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
-		AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CPF", "F","S"),Nil})
-		AADD(aVetor,{"A1_PESSOA", IIF(UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) = "CPF","F","J"),Nil})
+		AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CNPJ", "S","F"),Nil})
+		AADD(aVetor,{"A1_PESSOA", IIF(upper(docCli) = "CNPJ","J","F"),Nil})
 		AADD(aVetor,{"A1_CGC", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT,Nil})
-		AADD(aVetor,{"A1_INSCR", iif( upper(docType) == "RG","ISENTO",docID),Nil})
-		AADD(aVetor,{"A1_PFISICA", iif( upper(docType) == "RG" ,docID," "),Nil})
-		AADD(aVetor,{"A1_GRPTRIB", iif(upper(docCli) == "CPF","CFS",iif(upper(docType) == "RG","CFI","SOL")),Nil})
-		AADD(aVetor,{"A1_CONTRIB", iif( upper(docType) == "RG","2","1")	,Nil})
+		AADD(aVetor,{"A1_INSCR", iif( upper(personType) == "COMPANY",docID,"ISENTO"),Nil})
+		AADD(aVetor,{"A1_PFISICA", iif( upper(personType) == "RG" ,docID," "),Nil})
+		
+		_GrpCli := "CFS"
+		if personType == "COMPANY" .and. docID != "ISENTO"
+			_GrpCli := "SOL"
+		ElseIf personType == "PERSON" .and. docID != "ISENTO"
+			_GrpCli := "CFS"
+		Else
+			_GrpCli := "CFS"
+		EndIf
+
+		AADD(aVetor,{"A1_GRPTRIB", _GrpCli,Nil})//iif(upper(docCli) == "CPF","CFS",iif(upper(personType) == "RG","CFI","SOL"))
+		AADD(aVetor,{"A1_CONTRIB", iif( upper(docID) == "ISENTO","2","1")	,Nil})
 	endif
 
 	AADD(aVetor,{"A1_END", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT)),Nil})
@@ -618,8 +628,6 @@ endif
 		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
 	elseif cTemplate$cTempleB2B .And. !lJaExist
 		AADD(aVetor,{"A1_MSBLQL", "1",Nil})
-	//elseif UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) == "CPF"
-	//	AADD(aVetor,{"A1_MSBLQL", "2",Nil})
 	else
 		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
 	endif

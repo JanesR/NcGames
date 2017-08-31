@@ -136,7 +136,10 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 				If val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_ENTIDADE_ID:TEXT) == val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
 					//Nome do campo extra que dirá a que site o cliente pertence.
 					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "LOJAS" .And. UPPER(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT)) == "CLIENTEUZGAMES"
-						Loop
+						_cBloqueado := "2"
+						//Loop
+					else
+						_cBloqueado := "1"
 					EndIf
 				EndIf
 			EndIf
@@ -150,7 +153,7 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 			_cTipo		:="F"
 			_GrpCli		:="CFIE"
 			_cContrib	:="2"
-			_cBloqueado	:="2"
+			//_cBloqueado	:="2"
 			
 			_cTab		:=AchaTab(oXml:_SHOPPERLIST:_SHOPPER[i]:_ESTADO:TEXT,"F")
 			_cEstCiv	:=" "
@@ -196,7 +199,7 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 			Endif
 			
 			_cRG	:= ""
-			_cBloqueado:="1"
+			//_cBloqueado:="1"
 			_cSexo	:= " "
 			_cEstCiv	:= " "
 			_dDtNasc	:= Ctod("//")

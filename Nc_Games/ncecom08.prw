@@ -1007,6 +1007,7 @@ If cAcao=="GRAVA_PEDIDO"
 					//Atualiza o status atual do pedido (Pedido gerado com estoque insuficiente)
 					U_NCEC10CI(ZC5->ZC5_NUM, "003",ZC5->ZC5_PVVTEX)
 					COM08EnvMail(aRecZC6,cAcao,lPvVtex)
+					U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,'E-mail de infuficiência enviado','E-mail de infuficiência enviado',ZC5->ZC5_STATUS,.F.,,,ZC5->ZC5_PVVTEX)
 				EndIf
 				
 				If lEstornar

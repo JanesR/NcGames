@@ -176,7 +176,8 @@ USER FUNCTION PE01NFESEFAZ()
 			dbUseArea(.T.,"TOPCONN",TcGenQry(,,cQry),cAliasZX5,,.f.,.T.)
 
 
-			if (SA1->A1_YCODWM != ' ') .AND. (SA1->A1_YEMPDES == FWCodEmp()) .And. !(SA1->A1_YFILDES == '01')
+			//if (SA1->A1_YCODWM != ' ') .AND. (SA1->A1_YEMPDES == FWCodEmp()) .And. !(SA1->A1_YFILDES == '01')
+			if (SA1->A1_YCODWM != ' ') .And. !(SF2->F2_FILIAL == '01')
 
 				cMensCli+="TRANSFERENCIA ENTRE LOJAS "
 				if !empty(alltrim(SF2->F2_YCODMOV))
@@ -194,7 +195,7 @@ USER FUNCTION PE01NFESEFAZ()
 					cMensCli+="P/  NC STORE WM " + SF2->F2_YCODMOV + " ARMAZEM 03 QUALIDADE."
 				endif
 
-			Elseif SA1->A1_YCODWM != ' ' //.And. SF2->F2_YTOPER=="TLS"
+			Elseif SA1->A1_YCODWM != ' ' .AND. (FWCodEmp() =="03") .AND. (SF2->F2_FILIAL == '01') //.And. SF2->F2_YTOPER=="TLS"
 				DBSelectArea("ZX5")
 				DBSetOrder(1)
 				DbSeek(xFilial("ZX5")+"00006"+SA1->A1_YCODWM)
