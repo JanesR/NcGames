@@ -82,7 +82,9 @@ Local cEndereco
 Local nLenMun	:=AvSx3("CC2_MUN",3)
 Local cTabPrc := ""
 Local lSimular:=IsIncallStack("U_M01SIMUL")
-
+Local _cVend := "VN9901"
+Local _Canal := "990000"
+Local _lB2B	:=.T.
 PRIVATE lMsErroAuto 		:= .F.
 Private lMsHelpAuto		:= .T.
 PRIVATE lAutoErrNoFile	:= .T.
@@ -135,11 +137,17 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 			if valtype( xmlChildEx(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS,"_CAMPO_EXTRA"))=="O"
 				If val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_ENTIDADE_ID:TEXT) == val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
 					//Nome do campo extra que dirá a que site o cliente pertence.
-					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "LOJAS" .And. UPPER(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT)) == "CLIENTEUZGAMES"
+					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "LOJA" .And. UPPER(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT)) == "CLIENTEUZGAMES"
 						_cBloqueado := "2"
+						_cVend := "VN9902"
+						_Canal := "990001"
+						_lB2B := .F.
 						//Loop
 					else
 						_cBloqueado := "1"
+						_cVend := "VN9901"
+						_Canal := "990000"
+						_lB2B := .T.
 					EndIf
 				EndIf
 			EndIf
@@ -271,9 +279,15 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 		EndIf
 		_cNome:=Upper(_cNome)
 		
-		cTabPrc := iif(oXml:_SHOPPERLIST:_SHOPPER[i]:_ESTADO:TEXT=="SP","018",;
-		IIf(oXml:_SHOPPERLIST:_SHOPPER[i]:_ESTADO:TEXT$"RJ;RS;SC;PR;MG","112","107"))
+
+		if _lB2B
+			cTabPrc := iif(oXml:_SHOPPERLIST:_SHOPPER[i]:_ESTADO:TEXT=="SP","018",;
+			IIf(oXml:_SHOPPERLIST:_SHOPPER[i]:_ESTADO:TEXT$"RJ;RS;SC;PR;MG","112","107"))
+		else
+			cTabPrc := "CON"
+		Endif
 		
+
 		aVetor:={}
 		AADD(aVetor,{"A1_FILIAL" 	,xFilial("SA1") ,Nil})
 		AADD(aVetor,{"A1_COD" 		,_cDoc,Nil})
