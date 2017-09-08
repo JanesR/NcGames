@@ -97,9 +97,9 @@ For nInd:=1 To Len(aDados)
 	aConexoes:=GetUserInfoArray()
 	nContar:=0
 	AEVAL( aConexoes, {|a| IIf( (a[6]==GetEnvServer() .And. AllTrim(Upper(a[5]))=="U_WMF01Grv" ),nContar++, )   }  )
-	StartJob( "U_WMF01Grv",GetEnvServer(), nContar >= 5, aDadosAux)   
+	//StartJob( "U_WMF01Grv",GetEnvServer(), nContar >= 5, aDadosAux)   
 	//StartJob( "U_WMF01Grv",GetEnvServer(), .T., aDadosAux)
-	//U_WMF01Grv(aDadosAux)       
+	U_WMF01Grv(aDadosAux)       
 Next
 
 RestArea(aAreaAtu)
