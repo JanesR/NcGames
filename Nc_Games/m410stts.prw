@@ -127,8 +127,9 @@ User Function M410STTS
 	
 	U_NC110Del(SC5->C5_NUM)
 
-	If (INCLUI .Or. ALTERA) .And. (lPedidoSite .Or.  ( lCondPag .And. SC5->C5_XSTAPED == "15")  .Or. lWMPedido )
+	If SC5->C5_XCIAFAT<>'S' .And. (INCLUI .Or. ALTERA) .And. (lPedidoSite .Or.  ( lCondPag .And. SC5->C5_XSTAPED == "15")  .Or. lWMPedido )
 	
+		
 		Processa({||U_NC110MTA410()},"Processando Reserva.")
 	
 		If SC0->(DbSeek(xFilial()+SC5->C5_NUM  ))
@@ -139,6 +140,7 @@ User Function M410STTS
 		Else
 			MsgStop("Não foi possível realizar a reserva do pedido"+SC5->C5_NUM)
 		EndIf
+		
 	EndIf
 	
 

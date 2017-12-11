@@ -29,12 +29,12 @@ Private cTexto	:= ""
 Private dData	:= ctod("  /  /  ")
 
 //// LIMPA A LEGENDA QUANDO O PEDIDO É REJEITADO
-	dbSelectArea("SA1")
-	dbSetOrder(1)      // A1_FILIAL + A1_COD + A1_LOJA
-    dbseek(xFilial("SA1")+cCliAtu+cLojaAtu)
-    RECLOCK("SA1",.F.)  
- 	SA1->A1_YLEGEND := ""  	
-	MSUNLOCK() 
+dbSelectArea("SA1")
+dbSetOrder(1)      // A1_FILIAL + A1_COD + A1_LOJA
+dbseek(xFilial("SA1")+cCliAtu+cLojaAtu)
+RECLOCK("SA1",.F.)
+SA1->A1_YLEGEND := ""
+MSUNLOCK()
 ////////////////////////////////////////////////////////////////////////////////////
 
 DbSelectArea("SZR")
@@ -195,14 +195,37 @@ cTO	 := Posicione("SA3",1,xFilial("SA3")+cVend1,"A3_EMAIL")
 //cTO	 := "pcesar@ncgames.com.br;halves@ncgames.com.br"
 cCC	 := ""
 cBCC	 := ""
-cSUBJECT := "[NC GAMES] Rejeição de Crédito do cliente: "+alltrim(posicione("SA1",1,xFilial("SA1")+cCliAtu+cLojaAtu,"A1_NOME"))+"( "+cCliAtu+"/"+cLojaAtu+" )"
-cBODY	:= "Pedidos rejeitados pelo crédito: "+substr(cTMPPeds,1,len(cTMPPeds)-1)+chr(13)+chr(10)+chr(13)+chr(10)
-cBODY	+= "Prezado Vendedor: "+getadvfval("SA3","A3_NOME",xFilial("SA3")+cVend1,1,"")+","+chr(13)+chr(10)+"Os pedidos informados foram rejeitados pelo departamento de crédito:"+chr(13)+chr(10)+chr(13)+chr(10)
-cBODY	+= alltrim(cObsfin)+chr(13)+chr(10)+ctexto+chr(13)+chr(10)+chr(13)+chr(10)
-cBODY	+= "Esta notificação também está disponível para visualização no seu pedido de vendas."
-//cBODY	+= "Data limite para retorno das informações: "+dtoc(dData)
-aFiles	:= {}
 
+DbSelectArea("ZC5")
+DbSetOrder(2)
+
+If DbSeek(xFilial("ZC5")+SC9->C9_PEDIDO)
+	IF AllTrim(ZC5->ZC5_COND) == "FAT" .And. AllTrim(ZC5->ZC5_CODPAG) == "54" .And. AllTrim(ZC5->ZC5_NUMPV) != ""
+		cSUBJECT := "[NC GAMES] Rejeição de Crédito do cliente: "+alltrim(posicione("SA1",1,xFilial("SA1")+cCliAtu+cLojaAtu,"A1_NOME"))+"( "+cCliAtu+"/"+cLojaAtu+" ) - E-Commerce Faturado"
+		cBODY	:= "Pedidos rejeitados pelo crédito: "+ AllTrim(Str(ZC5->ZC5_NUM)) +"\" +substr(cTMPPeds,1,len(cTMPPeds)-1)+chr(13)+chr(10)+chr(13)+chr(10)
+		cBODY	+= "Prezado Vendedor: "+getadvfval("SA3","A3_NOME",xFilial("SA3")+cVend1,1,"")+","+chr(13)+chr(10)+"Os pedidos informados foram rejeitados pelo departamento de crédito:"+chr(13)+chr(10)+chr(13)+chr(10)
+		cBODY	+= alltrim(cObsfin)+chr(13)+chr(10)+ctexto+chr(13)+chr(10)+chr(13)+chr(10)
+		cBODY	+= "Esta notificação também está disponível para visualização no monitor de pedidos."
+		//cBODY	+= "Data limite para retorno das informações: "+dtoc(dData)
+		aFiles	:= {}
+		/*Else
+		cSUBJECT := "[NC GAMES] Rejeição de Crédito do cliente: "+alltrim(posicione("SA1",1,xFilial("SA1")+cCliAtu+cLojaAtu,"A1_NOME"))+"( "+cCliAtu+"/"+cLojaAtu+" )"
+		cBODY	:= "Pedidos rejeitados pelo crédito: "+substr(cTMPPeds,1,len(cTMPPeds)-1)+chr(13)+chr(10)+chr(13)+chr(10)
+		cBODY	+= "Prezado Vendedor: "+getadvfval("SA3","A3_NOME",xFilial("SA3")+cVend1,1,"")+","+chr(13)+chr(10)+"Os pedidos informados foram rejeitados pelo departamento de crédito:"+chr(13)+chr(10)+chr(13)+chr(10)
+		cBODY	+= alltrim(cObsfin)+chr(13)+chr(10)+ctexto+chr(13)+chr(10)+chr(13)+chr(10)
+		cBODY	+= "Esta notificação também está disponível para visualização no seu pedido de vendas."
+		//cBODY	+= "Data limite para retorno das informações: "+dtoc(dData)
+		aFiles	:= {}	*/
+	EndIf
+Else
+	cSUBJECT := "[NC GAMES] Rejeição de Crédito do cliente: "+alltrim(posicione("SA1",1,xFilial("SA1")+cCliAtu+cLojaAtu,"A1_NOME"))+"( "+cCliAtu+"/"+cLojaAtu+" )"
+	cBODY	:= "Pedidos rejeitados pelo crédito: "+substr(cTMPPeds,1,len(cTMPPeds)-1)+chr(13)+chr(10)+chr(13)+chr(10)
+	cBODY	+= "Prezado Vendedor: "+getadvfval("SA3","A3_NOME",xFilial("SA3")+cVend1,1,"")+","+chr(13)+chr(10)+"Os pedidos informados foram rejeitados pelo departamento de crédito:"+chr(13)+chr(10)+chr(13)+chr(10)
+	cBODY	+= alltrim(cObsfin)+chr(13)+chr(10)+ctexto+chr(13)+chr(10)+chr(13)+chr(10)
+	cBODY	+= "Esta notificação também está disponível para visualização no seu pedido de vendas."
+	//cBODY	+= "Data limite para retorno das informações: "+dtoc(dData)
+	aFiles	:= {}
+EndIf
 End Transaction
 
 
@@ -214,7 +237,7 @@ If AllTrim(SC5->C5_YORIGEM)=="WM"
 	U_WM001Cred("R")
 Else
 	u_ENVIAEMAIL(cTO, cCC, cBCC, cSUBJECT, cBODY, aFiles)
-	alert("E-mail de notificação enviado para: "+cTO)	
+	alert("E-mail de notificação enviado para: "+cTO)
 EndIf
 
 RestArea(aAreaSC5)

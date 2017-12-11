@@ -457,6 +457,9 @@ Local aCabec
 Local aItens
 Local aRecZC6
 
+Local oFunc
+Local cLog
+
 Local cQuery	:= ""
 Local cBloqLib 	:= AllTrim(U_MyNewSX6("NCG_000067","S"		,"C","Bloquear Liberacao do PV S=Sim ou N=Nao"	,"","",	.F. ))
 Local cBloqEcom	:= AllTrim(U_MyNewSX6("NCG_000074","S"		,"C","Bloquear Gravacao do PV S=Sim ou N=Nao"	,"","",	.F. ))
@@ -518,6 +521,8 @@ Local cError	:= ""
 Local cWarning	:= ""
 Local oobj
 Local oXml
+Local lFaturado
+Local aMesclado
 
 Default cPvVtex	:= ""
 Default cNumCia 	:= ""
@@ -599,9 +604,9 @@ If cAcao=="GRAVA_PEDIDO"
 		
 		If !Empty(cNumCia)
 			cQuery+="  And ZC5.ZC5_NUM='"+cNumCia+"'"+CRLF
-			cQuery+=" And ZC5.ZC5_FLAG IN (' ','6','7') "+CRLF
+			cQuery+=" And ZC5.ZC5_FLAG IN (' ','2','6','7') "+CRLF
 		Else
-			cQuery+=" And ZC5.ZC5_FLAG = ' ' "+CRLF
+			cQuery+=" And ZC5.ZC5_FLAG in(' ','2') "+CRLF
 		EndIf
 		
 		If cBloqLib=="S" .Or. cBloqEcom=="S"
@@ -622,6 +627,7 @@ If cAcao=="GRAVA_PEDIDO"
 		
 		ZC5->(DbGoTo( nRecZC5))
 		lPvVtex := ZC5->ZC5_PLATAF $ '00*03'
+		lFaturado:=AllTrim(ZC5->ZC5_COND)=='FAT'
 		
 		MyMensagem( ProcName(0)+"-"+ Iif(lPvVtex,"PVVTEX="+ZC5->ZC5_PVVTEX,"PV="+AllTrim(Str(ZC5->ZC5_NUM)) ) )
 		
@@ -661,7 +667,7 @@ If cAcao=="GRAVA_PEDIDO"
 		aRecZC6		:= {}
 		cTipoLib	:= "1"
 		cPreVenda	:= "N"
-		
+		aMesclado	:={}
 		If lPvVtex
 			
 			cNumCliPV	:= AllTrim(ZC5->ZC5_SEQUEN)
@@ -672,7 +678,16 @@ If cAcao=="GRAVA_PEDIDO"
 			SA1->(MsSeek(xFilial("SA1")+cCliEcom+ZC5->ZC5_PLATAF+Trim(ZC5->ZC5_SALES)))
 			
 			cVendedor	:= SA1->A1_VEND
+			
+			//JR
 			cCanal		:= "990001"
+			if ZC5->ZC5_TPECOM == "B2B"
+				cCanal		:= "990000"
+			Elseif ZC5->ZC5_TPECOM == "B2C"
+				cCanal		:= "990001"
+			ELSE
+				cCanal		:= "990001"
+			Endif
 			cTransp	:= "000002"
 			
 		ElseIf lWMPedido
@@ -697,9 +712,19 @@ If cAcao=="GRAVA_PEDIDO"
 			SA1->(DbSeek(xFilial("SA1")+ZC5->ZC5_CLIENT+ZC5->ZC5_LOJA))
 			
 			cVendedor	:= SA1->A1_VEND
-			cCanal		:= "990000"
-			cTransp	:= "000002"
 			
+			if ZC5->ZC5_TPECOM == "B2B"
+				cCanal		:= "990000"
+			Elseif ZC5->ZC5_TPECOM == "B2C"
+				cCanal		:= "990001"
+			ELSE
+				cCanal		:= "990001"
+			Endif
+			
+			cTransp	:= "000002"
+			If lFaturado
+				cCondPag:=M008CONPG(cCanal,"CIASHOP")
+			EndIf
 		EndIf
 		
 		PtInternal(1,"Pedido Site:"+cNumCliPV)
@@ -718,12 +743,19 @@ If cAcao=="GRAVA_PEDIDO"
 		aadd(aCabec,{"C5_XCODENT"  	,ZC5->ZC5_CODENT				,Nil})
 		aadd(aCabec,{"C5_TRANSP"   	,cTransp						,Nil})
 		
+		//JR
+		if     (ZC5->ZC5_TPECOM) == "B2B"
+			aadd(aCabec,{"C5_TABELA"   	,SA1->A1_TABELA	,Nil})
+		ElseIf (ZC5->ZC5_TPECOM) == "B2C"
+			aadd(aCabec,{"C5_TABELA"   	,"CON"	,Nil})
+		Endif
+
 		if !Empty(ZC5->ZC5_COND)
 			aadd(aCabec,{"C5_XFORMPG"  	,ZC5->ZC5_COND					,Nil})
 		EndIf
-		
+			aadd(aCabec,{"C5_XCIAFAT"   	,IIf(lFaturado,"S","N")						,Nil})
 		If Empty(cCondPag) .And. lWMPedido
-			cCondPag:=M008CONPG(cCanal)
+			cCondPag:=M008CONPG(cCanal,"WM")
 		EndIf
 		
 		aadd(aCabec,{"C5_CONDPAG"  	,cCondPag					,Nil})
@@ -769,11 +801,14 @@ If cAcao=="GRAVA_PEDIDO"
 		Do While (clAlias)->(!Eof() ) .And. Eval(bWbile)
 			
 			ZC6->(DbGoTo( (clAlias)->RecZC6 ))
-			
-			If cPreVenda=="N" .And. SB5->(MsSeek(xFilial("SB5")+ZC6->ZC6_PRODUT)) .And. SB5->(FieldPos("B5_YPREVEN"))>0 .And. SB5->B5_YPREVEN=="S"
-				cTipoLib :="2"
-				cPreVenda:="S"
+				SB5->(MsSeek(xFilial("SB5")+ZC6->ZC6_PRODUT)) 
+			If cPreVenda=="N" .And. SB5->B5_YPREVEN=="S"
+					cTipoLib :="2"
+					cPreVenda:="S"
 			EndIf
+				If Ascan(aMesclado,SB5->B5_YPREVEN)==0
+					AAdd(aMesclado,SB5->B5_YPREVEN)
+				EndIf	
 			
 			If lPvVtex .Or. lWMPedido
 				If !SB2->(MsSeek(xFilial("SB2")+ZC6->ZC6_PRODUT+ZC6->ZC6_LOCAL))
@@ -850,8 +885,10 @@ If cAcao=="GRAVA_PEDIDO"
 			
 			ZC5->ZC5_NUMPV	:= SC5->C5_NUM
 			ZC5->ZC5_PREVEN := SC5->C5_YPREVEN
+			ZC5->ZC5_VEND   := SC5->C5_VEND1
 			ZC5->ZC5_FLAG	:= " "
 			ZC5->(MsUnLock())
+			cLog := ""
 			
 			If lPvVtex .And. AllTrim(ZC5->ZC5_TPPGTO)=="6"//Boleto
 				
@@ -871,12 +908,13 @@ If cAcao=="GRAVA_PEDIDO"
 				
 			EndIf
 			
+			
 			SC6->(DbSetOrder(1))//C6_FILIAL+C6_NUM+C6_ITEM+C6_PRODUTO
 			SC0->(DbSetOrder(1))//C0_FILIAL+C0_NUM+C0_PRODUTO+C0_LOCAL
 			
 			lPvParcial	:= .F.
 			lZerado	:= .T.
-			
+			If !lFaturado
 			For nInd:=1 To Len(aRecZC6)
 				ZC6->(DbGoTo(  aRecZC6[nInd]  )	)
 				ZC6->(RecLock("ZC6",.F.))
@@ -885,6 +923,10 @@ If cAcao=="GRAVA_PEDIDO"
 				If SC6->( DbSeek(xFilial("SC6")+SC5->C5_NUM+ZC6->(ZC6_ITEM+ZC6_PRODUTO)   ) ) .And.   SC0->( DbSeek( xFilial("SC0") +SC6->(C6_RESERVA+C6_PRODUTO+C6_LOCAL)   )   )
 					If lPvVtex
 						U_NCVTEX03(SC6->C6_PRODUTO)
+					
+					//JR\\
+					ElseIf !lWMPedido
+						u_sndPrdUnic(SC6->C6_PRODUTO, SC6->C6_LOCAL)
 					EndIf
 					
 					ZC6->ZC6_QTDRES := SC0->C0_QTDPED
@@ -905,6 +947,9 @@ If cAcao=="GRAVA_PEDIDO"
 				ZC6->(MsUnLock())
 				
 			Next
+			Else
+				lPvParcial:=.F.
+			EndIf
 			
 			SC6->(DbSetOrder(1))//C6_FILIAL+C6_NUM+C6_ITEM+C6_PRODUTO
 			SC6->( DbSeek(xFilial("SC6")+ SC5->C5_NUM ))
@@ -913,6 +958,10 @@ If cAcao=="GRAVA_PEDIDO"
 					SC6->(RecLock("SC6",.F. ))
 					SC6->C6_BLOQUEI := StrZero(1, Len(SC6->C6_BLOQUEI))
 					SC6->(MsUnLock())
+				ElseIf lFaturado
+							If cPreVenda=="N"
+								MaLibDoFat(SC6->(Recno()),SC6->C6_QTDVEN ,.F.,.F.,.T.,.T.,.T.)//MaLibDoFat(nRegSC6,nQtdaLib,lCredito,lEstoque,lAvCred,lAvEst,lLibPar,lTrfLocal,aEmpenho,bBlock,aEmpPronto,lTrocaLot,lOkExpedicao,nVlrCred,nQtdalib2)
+							EndIf	
 				ElseIf lWMPedido
 					MaLibDoFat(SC6->(Recno()),SC6->C6_QTDVEN ,.F.,.F.,.T.,.T.,.T.)//MaLibDoFat(nRegSC6,nQtdaLib,lCredito,lEstoque,lAvCred,lAvEst,lLibPar,lTrfLocal,aEmpenho,bBlock,aEmpPronto,lTrocaLot,lOkExpedicao,nVlrCred,nQtdalib2)
 				EndIf
@@ -937,7 +986,8 @@ If cAcao=="GRAVA_PEDIDO"
 				
 				If !lZerado .And. !cPreVenda=="S"
 					If lBloqCred
-						U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,"Pedido em analise de Crédito.",cMsg,ZC5->ZC5_STATUS,lMsErroAuto,,,ZC5->ZC5_PVVTEX)
+						cLog := "Pedido em analise de Crédito."
+						U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,cLog,cMsg,ZC5->ZC5_STATUS,lMsErroAuto,,,ZC5->ZC5_PVVTEX)
 					Else
 						U_COM08WMS(SC5->C5_NUM,lWMPedido,!lPvParcial)
 					Endif
@@ -979,6 +1029,7 @@ If cAcao=="GRAVA_PEDIDO"
 					//Atualiza o status atual do pedido (Pedido gerado com estoque insuficiente)
 					U_NCEC10CI(ZC5->ZC5_NUM, "003",ZC5->ZC5_PVVTEX)
 					COM08EnvMail(aRecZC6,cAcao,lPvVtex)
+					U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,'E-mail de infuficiência enviado','E-mail de infuficiência enviado',ZC5->ZC5_STATUS,.F.,,,ZC5->ZC5_PVVTEX)
 				EndIf
 				
 				If lEstornar
@@ -986,12 +1037,65 @@ If cAcao=="GRAVA_PEDIDO"
 				Else
 					//COM08WMS()
 				EndIf
-			EndIf
-		EndIf
-		
+
+						If lFaturado
+							SA1->(DbSetOrder(1))
+							If SA1->(DbSeek(xFilial("SA1")+SC5->(C5_CLIENTE+C5_LOJACLI) ) ) .And. ( SA1->A1_YBLQFIN=="1"  .Or. SA1->A1_LC==0   )  
+							cLog:= Dtoc(MsDate())+"-"+Time()+" Cliente sem Credito na Ncgames"							
+								U_COM11Est(cLog)
+							ElseIf Len(aMesclado)>1
+								cLog := Dtoc(MsDate())+"-"+Time()+" Itens mesclados pre-venda e não pre-venda"
+								U_COM11Est(cLog)
+								
+							Else//If aMesclado[1]=="S"//Pre-Venda
+								ZC5->(RecLock("ZC5",.F.))
+								ZC5->ZC5_STATUS:='08'
+								ZC5->(MsUnLock())
+								If cPreVenda=="N"
+									cLog :=	"Pedido Faturado catalogo enviado para Analise de Credito"
+									U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,cLog," Log da atualização: Envio ao credito","",.T.)
+								ElseIf cPreVenda=="S"
+									cLog :=	"Pedido PREVENDA Faturado aguardando liberação para vendas"
+									U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,cLog," Log da atualização: Envio ao credito","",.T.)
+								EndIf
+							EndIf
+						EndIf
+
+
+					EndIf
+				EndIf
+
 		End Transaction
 		
 	EndDo
+	
+			//=====================================================================================================================================
+			//==Adicionado envio de Workflow quando a condição de pagamento do pedido for igual á "FAT"
+			//====================================================================================================================================
+			IF AllTrim(ZC5->ZC5_COND) == "FAT" .And. AllTrim(ZC5->ZC5_CODPAG) == "54" .And. AllTrim(ZC5->ZC5_NUMPV) != ""
+				 oFunc := FuncoesDiversas():New()
+				 
+				oFunc:setHtml('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">')
+				oFunc:setHtml(oFunc:getHtml()+'<html xmlns="http://www.w3.org/1999/xhtml">    ')
+				oFunc:setHtml(oFunc:getHtml()+'    <head>'	)
+				oFunc:setHtml(oFunc:getHtml()+'		   <body>')
+				
+					//cAssunto := "Pedido faturado " + AllTrim(Str(ZC5->ZC5_NUM)) + "."
+					cAssunto := "PV E-Commerce Faturado " + AllTrim(Str(ZC5->ZC5_NUM)) + "\"+ AllTrim(ZC5->ZC5_NUMPV) +"."
+					if !Empty(cLog) .And. cLog != Nil
+						oFunc:setHtml(oFunc:getHtml()+'			<span> ' + cLog + ' </span>')
+					else
+						oFunc:setHtml(oFunc:getHtml()+'			<span> Pedido gravado com sucesso, numero do pedido Protheus' +AllTrim(ZC5->ZC5_NUMPV)+ ' </span>')
+					end if
+				
+				oFunc:setHtml(oFunc:getHtml()+'			</body>')
+				oFunc:setHtml(oFunc:getHtml()+'</html>	')
+					
+				If !oFunc:enviaEmail(cAssunto,,oFunc:retornaEmailVendedorPedido(AllTrim(ZC5->ZC5_NUMPV)),)//cAssunto, aAnexos, cEmailTo, cEmailCc o corpo foi setado no metodo oFunc:setHtml
+						U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,'Erro ao enviar e-mail para '+oFunc:retornaEmailVendedorPedido(AllTrim(ZC5->ZC5_NUMPV)),oFunc:getErro(),ZC5->ZC5_STATUS,.T.,,,ZC5->ZC5_PVVTEX)
+				EndIF
+
+			EndIf
 	
 	(clAlias)->(DbCloseArea())
 	DbSelectArea("ZC5")
@@ -1104,6 +1208,8 @@ ElseIf  cAcao=="VERIFICA_CANCELAMENTO"
 			aRecZC6 := {}
 			Do While (clAlias)->(!Eof() ) .And. ZC6->ZC6_NUM == ZC5->ZC5_NUM
 				U_NCVTEX03(ZC6->ZC6_PRODUT)
+				//JR
+				u_sndPrdUnic(ZC6->ZC6_PRODUT, ZC6->ZC6_LOCAL)
 				aadd(aRecZC6, ZC6->(Recno()) )
 				
 				ZC6->(DbSkip())
@@ -1333,6 +1439,7 @@ ElseIf  cAcao=="VERIFICA_RASTREIO"
 					cHtmlPage := Httpget(cUrlAux)
 					
 					If !ValType(cHtmlPage)=="C"
+						(clAlias)->(DbSkip())
 						Loop
 					EndIf
 					
@@ -3563,12 +3670,14 @@ Return
 ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
 ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
 */
-Static Function M008CONPG(cCanal)
+Static Function M008CONPG(cCanal,cPlataforma)
 
 Local aAreaAtu	:= GetArea()
 Local cAliasQry	:= GetNextAlias()
 Local cQry		:= ""
 Local cRetorno	:= ""
+
+If cPlataforma=="WM"
 
 cQry += "	SELECT ZE4.ZE4_PMEDIO MEDIA, "+CRLF
 cQry += "	ZE4.ZE4_CPDEFA CPDEF,"+CRLF
@@ -3582,6 +3691,17 @@ cQry += "	AND ZE4.D_E_L_E_T_ = ' '"+CRLF
 dbUseArea(.T.,"TOPCONN",TcGenQry(,,cQry),cAliasQry,.T.,.T.)
 
 cRetorno:=(cAliasQry)->CPDEF
+
+	Else
+		cQry += "	SELECT 	SE4.E4_CODIGO "+CRLF
+		cQry += "	FROM "+RetSqlName("SE4")+" SE4"+CRLF
+		cQry += "	WHERE SE4.E4_FILIAL = '"+xFilial("SE4")+"'"+CRLF
+		cQry += "	AND SE4.D_E_L_E_T_ = ' '"+CRLF
+		cQry += "	AND SE4.E4_XPARCFA="+AllTrim(Str(ZC5->ZC5_QTDPAR))
+		dbUseArea(.T.,"TOPCONN",TcGenQry(,,cQry),cAliasQry,.T.,.T.)
+		cRetorno:=(cAliasQry)->E4_CODIGO
+
+	EndIf
 
 (cAliasQry)->(DbCloseArea())
 RestArea(aAreaAtu)

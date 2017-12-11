@@ -6759,77 +6759,73 @@ Return
 
 
 
+User Function xTstSSl()
+	RpcSetType(3)
+	RpcSetEnv("01","01")
+	TSTGetSSL()
+Return
 
-/*
-ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
-±±ºPrograma  ³UPDPR700  ºAutor  ³Microsiga           º Data ³  12/17/15   º±±
-±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
-±±ºDesc.     ³                                                            º±±
-±±º          ³                                                            º±±
-±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
-±±ºUso       ³ AP                                                        º±±
-±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
-*/
-User Function LeRpo()
-Local cTexto1 := "Realizando comparação do(s) RPO(s)... "
-Local cTexto2  := "Gerando Arquivo Excel..."
-Local aIteExcel  := {}
-Local aCabExcel  := {}
-
-MsgRun(cTexto1,,{|| FMonta(@aIteExcel,@aCabExcel) } )
-MsgRun(cTexto2,,{|| DlgToExcel({{"GETDADOS","",aCabExcel,aIteExcel}}) })
-
-Return Nil
-/*
-ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
-±±ºPrograma  |FMonta    ºAutor  ³Rodrigo Aguilar     º Data ³  23/09/2010 º±±
-±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
-±±ºDesc.     ³ Realiza a comparacao dos repositorios                      º±±
-±±º          ³ 									                          º±±
-±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
-±±ºUso       ³                                                            º±±
-±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
-±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
-*/
-Static function FMonta(aIteExcel,aCabExcel)
-Local nlI
-Local aType	:={}
-Local aFile	:={}
-Local aLine	:={}
-Local aDate	:={}
-Local aTime	:={}
-Local aFun	:={}
-
-
-aFun:= GetFuncArray( "U_*", @aType, @aFile, @aLine, @aDate, @aTime )
-
-//Adicionando valores a variavel de cabecalho
-
-
-
-AADD(aCabExcel, {"Fonte" ,"Fonte","@!",20,0,"AllwaysTrue()","û","N","" })
-AADD(aCabExcel, {"Linha" ,"Linha","@!",20,0,"AllwaysTrue()","û","N","" })
-AADD(aCabExcel, {"Data"  ,"Data","@!",20,0,"AllwaysTrue()","û","N","" })
-AADD(aCabExcel, {"Hora"  ,"Data","@!",20,0,"AllwaysTrue()","û","N","" })
-AADD(aCabExcel, {"Funcao","Funcao","@!",20,0,"AllwaysTrue()","û","N","" })
-
-AADD(aCabExcel, {"",""   ,"@!",10,0,"AllwaysTrue()","û","N","" })
-
-For nlI:=1 To Len(aFile)
-	aFuncInfo	:= GetApoInfo( aFile[nlI] )
+Static function TSTGetSSL()
 	
-	//If Ascan(aIteExcel, {|a| a[1]==aFuncInfo[1] }  )>0
-	//Loop
+	Local cURL := "https://api.sandbox.blackhawknetwork.com/productCatalogManagement/v1/productCatalogs?first=0&maximum=10&ascending=true&exactMatch=false&caseSensitive=false"
+	Local nTimeOut := 120
+	Local aHeadOut := {}
+	Local cHeadRet := ""
+	Local cRetorno := ""
+	Local oJson
+	Local cCertificate	:="\certs\cert.pem"
+	Local cPrivKey		:="\certs\privkey.pem"
+	Local cPassword		:="CNTC82SH"
+	Local cPostParam
+	Local oRestClient := FWRest():New(cURL)
+
+
+	
+	cRetorno := HTTPSGet( cURL, "\certs\cert.pem", "\certs\privkey.pem", "CNTC82SH", "", nTimeOut, aHeadOut, @cHeadRet )
+	FWJsonDeserialize(cRetorno,@oJson)
+	cURL:=oJson:results[1]:entityId
+
+	oRestClient:setPath("")
+	If oRestClient:Get()
+		ConOut(oRestClient:GetResult())
+	Else
+		conout(oRestClient:GetLastError())
+	Endif
+	cPostParam:=""	
+	//If At("https://sandbox",cUrl)>0
+		//cURL:=Stuff(cURL,9,0,"api.")
 	//EndIf
+	//cRetorno := HTTPSGet( cURL, "\certs\cert.pem", "\certs\privkey.pem", "CNTC82SH", "", nTimeOut, aHeadOut, @cHeadRet )
 	
-	AADD(aIteExcel, {  aFuncInfo[1],aFuncInfo[2],DTOC(aFuncInfo[4]),aFuncInfo[5],aFun[nlI] }  )
-Next nlI
+	//cURL:='https://api.sandbox.blackhawknetwork.com/eGiftProcessing/v1/generateEGift HTTP/1.1'
+	//Conout("================>Antes")
+	//cPostParam:='{     "giftAmount": 15,     "productConfigurationId": "AQKNLF4MKRAA5RBPJD00QB9P4R"}'
+	//cRetorno := HTTPSPost(  cURL ,  cCertificate , cPrivKey , cPassword ,"", cPostParam , nTimeOut, aHeadOut,@cHeadRet)
+	//FWJsonDeserialize(cRetorno,@oJson)
 
-Return Nil
+	aHeadOut:={'Content-Length: 86'}
+	aHeadOut:={'Content-Type: application/json'}
+
+	cURL:='https://api.sandbox.blackhawknetwork.com/eGiftProcessing/v1/generateEGift'
+	oRestClient := FWRest():New(cURL)
+
+	oRestClient:setPath("")
+	cPostParam:='{     "giftAmount": 15,     "productConfigurationId": "AQKNLF4MKRAA5RBPJD00QB9P4R"}'
+	oRestClient:SetPostParams(cPostParam)
+	
+	If oRestClient:Post(aHeadOut)
+		FWJsonDeserialize(oRestClient:cResult,@oJson)
+		ConOut(oRestClient:GetResult())
+	Else
+		conout(oRestClient:GetLastError())
+	Endif 
+	
+	
+	Conout("Retorno:=")
+	Conout(cRetorno)
+	
+	Conout("================>Depois")
+return
+
+
+

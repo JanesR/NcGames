@@ -2802,7 +2802,7 @@ Else
 		cNumPedSite,;
 		SC5->C5_EMISSAO,;
 		(cAlias)->ZC5_DTVTEX,;
-		Iif(!Empty((cAlias)->ZC5_STATUS),Iif((cAlias)->ZC5_STATUS == "10", "Sim", "Não"),"" ),;
+		Iif(!Empty((cAlias)->ZC5_STATUS),Iif((cAlias)->ZC5_STATUS == "10" .OR. (cAlias)->ZC5_STATUS == "08", "Sim", "Não"),"" ),;
 		SA1->A1_COD 							,;
 		SA1->A1_LOJA 				   		,;
 		SA1->A1_NOME 				   		,;
@@ -2870,8 +2870,14 @@ olCheck := TCheckBox():New(011,350,"Inverte Seleção",,oPanelESQ3,050,050,,,,,,,,
 olCheck:BLCLICKED	:= {|| INVERTSELL() }
 
 TBtnBmp2():New(5,1100,30,45,"FINAL",,,,{|| lContinuar:=.F.,oDlg:End() },oPanelESQ3,"Sair",,.T. )
-TBtnBmp2():New(5,1050,30,45,"PCOFXOK",,,,{|| IIF( FCONFIRMA(),(lContinuar:=.T.,oDlg:End()),Nil) },oPanelESQ3,"Confirmar",,.T. )
-TBtnBmp2():New(5,1000,30,45,"BMPUSER"	,,,,{|| Processa( {|| U_PR106Inf(olMsNewGet) }) },oPanelESQ3,"Pedido Cliente",,.T. )
+
+TBtnBmp2():New(5,1050,30,45,"PMSRRFSH"	,,,,{|| Processa( {|| U_NCGPR140() }) },oPanelESQ3,"Retornar Pedidos",,.T. )
+
+TBtnBmp2():New(5,1000,30,45,"PCOFXOK",,,,{|| IIF( FCONFIRMA(),(lContinuar:=.T.,oDlg:End()),Nil) },oPanelESQ3,"Confirmar",,.T. )
+TBtnBmp2():New(5,950,30,45,"BMPUSER"	,,,,{|| Processa( {|| U_PR106Inf(olMsNewGet) }) },oPanelESQ3,"Pedido Cliente",,.T. )
+
+
+
 
 TBtnBmp2():New(5,400,30,45,"PESQUISA",,,,{|| PESQUISA(cpCombo,cpEdit1)},oPanelESQ3,"Pesquisa",,.T. )
 opCombo		:= TComboBox():New(007,001,{|u| If(PCount()>0,cpCombo:=u,cpCombo)},apItens,070,020,oPanelESQ3,,{|| Ordena(cpCombo,cpEdit1) },,,,.T.,,,,,,,,,"cpCombo")

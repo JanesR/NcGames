@@ -6756,3 +6756,116 @@ EndDo
 MemoWrite( "d:\CES\SA7.txt", cProdErro )
 
 Return 
+
+
+
+User Function xTstSSl()
+	RpcSetType(3)
+	RpcSetEnv("01","01")
+	TSTGetSSL()
+Return
+
+Static function TSTGetSSL()
+	
+	Local cURL := "https://api.sandbox.blackhawknetwork.com/productCatalogManagement/v1/productCatalogs?first=0&maximum=10&ascending=true&exactMatch=false&caseSensitive=false"
+	Local nTimeOut := 120
+	Local aHeadOut := {}
+	Local cHeadRet := ""
+	Local cRetorno := ""
+	Local oJson
+	Local cCertificate	:="\certs\cert.pem"
+	Local cPrivKey		:="\certs\privkey.pem"
+	Local cPassword		:="CNTC82SH"
+	Local cPostParam
+	Local oRestClient := FWRest():New(cURL)
+
+
+	
+	cRetorno := HTTPSGet( cURL, "\certs\cert.pem", "\certs\privkey.pem", "CNTC82SH", "", nTimeOut, aHeadOut, @cHeadRet )
+	FWJsonDeserialize(cRetorno,@oJson)
+	cURL:=oJson:results[1]:entityId
+
+	oRestClient:setPath("")
+	If oRestClient:Get()
+		ConOut(oRestClient:GetResult())
+	Else
+		conout(oRestClient:GetLastError())
+	Endif
+	cPostParam:=""	
+	//If At("https://sandbox",cUrl)>0
+		//cURL:=Stuff(cURL,9,0,"api.")
+	//EndIf
+	//cRetorno := HTTPSGet( cURL, "\certs\cert.pem", "\certs\privkey.pem", "CNTC82SH", "", nTimeOut, aHeadOut, @cHeadRet )
+	
+	//cURL:='https://api.sandbox.blackhawknetwork.com/eGiftProcessing/v1/generateEGift HTTP/1.1'
+	//Conout("================>Antes")
+	//cPostParam:='{     "giftAmount": 15,     "productConfigurationId": "AQKNLF4MKRAA5RBPJD00QB9P4R"}'
+	//cRetorno := HTTPSPost(  cURL ,  cCertificate , cPrivKey , cPassword ,"", cPostParam , nTimeOut, aHeadOut,@cHeadRet)
+	//FWJsonDeserialize(cRetorno,@oJson)
+
+	aHeadOut:={'Content-Length: 86'}
+	aHeadOut:={'Content-Type: application/json'}
+
+	cURL:='https://api.sandbox.blackhawknetwork.com/eGiftProcessing/v1/generateEGift'
+	oRestClient := FWRest():New(cURL)
+
+	oRestClient:setPath("")
+	cPostParam:='{     "giftAmount": 15,     "productConfigurationId": "AQKNLF4MKRAA5RBPJD00QB9P4R"}'
+	oRestClient:SetPostParams(cPostParam)
+	
+	If oRestClient:Post(aHeadOut)
+		FWJsonDeserialize(oRestClient:cResult,@oJson)
+		ConOut(oRestClient:GetResult())
+	Else
+		conout(oRestClient:GetLastError())
+	Endif 
+	
+	
+	Conout("Retorno:=")
+	Conout(cRetorno)
+	
+	Conout("================>Depois")
+return
+
+
+
+User Function BHN01JOB()
+	RpcSetEnv('01','03')
+	u_NCGBHN01()
+Return
+
+User Function NCGBHN01()
+	Local cEndPoint:=U_BHN00END()
+	Local cURL := 'https://api.certification.blackhawknetwork.com/productCatalogManagement/v1/productCatalogs?first=0&maximum=10&ascending=true&exactMatch=false&caseSensitive=falsefirst=0&maximum=10&ascending=true&exactMatch=false&caseSensitive=false'
+	Local nTimeOut := 120
+	Local aHeadOut := {}
+	Local cHeadRet := ""
+	Local cRetorno := ""
+	Local oJson
+	Local cPostParam
+	Local oRestClient := FWRest():New(cURL)
+
+	cRetorno := HTTPSGet( cURL, "\certs\certif_cert.pem", "\certs\certif_key.pem", "XKG93V4NNHLDQ00AJQVBLYYLJW", "", nTimeOut, aHeadOut, @cHeadRet )
+
+	oRestClient:setPath("")
+	If oRestClient:Get()
+		ConOut(oRestClient:GetResult())
+	Else
+		conout(oRestClient:GetLastError())
+	Endif
+
+Return
+
+
+User Function NCGBHN00()
+
+
+
+Return
+
+
+User Function BHN00END()
+	Local cEndPoint
+	cURL:='https://api.certification.blackhawknetwork.com/'
+
+Return cURL

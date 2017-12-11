@@ -121,7 +121,7 @@ Local nLenCodLoj	:=TAMSX3("PZR_CODLOJ")[1]
 Local nLenSequen	:=TAMSX3("PZR_SEQ")[1]
 Local cLojaAux		:= ""
 Local aEmpFilExc 	:= {}	
-Local dDtaCorte		:=Ctod("20170327")
+Local dDtaCorte		:=Stod("20170327")
 
 Default dDtIni := CtoD("")
 Default dDtFin := CtoD("")

@@ -22,7 +22,7 @@ USER FUNCTION PE01NFESEFAZ()
 	Local aAreaSA1	:= SA1->(GetArea())
 	Local aAreaSF2	:= SF2->(GetArea())
 	Local aAreaSF1	:= SF1->(GetArea())
-	Local aAreaSB1	:= SB1->(GetArea())     
+	Local aAreaSB1	:= SB1->(GetArea())
 	Local cAliasZX5	:= GetNextAlias()
 	Local aProd		:= PARAMIXB[1]
 	Local cMensCli	:= PARAMIXB[2]
@@ -55,7 +55,7 @@ USER FUNCTION PE01NFESEFAZ()
 	Local cEstado	:= ""
 	Local cComplem	:= ""
 	Local cCodMun	:= ""
-	Local aDadEnt                    
+	Local aDadEnt
 	local cQry
 	Private _wnDoc	:= ""
 	Private _wnserie:= ""
@@ -177,7 +177,7 @@ USER FUNCTION PE01NFESEFAZ()
 
 
 			//if (SA1->A1_YCODWM != ' ') .AND. (SA1->A1_YEMPDES == FWCodEmp()) .And. !(SA1->A1_YFILDES == '01')
-			if (SA1->A1_YCODWM != ' ') .And. !(SF2->F2_FILIAL == '01')
+			if (SA1->A1_YCODWM != ' ') .And. !(SF2->F2_FILIAL == '30')
 
 				cMensCli+="TRANSFERENCIA ENTRE LOJAS "
 				if !empty(alltrim(SF2->F2_YCODMOV))
@@ -187,18 +187,18 @@ USER FUNCTION PE01NFESEFAZ()
 
 				//cMensCli+= SA1->A1_YCODWM +" "+  GetDescLoja(SA1->A1_YCODWM)
 
-			elseif (SA1->A1_YCODWM != ' ') .And. (SF2->F2_YTOPER=="TLS") .AND. (SA1->A1_YFILDES == '01') .And. (SA1->A1_YEMPDES == "03")
+			elseif (SF2->F2_YLOJAWM != ' ') .And. (SF2->F2_YTOPER=="TLS") .AND. (SA1->A1_YFILDES == '30') .And. (SA1->A1_YEMPDES == "03")
 				cMensCli+="TRANSFERENCIA DA LOJA:"+(cAliasZX5)->CHAVE+ " " + GetDescLoja((cAliasZX5)->CHAVE)
-				if alltrim(SA1->A1_YCODWM) == "3001"
+				if alltrim(SF2->F2_YLOJAWM) == "3001"
 					cMensCli+="P/ NC STORE WM " + SF2->F2_YCODMOV + " ARMAZEM 04 RMA."
-				elseif alltrim(SA1->A1_YCODWM) == "3000"
+				elseif alltrim(SF2->F2_YLOJAWM) == "3000"
 					cMensCli+="P/  NC STORE WM " + SF2->F2_YCODMOV + " ARMAZEM 03 QUALIDADE."
 				endif
 
-			Elseif SA1->A1_YCODWM != ' ' .AND. (FWCodEmp() =="03") .AND. (SF2->F2_FILIAL == '01') //.And. SF2->F2_YTOPER=="TLS"
+			Elseif SF2->F2_YLOJAWM != ' ' .AND. (FWCodEmp() =="03") .AND. (SF2->F2_FILIAL == '30') //.And. SF2->F2_YTOPER=="TLS"
 				DBSelectArea("ZX5")
 				DBSetOrder(1)
-				DbSeek(xFilial("ZX5")+"00006"+SA1->A1_YCODWM)
+				DbSeek(xFilial("ZX5")+"00006"+SF2->F2_YLOJAWM)
 
 				cMensCli+= "TRANSFERENCIA NC STORE P/ LOJA:"+ SUBSTR(ZX5->ZX5_DESCRI,7, LEN(ALLTRIM(ZX5->ZX5_DESCRI)))
 				dbCloseArea("ZX5")
@@ -224,6 +224,7 @@ USER FUNCTION PE01NFESEFAZ()
 			_hawb    	:= SF1->F1_HAWB								// Numero DI
 			_wndoc   	:= PadR(SF1->F1_DOC,TamSx3("WN_DOC")[1])	// Numero NFE
 			_wnserie 	:= SF1->F1_SERIE 					 		// Serie NFE
+			_valii    	:= SF1->F1_II								// Valor II
 
 			ImpNFEIC() // Busca informações impostos DI
 
@@ -232,6 +233,7 @@ USER FUNCTION PE01NFESEFAZ()
 			cMensEIC:= "Proc: "+_hawb+" - DI: "+Transform(_w6dinum,"@R 99/9999999-9")
 			cMensEIC+= " .BASE:   R$ "+Transform(_wnbaspis,"@r 999,999.99")+" - "+"PIS: R$ "+Transform(_wnvlrpis,"@r 999,999.99")
 			cMensEIC+= " - COFINS: R$ "+Transform(_wnvlrcof,"@r 999,999.99")+" - "+"TX:  R$ "+Transform(xOUTRADESP,"@r 999,999.99")
+			cMensEIC+= " - II: R$ "+Transform(_valii,"@r 999,999.99")
 			If !Empty(AllTrim(cMensCli)) .AND. !AllTrim(cMensEIC) $ cMensCli
 				If Len(cMensCli) > 0 .And. SubStr(cMensCli, Len(cMensCli), 1) <> " "
 					cMensCli += " "

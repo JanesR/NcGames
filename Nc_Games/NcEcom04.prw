@@ -84,11 +84,7 @@ User Function NcEcom04()
 	_cQuery+=" WHERE ZC4_FILIAL='"+xFilial("ZC4")+"'"+ CRLF
 	_cQuery+=" And D_E_L_E_T_= ' ' "+ CRLF
 	_cQuery+=" AND ZC4_FLAG='2' "+ CRLF
-	
-	//criar parametro para as tabelas que não serão enviados ao ciashop
-	//_cQuery+=" AND ZC4_CODTAB != '028' "
-	_cQuery+=" AND ZC4_CODTAB not in "+ FormatIn(cTabNotEnv,";") + CRLF
-
+	_cQuery+=" and ZC4_PRCCIA > 0 "+ CRLF
 	_cQuery := ChangeQuery(_cQuery)
 
 	dbUseArea(.T., "TOPCONN", TCGenQry(,,_cQuery), aAreSql, .T., .F.)
@@ -109,22 +105,27 @@ User Function NcEcom04()
 			cCodPro 	:= AllTrim((aAreSql)->ZC4_CODPRO)
 			cCodTab	:= AllTrim((aAreSql)->ZC4_CODTAB)
 			
-			If (aAreSql)->ZC4_CIAOFE > 0 .And. StoD((aAreSql)->ZC4_DTFIMO) - MsDate() > 0
-				cVlrDe		:= AllTrim( Str(Round( (aAreSql)->ZC4_CIAOFE * 100 ,0) ))
-				cVlrPor	:= AllTrim( Str(Round( (aAreSql)->ZC4_PRCCIA * 100 ,0) ))
-				cDtIni		:= IIf(!Empty((aAreSql)->ZC4_DTINIO),(SubSTR((aAreSql)->ZC4_DTINIO,1,4)+"-"+SubSTR((aAreSql)->ZC4_DTINIO,5,2)+"-"+SubSTR((aAreSql)->ZC4_DTINIO,7,2)),dDtIOfer)
-				cDtFim		:= IIf(!Empty((aAreSql)->ZC4_DTFIMO),(SubSTR((aAreSql)->ZC4_DTFIMO,1,4)+"-"+SubSTR((aAreSql)->ZC4_DTFIMO,5,2)+"-"+SubSTR((aAreSql)->ZC4_DTFIMO,7,2)),dDtFOfer)
-			Else
-				cVlrDe		:= AllTrim( Str(Round((aAreSql)->ZC4_PRCCIA * 100 + 1 ,0) ))
-				cVlrPor	:= AllTrim( Str(Round((aAreSql)->ZC4_PRCCIA * 100 ,0) ))
-				cDtIni		:= dDtIOfer //2012-01-01
-				cDtFim		:= dDtFOfer //2012-02-01
-			EndIf
-		
-			_cxml += '<TabelaPrecoVariante xmlns="" op="I" sku="'+ cCodPro +'" tabelapreco="'+ cCodTab +'" list_price="'+ cVlrDe +'" sale_price="'+ cVlrPor +'" sale_start="'+ cDtIni +'" sale_end="'+ cDtFim +'"  />'
-			
+			If cCodTab == '028'
+				cCodTab := '1000'
+			endif
+			if (aAreSql)->ZC4_PRCCIA > 0
+				If (aAreSql)->ZC4_CIAOFE > 0 .And. StoD((aAreSql)->ZC4_DTFIMO) - MsDate() > 0
+					cVlrDe		:= AllTrim( Str(Round( (aAreSql)->ZC4_CIAOFE * 100 ,0) ))
+					cVlrPor	:= AllTrim( Str(Round( (aAreSql)->ZC4_PRCCIA * 100 ,0) ))
+					cDtIni		:= IIf(!Empty((aAreSql)->ZC4_DTINIO),(SubSTR((aAreSql)->ZC4_DTINIO,1,4)+"-"+SubSTR((aAreSql)->ZC4_DTINIO,5,2)+"-"+SubSTR((aAreSql)->ZC4_DTINIO,7,2)),dDtIOfer)
+					cDtFim		:= IIf(!Empty((aAreSql)->ZC4_DTFIMO),(SubSTR((aAreSql)->ZC4_DTFIMO,1,4)+"-"+SubSTR((aAreSql)->ZC4_DTFIMO,5,2)+"-"+SubSTR((aAreSql)->ZC4_DTFIMO,7,2)),dDtFOfer)
+				Else
+					cVlrDe		:= AllTrim( Str(Round((aAreSql)->ZC4_PRCCIA * 100 + 1 ,0) ))
+					cVlrPor	:= AllTrim( Str(Round((aAreSql)->ZC4_PRCCIA * 100 ,0) ))
+					cDtIni		:= dDtIOfer //2012-01-01
+					cDtFim		:= dDtFOfer //2012-02-01
+				EndIf
+
+				_cxml += '<TabelaPrecoVariante xmlns="" op="I" sku="'+ cCodPro +'" tabelapreco="'+ cCodTab +'" list_price="'+ cVlrDe +'" sale_price="'+ cVlrPor +'" sale_start="'+ cDtIni +'" sale_end="'+ cDtFim +'"  />'
+				_nCont++
+			endif
 			(aAreSql)->(DbSkip())
-			_nCont++
+			
 			
 		EndDo
 		

@@ -36,7 +36,8 @@ If cFilSC5 == "03"
 //	Else
 //		cRet:= SA1->A1_TABELA
 //	EndIf
-
+ElseIF cFilSC5 == "04"
+		cRet:= SA1->A1_TABELA
 ElseIf cFilSC5 == "07"
 		cRet:= SA1->A1_TABELA
 EndIf

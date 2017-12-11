@@ -314,6 +314,24 @@ Local cLjSemConf:=Alltrim(U_MyNewSX6("NCG_000112","3001/3009","C","lOJAS SEM CON
 SD1->(DbSetOrder(1))
 SD1->(MsSeek(xFilial("SD1")+SF1->(F1_DOC+F1_SERIE+F1_FORNECE+F1_LOJA) ))
 
+//jr
+if SF1->F1_TIPO == "D"
+	DbSelectArea("SA1")
+	DbSetOrder(1)
+	if DbSeek(xFilial("SA1")+SF1->F1_FORNECE+SF1->F1_LOJA, .T.)		
+		If SA1->A1_PESSOA == "F"
+			Return .F.
+		Endif
+	EndIF
+Else
+	DbSelectArea("SA2")
+	DbSetOrder(1)
+	if DbSeek(xFilial("SA2")+SF1->F1_FORNECE+SF1->F1_LOJA, .T.)		
+		If SA2->A2_TIPO == "F"
+			Return .F.
+		Endif
+	EndIF
+EndIF
 
 cQuery:=" Select Cod_conferencia From "+U_NCGetBWM("Conferencia_cega")
 cQuery+=" Where Cod_referencia='"+cCodRef+"'"
@@ -722,7 +740,7 @@ cQuery+=" Where Cod_referencia='"+cCodRef+"'"
 cQuery+=" And Cod_loja_WM = '"+cLojaWM+"' "
 cAliasQry:=U_NCIWMF02(cQuery,"1",@cMensagem)
 
-If Select(cAliasQry)>0
+If Select(cAliasQry)>0 .and. cAliasQry != ""
 	
 	Do While (cAliasQry)->(!Eof())
 		
@@ -743,6 +761,8 @@ If Select(cAliasQry)>0
 	
 	
 	(cAliasQry)->(DbCloseArea())
+Else
+	lJaExiste := .F.
 EndIf
 
 
@@ -753,9 +773,11 @@ cQuery+=" And Cod_loja_WM = '"+cLojaWM+"' "
 
 cAliasQry:=U_NCIWMF02(cQuery,"1",@cMensagem)
 
-If Select(cAliasQry)>0 
+If Select(cAliasQry)>0 .and. cAliasQry != ""
 	lJaExiste:=(cAliasQry)->Contar>0
 	(cAliasQry)->(DbCloseArea())
+Else
+	lJaExiste := .F.
 EndIf
 	
 

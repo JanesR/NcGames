@@ -89,14 +89,23 @@ Local cBody		:=""
 Local cTemplate :=""
 Local cArmPed  	:=""
 Local IntB2C	:=.F.
+Local aKit		:={}
+Local nItem		:= 1
+Local lPossuiKit:= .F.
 Local cEmailTo := U_MyNewSX6("NC_ECOM05E",;
-											"rciambarella@ncgames.com.br",;
-											"C",;
-											"Define o e-mail para envio de erro (Endereço de entrega divergente).",;
-											"Define o e-mail para envio de erro (Endereço de entrega divergente).",;
-											"Define o e-mail para envio de erro (Endereço de entrega divergente).",;
-											.F. )
-
+"rciambarella@ncgames.com.br",;
+"C",;
+"Define o e-mail para envio de erro (Endereço de entrega divergente).",;
+"Define o e-mail para envio de erro (Endereço de entrega divergente).",;
+"Define o e-mail para envio de erro (Endereço de entrega divergente).",;
+.F. )
+Local cTempleB2B := U_MyNewSX6("NC_TMPB2B",;
+"2",;
+"C",;
+"Define o Template pertencente ao B2B.",;
+"Define o Template pertencente ao B2B.",;
+"Define o Template pertencente ao B2B.",;
+.F. )
 Local oSrv
 Local cXML
 
@@ -117,7 +126,7 @@ EndIf
 
 
 //Cria o Obejto com os Métodos do Portal CiaShop
-//Método paleativo//oXml :=XmlParserFile ( "\system\ciashop.xml", "_", @cError, @cWarning ) 
+//Método paleativo//oXml :=XmlParserFile ( "\system\ciashop.xml", "_", @cError, @cWarning )
 oobj:=NC_WSWSIntegracao():new()
 //chama o metodo do portal
 
@@ -139,13 +148,13 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 	For i:=1 to Len(oXml:_RECEIPTLIST:_RECEIPT)
 		
 		cTemplate := ALLTRIM(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_TEMPLATE_ID:TEXT)
-
+		
 		ZC5->(DbSetOrder(1))
-		If ZC5->(!DbSeek(xFilial("ZC5")+oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT)) 
+		If ZC5->(!DbSeek(xFilial("ZC5")+oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT))
 			
 			_aCli:=AchaCli(oXml,cTemplate)
 			
-			If empty(_aCli[1]) .And. cTemplate != "2"
+			If empty(_aCli[1]) .And. !(cTemplate$cTempleB2B)
 				IntB2C := .T.
 			elseif !empty(_aCli[1])
 				IntB2C := .T.
@@ -166,31 +175,115 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 					XmlNode2Arr(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM,"_RECEIPT_ITEM")
 				Endif
 				
-				
+				lPossuiKit := .F.
+
 				For nX := 1 To LEN(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM)
-					ZC6->(RecLock("ZC6",.T.))
 					
-					ZC6->ZC6_FILIAL:= xFilial("ZC6")
-					ZC6->ZC6_NUM	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT)
-					ZC6->ZC6_ITEM	:= StrZero(nX,2)
-					ZC6->ZC6_PRODUT:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT
-					ZC6->ZC6_QTDVEN:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_QUANTITY:TEXT)
-					ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_LIST_PRICE:TEXT)/100
-					ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_ADJUSTED_PRICE:TEXT)/100
 					
-					//JR
-					//Adicionado em 26/06/2017 para tratar pedidos do tipo B2B e B2C
-					//de pedidos de vendas originados do CiaShop.
-					//O armazem é equivaliente ao cadastrado jo Protheus.
-					//ZC6->ZC6_LOCAL	:= SuperGetMV("MV_CIAESTO",,"01")
-										
-					if !empty(alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text))
-						cArmPed:= alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text)
-						ZC6->ZC6_LOCAL := cArmPed
+					if upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_type:Text) != "KIT"
+						
+						ZC6->(RecLock("ZC6",.T.))
+						ZC6->ZC6_FILIAL:= xFilial("ZC6")
+						ZC6->ZC6_NUM	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT)
+						ZC6->ZC6_ITEM	:= StrZero(nItem,2)
+						ZC6->ZC6_PRODUT:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT
+						ZC6->ZC6_QTDVEN:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_QUANTITY:TEXT)
+						ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_LIST_PRICE:TEXT)/100
+						ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_ADJUSTED_PRICE:TEXT)/100
+						
+						//JR
+						//Adicionado em 26/06/2017 para tratar pedidos do tipo B2B e B2C
+						//de pedidos de vendas originados do CiaShop.
+						//O armazem é equivaliente ao cadastrado jo Protheus.
+						//ZC6->ZC6_LOCAL	:= SuperGetMV("MV_CIAESTO",,"01")
+						
+						if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX],"_RECEIPT_ITEM_WAREHOUSES"))
+							if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM,"_ERP_ID"))
+								cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSE_ITEM:_ERP_ID:Text) , 5, 2)
+								ZC6->ZC6_LOCAL := cArmPed
+							elseif cTemplate $ cTempleB2B
+								cArmPed:= "01"
+								ZC6->ZC6_LOCAL := cArmPed
+							else
+								cArmPed:= "51"
+								ZC6->ZC6_LOCAL := cArmPed
+							EndIf
+						elseif cTemplate $ cTempleB2B
+								cArmPed:= "01"
+								ZC6->ZC6_LOCAL := cArmPed
+							else
+								cArmPed:= "51"
+								ZC6->ZC6_LOCAL := cArmPed
+						endif
+
+						ZC6->ZC6_TPPROD := "N"
+						ZC6->(MsUnlock())
+
+						DbSelectArea("SB2")
+						SB2->(DBSETORDER(1))
+
+						If !SB2->(DbSeek(xFilial("SB2") + PADR(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT,TAMSX3("B1_COD")[1]) + cArmPed,.T.))
+							CriaSB2(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT,cArmPed)
+						EndIf
+
+						SB2->(dbCloseArea())
+
+						nItem += 1
+					Else
+						//JR
+
+						lPossuiKit := .T.
+
+						For nXkit:= 1 to Len(OXML:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM)
+							
+							ZC6->(RecLock("ZC6",.T.))
+							ZC6->ZC6_FILIAL:= xFilial("ZC6")
+							ZC6->ZC6_NUM	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT)
+							ZC6->ZC6_ITEM	:= StrZero(nItem,2)
+							ZC6->ZC6_PRODUT:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PF_ID:TEXT
+							ZC6->ZC6_QTDVEN:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_QUANTITY:TEXT)
+							ZC6->ZC6_VLRUNI:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PRORATED_PRICE:TEXT)
+							ZC6->ZC6_VLRTOT:= Val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_PRORATED_PRICE:TEXT)*val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_QUANTITY:TEXT)
+													
+							if (XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSEINTEG,"_ERP_ID"))
+								cArmPed:= SubStr( alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_RECEIPT_ITEM_WAREHOUSES:_WAREHOUSEINTEG:_ERP_ID:Text) , 5, 2)
+								ZC6->ZC6_LOCAL := cArmPed
+							elseif cTemplate $ cTempleB2B .Or. UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) != "CPF" 
+								cArmPed:= "01"
+								ZC6->ZC6_LOCAL := cArmPed
+							else
+								cArmPed:= "51"
+								ZC6->ZC6_LOCAL := cArmPed
+							EndIf
+							
+							if XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit],UPPER("_receipt_item_id"))
+								ZC6->ZC6_TPPROD := "K"
+								ZC6->ZC6_KIT := oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_KIT_ITEM[nXkit]:_receipt_item_id:TEXT
+							else
+								ZC6->ZC6_TPPROD := "N"
+								ZC6->ZC6_KIT := " "
+							endif
+
+							ZC6->(MsUnlock())
+							
+							DbSelectArea("SB2")
+							SB2->(DBSETORDER(1))
+
+							If !SB2->(DbSeek(xFilial("SB2") + PADR(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT,TAMSX3("B1_COD")[1]) + cArmPed,.T.))
+								CriaSB2(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_ITEM[nX]:_PF_ID:TEXT,cArmPed)
+							EndIf
+
+							SB2->(dbCloseArea())
+
+							nItem += 1
+						Next nXkit
+
 					EndIf
+
 					
-					ZC6->(MsUnlock())
 				Next nX
+				
+				nItem := 1
 
 				ZC5->(Reclock("ZC5",.T.))
 				
@@ -199,6 +292,7 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				ZC5->ZC5_CLIENT	:= iif(empty(_aCli[1])," ",_aCli[1])
 				ZC5->ZC5_LOJA	:= iif(empty(_aCli[2])," ",_aCli[2])
 				ZC5->ZC5_COND	:= AchaCond(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_COD_PG:TEXT)
+				ZC5->ZC5_CODPAG := ALLTRIM(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_COD_PG:TEXT)
 				ZC5->ZC5_PLATAF	:= '01'
 				ZC5->ZC5_STATUS	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_PASSO:TEXT
 				ZC5->ZC5_ATUALI	:= "S"
@@ -220,12 +314,22 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				//JR
 				//Pedidos de vendas originados do CiaShop.
 				//Utilizar "C" para B2C e "B" para B2B, basendo-se no template utilizado.
-				IF cTemplate == "2"  // ccriar um parametro para o template
+				IF cTemplate $ cTempleB2B  // ccriar um parametro para o template
 					ZC5->ZC5_TPECOM := "B2B"
-				Else 
+				Else
 					ZC5->ZC5_TPECOM := "B2C"
 				EndIf
 				
+				if lPossuiKit
+					ZC5->ZC5_KIT := "SIM"
+				else
+					ZC5->ZC5_KIT := "NÃO"
+				endif
+
+				//Prj GET
+				ZC5->ZC5_CODENT	:= U_V05CodEnt(ZC5->(Recno()),oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_METHOD:TEXT,Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT))
+					
+
 				if !empty(_aCli[1])
 					ZC5->ZC5_CGC := _aCli[3]
 					//ZC5->ZC5_CODENT:=	oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_METHOD:TEXT
@@ -236,38 +340,26 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 					cMunic			:= StrTran(cMunic,"Ç","C")
 					cMunic			:= NoAcento(cMunic)
 					
+					DbSelectArea("SA1")
+					SA1->(MsSeek(xFilial("SA1")+_aCli[1]+_aCli[2]))
+				
 					
+					ZC5->ZC5_ENDENT	:= SA1->A1_END
+					ZC5->ZC5_BAIROE	:= SA1->A1_BAIRRO
+					ZC5->ZC5_CEPE	:= SA1->A1_CEP
+					ZC5->ZC5_MUNE	:= SA1->A1_MUN
+					ZC5->ZC5_CODMUE := SA1->A1_COD_MUN
+					ZC5->ZC5_ESTE	:= SA1->A1_EST
+					ZC5->ZC5_COMPLE	:= SA1->A1_COMPLEM
+					ZC5->ZC5_FLAG 	:= '2'
+					DbCloseArea("SA1")
 					
-					ZC5->ZC5_ENDENT	:= Upper( AllTrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS1:TEXT) +","+oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_STREET_NUMBER:TEXT)
-					ZC5->ZC5_BAIROE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_DISTRICT:TEXT)
-					ZC5->ZC5_CEPE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT)
-					ZC5->ZC5_MUNE	:= cMunic
-					ZC5->ZC5_ESTE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS3:TEXT)
-					ZC5->ZC5_COMPLE	:= Upper(AllTrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_STREET_COMPL:TEXT))
-					
-					//Prj GET
-					ZC5->ZC5_CODENT	:= U_V05CodEnt(ZC5->(Recno()),oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_METHOD:TEXT,Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT))
-					
-					cCodMun:=""
-					CC2->(DBSETORDER(2)) //CC2_FILIAL+CC2_MUN
-					CC2->(DbSeek(xFilial("CC2")+ZC5->ZC5_MUNE))
-					Do While CC2->(!Eof()) .And.  CC2->CC2_MUN==ZC5->ZC5_MUNE
-						If CC2->CC2_EST==ZC5->ZC5_ESTE
-							cCodMun	:= CC2->CC2_CODMUN
-							Exit
-						EndIf
-						CC2->(DbSkip())
-					EndDo
-					CC2->(DBSETORDER(1))
-					
-					ZC5->ZC5_CODMUE:=cCodMun
 				Else
-					ZC5->ZC5_FLAG := '4'	
+					ZC5->ZC5_FLAG := '4'
 				EndIf
-
+				
 				ZC5->(MsUnlock())
 				
-				//U_COM09PV(oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT, "PV","IMPORTA_PEDIDO","Pedido Importado")
 				
 				END TRANSACTION
 				IF !empty(_aCli[1])
@@ -315,70 +407,6 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 					ZC5->(MsUnlock())
 					
 				EndIf
-			elseif ZC5->ZC5_FLAG == "2"	
-				_aCli:=AchaCli(oXml,cTemplate)
-				ZC5->(Reclock("ZC5",.F.))
-				
-				ZC5->ZC5_CLIENT	:= iif(empty(_aCli[1])," ",_aCli[1])
-				ZC5->ZC5_LOJA	:= iif(empty(_aCli[2])," ",_aCli[2])
-				ZC5->ZC5_COND	:= AchaCond(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_COD_PG:TEXT)
-				ZC5->ZC5_PLATAF	:= '01'
-				ZC5->ZC5_STATUS	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_PASSO:TEXT
-				ZC5->ZC5_ATUALI	:= "S"
-				
-				If Alltrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_PASSO:TEXT) == "10"
-					ZC5->ZC5_PAGTO := "2"
-				EndIf
-				
-				ZC5->ZC5_QTDPAR	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_INSTALLMENT:TEXT)
-				ZC5->ZC5_TOTAL	:= val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_TOTAL:TEXT)/100
-				ZC5->ZC5_FRETE	:= VAL(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_COST:TEXT)/100
-				ZC5->ZC5_IDTRAN	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_COD_TRANS:TEXT
-				
-				ZC5->ZC5_VDESCON:= Val( oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_DISCOUNT_COUPON:TEXT ) /100  //Valor Desconto
-				If ZC5->ZC5_VDESCON>0
-					ZC5->ZC5_PDESCON:= ZC5->ZC5_VDESCON/(ZC5->ZC5_TOTAL-ZC5->ZC5_FRETE+ZC5->ZC5_VDESCON)*100//Percentual Desconto
-				EndIf
-				if !empty(_aCli[1])
-					ZC5->ZC5_CGC := _aCli[3]
-					//ZC5->ZC5_CODENT:=	oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_METHOD:TEXT
-					
-					cMunic			:= AllTrim( Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS2:TEXT))
-					cMunic			:= StrTran(cMunic,"Ã","A")
-					cMunic			:= StrTran(cMunic,"Õ","O")
-					cMunic			:= StrTran(cMunic,"Ç","C")
-					cMunic			:= NoAcento(cMunic)
-					
-					
-					
-					ZC5->ZC5_ENDENT	:= Upper( AllTrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS1:TEXT) +","+oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_STREET_NUMBER:TEXT)
-					ZC5->ZC5_BAIROE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_DISTRICT:TEXT)
-					ZC5->ZC5_CEPE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT)
-					ZC5->ZC5_MUNE	:= cMunic
-					ZC5->ZC5_ESTE	:= Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS3:TEXT)
-					ZC5->ZC5_COMPLE	:= Upper(AllTrim(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_STREET_COMPL:TEXT))
-					
-					//Prj GET
-					ZC5->ZC5_CODENT	:= U_V05CodEnt(ZC5->(Recno()),oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_DETAILS:_SHIPPING_METHOD:TEXT,Upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS4:TEXT))
-					
-					cCodMun:=""
-					CC2->(DBSETORDER(2)) //CC2_FILIAL+CC2_MUN
-					CC2->(DbSeek(xFilial("CC2")+ZC5->ZC5_MUNE))
-					Do While CC2->(!Eof()) .And.  CC2->CC2_MUN==ZC5->ZC5_MUNE
-						If CC2->CC2_EST==ZC5->ZC5_ESTE
-							cCodMun	:= CC2->CC2_CODMUN
-							Exit
-						EndIf
-						CC2->(DbSkip())
-					EndDo
-					CC2->(DBSETORDER(1))
-					
-					ZC5->ZC5_CODMUE:=cCodMun
-				Else
-					ZC5->ZC5_FLAG := '4'	
-				EndIf
-
-				ZC5->(MsUnlock())
 			Endif
 		Endif
 	Next i
@@ -416,9 +444,9 @@ Local _cDoc		:= ""
 Local cNPed		:= ""
 Local cAliasQry:= GetNextAlias()
 Local docCli := ""
-Local docType := ""
-Local docID := ""
+Local personType := ""
 Local _GrpCli := ""
+Local docID := ""
 Local _cCodMun := ""
 Local _cMun
 Local aVetor := {}
@@ -427,6 +455,14 @@ Local aErro		:= {}
 Local _cError	:= ""
 Local aZA1_SA1	:= {}
 Local cCGCCli := ""
+Local lJaExist := .F.
+Local cTempleB2B := U_MyNewSX6("NC_TMPB2B",;
+"2",;
+"C",;
+"Define o Template pertencente ao B2B.",;
+"Define o Template pertencente ao B2B.",;
+"Define o Template pertencente ao B2B.",;
+.F. )
 Default _lIncl	:= .F.
 
 _cQuery:=" SELECT A1_COD,A1_LOJA,A1_END,A1_CGC "
@@ -434,6 +470,7 @@ _cQuery+=" FROM "+RetSqlName("SA1")
 _cQuery+=" WHERE A1_FILIAL='"+xFilial("SA1")+"'"
 _cQuery+=" AND D_E_L_E_T_=' '"
 _cQuery+=" AND A1_ZCODCIA='"+ oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHOPPER_ID:TEXT +"'"
+_cQuery+=" AND a1_cgc = '"+oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT+"' "
 _cQuery+=" ORDER BY A1_COD,A1_LOJA "
 
 _cQuery := ChangeQuery(_cQuery)
@@ -441,35 +478,59 @@ dbUseArea(.T., "TOPCONN", TCGenQry(,,_cQuery), cAliasQry, .T., .F.)
 
 (cAliasQry)->(DbGoTop())
 
+
+if cTemplate $ cTempleB2B .And. alltrim((cAliasQry)->A1_COD) != ""
+		aAdd(_aCli,(cAliasQry)->A1_COD)
+		aAdd(_aCli,"01")
+		aAdd(_aCli,(cAliasQry)->A1_CGC)
+		(cAliasQry)->(dbCloseArea())
+		RestArea(aAreaAtu)
+		Return _aCli
+elseif cTemplate $ cTempleB2B
+		aAdd(_aCli,"")
+		aAdd(_aCli,"")
+		aAdd(_aCli,"")
+		(cAliasQry)->(dbCloseArea())
+		RestArea(aAreaAtu)
+		Return _aCli
+elseif !(cTemplate $ cTempleB2B) .And. strTran( (cAliasQry)->A1_END," ","") == strTran( upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT))," ","")
+		aAdd(_aCli,(cAliasQry)->A1_COD)
+		aAdd(_aCli,"01")
+		aAdd(_aCli,(cAliasQry)->A1_CGC)
+		(cAliasQry)->(dbCloseArea())
+		RestArea(aAreaAtu)
+		Return _aCli
+endif
+
+//Verifica se existe o cliente
 IF alltrim((cAliasQry)->A1_COD) != ""
+	
+	_cDoc = (cAliasQry)->A1_COD	
+	cCGCCli := (cAliasQry)->A1_CGC	
+	(cAliasQry)->(dbCloseArea())
+	lJaExist := .T.
 
-	//Verifica se existe o cliente
-	aAdd(_aCli,(cAliasQry)->A1_COD)
-	aAdd(_aCli,(cAliasQry)->A1_LOJA)
-	aAdd(_aCli,(cAliasQry)->A1_CGC)
-
-(cAliasQry)->(dbCloseArea())
-
-Else
-(cAliasQry)->(dbCloseArea())
-
-	DbSelectArea("SA1")
-	SA1->(DbSetOrder(1))
-	SA1->(DbGoTop())
-	_cDoc := GETSXENUM("SA1","A1_COD")
-	Do While SA1->(DbSeek(xFilial("SA1") +_cDoc+"01" ))
-		ConfirmSX8()
+endif
+	
+	if !lJaExist
+		DbSelectArea("SA1")
+		SA1->(DbSetOrder(1))
+		SA1->(DbGoTop())
 		_cDoc := GETSXENUM("SA1","A1_COD")
-	EndDo
-	DbCloseArea("SA1")	
+		Do While SA1->(DbSeek(xFilial("SA1") +_cDoc+"01" ))
+			ConfirmSX8()
+			_cDoc := GETSXENUM("SA1","A1_COD")
+		EndDo
+		DbCloseArea("SA1")
+	endif
 
-	docCli 	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT
-	docType :=  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_type:TEXT
-	docID 	:=  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_id:TEXT
-	_cMun 	:= NoAcento(Padr( upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_city:TEXT), AvSx3("CC2_MUN",3) ))
-	cNPed	:= oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT
-	cCGCCli := oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT
-
+	docCli 	:= iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_document_type") , oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT, " ") 
+		personType := upper(iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_customer_type"),  oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_customer_type:TEXT, " ") )
+	docID 	:= iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_regional_document_id"), oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_regional_document_id:TEXT, " ") 
+	_cMun 	:= NoAcento(Padr( upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHIP_TO_ADDRESS2:TEXT), AvSx3("CC2_MUN",3) ))
+	cNPed	:= iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_ORDER_ID"), oXml:_RECEIPTLIST:_RECEIPT[i]:_ORDER_ID:TEXT, " ") 
+	cCGCCli := iif( XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing, "_document_id"), oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT, " ") 
+	
 	DbSelectArea("CC2")
 	CC2->(DBSETORDER(2)) //CC2_FILIAL+CC2_MUN
 	CC2->(DbGoTop())
@@ -483,83 +544,108 @@ Else
 	Else
 		cErroAdiconal:="Codigo Municipio não encontrado para o Municipio "+_cMun
 	EndIf
-	DbCloseArea("CC2")	
+	DbCloseArea("CC2")
 	
-		AADD(aVetor,{"A1_FILIAL", xFilial("SA1") ,Nil})
-		AADD(aVetor,{"A1_COD", _cDoc,Nil})
-		AADD(aVetor,{"A1_LOJA", "01",Nil})
-		AADD(aVetor,{"A1_PESSOA", IIF(UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) = "CPF","F","J"),Nil})
-		AADD(aVetor,{"A1_NOME",upper(NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_name:TEXT)),Nil})
-		AADD(aVetor,{"A1_NREDUZ",upper( NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_name:TEXT)),Nil})
-		AADD(aVetor,{"A1_END", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +","+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT)),Nil})
-		AADD(aVetor,{"A1_COMPLEM",upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_compl:TEXT )) + "- Ref.:" +upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_reference:TEXT )),Nil})
-		AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CPF", "F","S"),Nil})
-		AADD(aVetor,{"A1_EST", upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
-		AADD(aVetor,{"A1_NATUREZ", "19101",Nil})
-		AADD(aVetor,{"A1_COD_MUN", _cCodMun,Nil})
-		AADD(aVetor,{"A1_MUN", Upper(NoAcento(_cMun)),Nil})
-		AADD(aVetor,{"A1_BAIRRO", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_district:TEXT)),Nil})
-		AADD(aVetor,{"A1_CEP", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_zip_code:TEXT,Nil})
-		AADD(aVetor,{"A1_DDD", oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_ddd_phone:TEXT,Nil})
-		AADD(aVetor,{"A1_TEL", oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_phone:TEXT,Nil})
-		AADD(aVetor,{"A1_ENDCOB", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)),Nil})
-		AADD(aVetor,{"A1_BAIRROC", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_district:TEXT)),Nil})
-		AADD(aVetor,{"A1_CEPC", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_zip_code:TEXT,Nil})
-		AADD(aVetor,{"A1_MUNC", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_city:TEXT)),Nil})
-		AADD(aVetor,{"A1_ESTC", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT)),Nil})
-		AADD(aVetor,{"A1_ENDENT", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)),Nil})
-		AADD(aVetor,{"A1_BAIRROE", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_district:TEXT)),Nil})
-		AADD(aVetor,{"A1_CEPE", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_zip_code:TEXT,Nil})
-		AADD(aVetor,{"A1_MUNE", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_city:TEXT)),Nil})
-		AADD(aVetor,{"A1_X_LOCZ", "C",Nil})
-		AADD(aVetor,{"A1_ESTE", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT)),Nil})
+	AADD(aVetor,{"A1_FILIAL", xFilial("SA1") ,Nil})
+	AADD(aVetor,{"A1_COD", _cDoc,Nil})
+	AADD(aVetor,{"A1_LOJA", "01",Nil})
+	
+	if !lJaExist
+		AADD(aVetor,{"A1_NOME",  upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
+		AADD(aVetor,{"A1_NREDUZ",upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
+		AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CNPJ", "S","F"),Nil})
+		AADD(aVetor,{"A1_PESSOA", IIF(upper(docCli) = "CNPJ","J","F"),Nil})
 		AADD(aVetor,{"A1_CGC", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT,Nil})
-		AADD(aVetor,{"A1_INSCR", iif( upper(docType) == "RG","ISENTO",docID),Nil})
-		AADD(aVetor,{"A1_PFISICA", iif( upper(docType) == "RG" ,docID," "),Nil})
-		AADD(aVetor,{"A1_VEND", "VN9901",Nil})
-		AADD(aVetor,{"A1_CONTA", "11201010001",Nil})
-		AADD(aVetor,{"A1_TRANSP", "000002",Nil})
-		AADD(aVetor,{"A1_TPFRET", "C",Nil})
-		AADD(aVetor,{"A1_GRPTRIB", iif(upper(docCli) == "CPF","CFS",iif(upper(docType) == "RG","CFI","SOL")),Nil})
-		AADD(aVetor,{"A1_SATIV1", "000037",Nil})
-		AADD(aVetor,{"A1_GRPVEN", "990000",Nil})
-		AADD(aVetor,{"A1_CODPAIS", "01058",Nil})
-		AADD(aVetor,{"A1_FRETE", "1",Nil})
-		AADD(aVetor,{"A1_TEMODAL", "2",Nil})		
-		AADD(aVetor,{"A1_YCANAL", iif(cTemplate=="2","990000","990001") ,Nil})
-		AADD(aVetor,{"A1_XGRPCOM", "ECOMME",Nil})
-		AADD(aVetor,{"A1_CONTRIB", iif( upper(docType) == "RG","2","1")	,Nil})
-		AADD(aVetor,{"A1_RISCO" , 'E',Nil})
-		if cTemplate == "2"
-			AADD(aVetor,{"A1_TABELA", iif(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT=="SP","018",IIf(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT$"RJ;RS;SC;PR;MG","112","107")),Nil})
-		else
-			AADD(aVetor,{"A1_TABELA", "CON",Nil})
+		AADD(aVetor,{"A1_INSCR", iif( upper(personType) == "COMPANY",docID,"ISENTO"),Nil})
+		AADD(aVetor,{"A1_PFISICA", iif( upper(personType) == "RG" ,docID," "),Nil})
+		
+		_GrpCli := "CFS"
+		if personType == "COMPANY" .and. docID != "ISENTO"
+			_GrpCli := "SOL"
+		ElseIf personType == "PERSON" .and. docID != "ISENTO"
+			_GrpCli := "CFS"
+		Else
+			_GrpCli := "CFS"
 		EndIf
-		
-		AADD(aVetor,{"A1_COND", "WEB",Nil})
-		AADD(aVetor,{"A1_XSORTER", "1",Nil})
-		AADD(aVetor,{"A1_AGEND", "2",Nil})
-		AADD(aVetor,{"A1_OPER", " ",Nil})
-		AADD(aVetor,{"A1_ZSEXO", iif( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_gender:TEXT == "Male","M","F"),Nil})
-		AADD(aVetor,{"A1_ZESTCIV", " ",Nil})
-		AADD(aVetor,{"A1_EMAIL", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_email:Text,Nil})
-		AADD(aVetor,{"A1_MSBLQL", IIF(cTemplate=="2","1","2"),Nil})
-		AADD(aVetor,{"A1_ZCODCIA", val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHOPPER_ID:TEXT),Nil})
-		AADD(aVetor,{"A1_REGIAO", U_AchaReg(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
-		
-		
-		if u_CriaCli(aVetor,cNPed)
-			aAdd(_aCli,_cDoc)
-			aAdd(_aCli,"01")
-			aAdd(_aCli,cCGCCli)
-		else
-			aAdd(_aCli,"")
-			aAdd(_aCli,"")
-			aAdd(_aCli,"")
-		EndIf
-		
 
-EndIf
+		AADD(aVetor,{"A1_GRPTRIB", _GrpCli,Nil})//iif(upper(docCli) == "CPF","CFS",iif(upper(personType) == "RG","CFI","SOL"))
+		AADD(aVetor,{"A1_CONTRIB", iif( upper(docID) == "ISENTO","2","1")	,Nil})
+	endif
+
+	AADD(aVetor,{"A1_END", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT)),Nil})
+	AADD(aVetor,{"A1_COMPLEM",iif(XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER,"_ship_to_street_compl"), upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_compl:TEXT ))," ") + "- Ref.:" + iif(XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER,"_REFERENCE"),upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_reference:TEXT ))," ") ,Nil})
+	AADD(aVetor,{"A1_EST", upper(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
+	AADD(aVetor,{"A1_NATUREZ", "19101",Nil})
+	AADD(aVetor,{"A1_COD_MUN", _cCodMun,Nil})
+	AADD(aVetor,{"A1_MUN", Upper(NoAcento(_cMun)),Nil})
+	AADD(aVetor,{"A1_BAIRRO", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_district:TEXT)),Nil})
+	AADD(aVetor,{"A1_CEP", oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address4:TEXT,Nil})
+	AADD(aVetor,{"A1_DDD", oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_ddd_phone:TEXT,Nil})
+	AADD(aVetor,{"A1_TEL", oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_phone:TEXT,Nil})
+	AADD(aVetor,{"A1_ENDCOB", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)),Nil})
+	AADD(aVetor,{"A1_BAIRROC", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_district:TEXT)),Nil})
+	AADD(aVetor,{"A1_CEPC", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_zip_code:TEXT,Nil})
+	AADD(aVetor,{"A1_MUNC", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_city:TEXT)),Nil})
+	AADD(aVetor,{"A1_ESTC", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT)),Nil})
+	AADD(aVetor,{"A1_ENDENT", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)),Nil})
+	AADD(aVetor,{"A1_BAIRROE", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_district:TEXT)),Nil})
+	AADD(aVetor,{"A1_CEPE", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_zip_code:TEXT,Nil})
+	AADD(aVetor,{"A1_MUNE", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_city:TEXT)),Nil})
+	AADD(aVetor,{"A1_X_LOCZ", "C",Nil})
+	AADD(aVetor,{"A1_ESTE", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT)),Nil})
+	AADD(aVetor,{"A1_VEND", iif(cTemplate == "2", "VN9901","VN9902"),Nil})
+	AADD(aVetor,{"A1_CONTA", "11201010001",Nil})
+	AADD(aVetor,{"A1_TRANSP", "000002",Nil})
+	AADD(aVetor,{"A1_TPFRET", "C",Nil})
+	
+	AADD(aVetor,{"A1_SATIV1", "000037",Nil})
+	AADD(aVetor,{"A1_GRPVEN", "990000",Nil})
+	AADD(aVetor,{"A1_CODPAIS", "01058",Nil})
+	AADD(aVetor,{"A1_FRETE", "1",Nil})
+	AADD(aVetor,{"A1_TEMODAL", "2",Nil})
+	AADD(aVetor,{"A1_YCANAL", iif(cTemplate=="2","990000","990001") ,Nil})
+	AADD(aVetor,{"A1_XGRPCOM", "ECOMME",Nil})
+	AADD(aVetor,{"A1_RISCO" , 'E',Nil})
+	AADD(aVetor,{"A1_DTNASC" , msdate(),Nil})
+	AADD(aVetor,{"A1_COND", "WEB",Nil})
+	AADD(aVetor,{"A1_XSORTER", "1",Nil})
+	AADD(aVetor,{"A1_AGEND", "2",Nil})
+	AADD(aVetor,{"A1_OPER", " ",Nil})
+	AADD(aVetor,{"A1_ZSEXO", iif( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_gender:TEXT == "Male","M","F"),Nil})
+	AADD(aVetor,{"A1_ZESTCIV", " ",Nil})
+	AADD(aVetor,{"A1_EMAIL", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_email:Text,Nil})
+	AADD(aVetor,{"A1_ZCODCIA", val(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHOPPER_ID:TEXT),Nil})
+	AADD(aVetor,{"A1_REGIAO", U_AchaReg(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT),Nil})
+
+	if cTemplate $ cTempleB2B
+		AADD(aVetor,{"A1_TABELA", iif(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT=="SP","018",IIf(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address3:TEXT$"RJ;RS;SC;PR;MG","112","107")),Nil})
+	else
+		AADD(aVetor,{"A1_TABELA", "CON",Nil})
+	EndIf
+	
+
+	if cTemplate$cTempleB2B .And. lJaExist
+		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
+	elseif cTemplate$cTempleB2B .And. !lJaExist
+		AADD(aVetor,{"A1_MSBLQL", "1",Nil})
+	//elseif UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) == "CPF"
+	//	AADD(aVetor,{"A1_MSBLQL", "2",Nil})
+	else
+		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
+	endif
+
+	if u_CriaCli(aVetor,cNPed, lJaExist)
+		aAdd(_aCli,_cDoc)
+		aAdd(_aCli,"01")
+		aAdd(_aCli,cCGCCli)
+	else
+		aAdd(_aCli,"")
+		aAdd(_aCli,"")
+		aAdd(_aCli,"")
+	EndIf
+	
+	
+
 
 RestArea(aAreaAtu)
 Return _aCli
@@ -694,10 +780,12 @@ CARTÃO DE CRÉDITO-CC
 */
 If _cCond$"080/081/082/083"
 	_cRet:="DC"
-ElseIf _cCond$"084"
+ElseIf _cCond$"024/084"
 	_cRet:="BOL"
 ElseIf _cCond$"075/076/077/078/079"
 	_cRet:="CC"
+ElseIf  _cCond$"054"
+	_cRet:="FAT"
 Endif
 
 Return _cRet
@@ -792,7 +880,7 @@ Default cComplem	:=""
 Default lConcatena:=.T.
 
 
-cQuery:=" Select ZC5_ENDENT,ZC5_BAIROE,ZC5_CEPE,ZC5_MUNE,ZC5_ESTE,ZC5_COMPLE,ZC5_CODMUE,ZC5_CLIENT,ZC5_LOJA,ZC5_PVVTEX"+CRLF
+cQuery:=" Select ZC5_ENDENT,ZC5_BAIROE,ZC5_CEPE,ZC5_MUNE,ZC5_ESTE,ZC5_COMPLE,ZC5_CODMUE,ZC5_CLIENT,ZC5_LOJA,ZC5_PVVTEX,ZC5_TPECOM"+CRLF
 cQuery+=" From "+RetSqlName("ZC5")+" ZC5"
 cQuery+=" Where ZC5.ZC5_FILIAL='"+xFilial("ZC5")+"'"+CRLF
 cQuery+=" And ZC5.ZC5_NUMPV='"+cNumPV+"'"+CRLF
@@ -802,16 +890,16 @@ cQuery+=" And ZC5.D_E_L_E_T_=' '"+CRLF
 DbUseArea(.T.,"TOPCONN",TcGenQry(,,cQuery),clAlias, .F., .F.)
 
 If !(clAlias)->(Eof() .And. Bof()) .And. SA1->(MsSeek(xFilial("SA1")+(clAlias)->(ZC5_CLIENT+ZC5_LOJA) ))
-
-
+	
+	//JR
 	If Empty( (clAlias)->ZC5_PVVTEX )
-		lContinuar:=( SA1->A1_EST=="SP" )
+		lContinuar:= ( SA1->A1_EST=="SP" ) .and. ((clAlias)->ZC5_PVVTEX == "B2B")
 	Else
 		lContinuar:=.T.
-	EndIf	
+	EndIf
 	
-	If lContinuar .And. !Empty((clAlias)->ZC5_ENDENT)		
-	
+	If lContinuar .And. !Empty((clAlias)->ZC5_ENDENT)
+		
 		cEndereco	:=AllTrim((clAlias)->ZC5_ENDENT)
 		cBairro		:=AllTrim((clAlias)->ZC5_BAIROE)
 		cCEP			:=AllTrim((clAlias)->ZC5_CEPE)
@@ -828,7 +916,7 @@ If !(clAlias)->(Eof() .And. Bof()) .And. SA1->(MsSeek(xFilial("SA1")+(clAlias)->
 	
 EndIf
 
-(clAlias)->(DbCloseArea()) 
+(clAlias)->(DbCloseArea())
 
 RestArea(aAreaSA1)
 RestArea(aAreaZC5)
@@ -994,7 +1082,7 @@ Do While !(cArqTmp)->(Eof())
 	Next
 	
 	If Len(aCols)>0
-	   Begin Transaction
+		Begin Transaction
 		ZC5->(RecLock("ZC5",.F.))
 		ZC5->ZC5_ENDENT:=AllTrim(acols[1][13])+","+AllTrim(acols[1][14])
 		ZC5->ZC5_COMPLE:=acols[1][10]
@@ -1016,7 +1104,7 @@ Do While !(cArqTmp)->(Eof())
 		CC2->(DBSETORDER(1))
 		
 		ZC5->ZC5_CODMUE:=cCodMun
-	
+		
 		ZC5->(MsUnLock())
 		End Transaction
 	EndIf
@@ -1033,3 +1121,58 @@ EndDo
 RestArea(aArea)
 Return
 
+User Function reprPedido(cPedido)
+Local aArea := GetArea()
+Local aDadaCli := {}
+Local cCGC := ""
+Local cQuery := ""
+Local cAliasQry := GetNextAlias()
+
+DbSelectArea("ZA1")
+ZA1->(DbSetOrder(1))
+If ZA1->(MsSeek(xFilial("ZA1")+padr(cPedido,AvSx3("ZA1_PVVTEX",3) )))
+	cCGC := ZA1->ZA1_CGC
+endif
+ZA1->(DbCloseArea())
+
+_cQuery:=" SELECT * "
+_cQuery+=" FROM "+RetSqlName("SA1")
+_cQuery+=" WHERE A1_FILIAL='"+xFilial("SA1")+"'"
+_cQuery+=" AND D_E_L_E_T_=' '"
+_cQuery+=" AND a1_cgc = '"+ cCGC +"' "
+_cQuery+=" ORDER BY A1_COD,A1_LOJA "
+
+dbUseArea(.T., "TOPCONN", TCGenQry(,,_cQuery), cAliasQry, .T., .F.)
+
+DbSelectArea("ZC5")
+ZC5->(DBSETORDER(1))
+
+If ZC5->(MsSeek(xFilial("ZC5")+STR(cPedido,6,0))) .AND. ALLTRIM((cAliasQry)->A1_COD) != ""
+
+
+	if ZC5->(Reclock("ZC5",.F.)) .And. ALLTRIM(ZC5->ZC5_ENDENT) == "" .AND. alltrim(ZC5->ZC5_NUMPV) == ""
+		ZC5->ZC5_CLIENT	:= ALLTRIM((cAliasQry)->A1_COD)
+		ZC5->ZC5_LOJA	:= ALLTRIM((cAliasQry)->A1_LOJA)
+		ZC5->ZC5_PLATAF	:= '01'
+		ZC5->ZC5_ATUALI	:= "S"
+		ZC5->ZC5_ENDENT	:= (cAliasQry)->A1_END
+		ZC5->ZC5_BAIROE	:= (cAliasQry)->A1_BAIRRO
+		ZC5->ZC5_CEPE	:= (cAliasQry)->A1_CEP
+		ZC5->ZC5_MUNE	:= (cAliasQry)->A1_MUN
+		ZC5->ZC5_CODMUE := (cAliasQry)->A1_COD_MUN
+		ZC5->ZC5_ESTE	:= (cAliasQry)->A1_EST
+		ZC5->ZC5_COMPLE	:= (cAliasQry)->A1_COMPLEM
+		ZC5->ZC5_FLAG 	:= '2'
+		ZC5->(MsUnlock())
+	elseif alltrim(ZC5->ZC5_NUMPV) != ""
+		Msginfo("O pedido de venda já foi gravado! Não é possível reprocessar um pedido que já tenha Pv Protheus! ")
+	elseif ALLTRIM(ZC5->ZC5_ENDENT) != ""
+		Msginfo("Informações de entrega já informadas no Pedido.")
+	endif
+EndIf
+
+ZC5->(DbCloseArea())
+(cAliasQry)->(DbCloseArea())
+
+RestArea(aArea)
+Return

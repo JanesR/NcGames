@@ -338,6 +338,7 @@ While !(ZC4->(EOF())) .And. cFilZC4 == ZC4->ZC4_FILIAL .And. cCodZC4 == ZC4->ZC4
 	cQuery+= "	LEFT OUTER JOIN " +RetSqlName("DA1")+ " DA1 "+CRLF
 	cQuery+= "	ON DA1.D_E_L_E_T_ = ' ' "+CRLF
 	cQuery+= "	AND DA1.DA1_CODPRO = SB1.B1_COD "+CRLF
+	cQuery+= "	AND da1.da1_filial = '"+xFilial("DA1")+"' "+CRLF
 	cQuery+= "	LEFT OUTER JOIN " +RetSqlName("SF7")+ " SF7 "+CRLF
 	cQuery+= "	ON SF7.D_E_L_E_T_ = ' ' "+CRLF
 	cQuery+= "	AND SF7.F7_FILIAL = '"+xFilial("SF7")+"' "+CRLF
@@ -405,11 +406,11 @@ While !(ZC4->(EOF())) .And. cFilZC4 == ZC4->ZC4_FILIAL .And. cCodZC4 == ZC4->ZC4
 		ZC4->ZC4_BICMST	:=(cAliasSQL)->F4_BSICMST
 		ZC4->ZC4_FLAG		:= "2"
 		
-		If cUFTab == "PR"
+		/*If cUFTab == "PR"
 			ZC4->ZC4_PRCCIA	:=	U_Pr120STRet((cAliasSQL)->B1_COD,(cAliasSQL)->DA1_PRCVEN,(cAliasSQL)->FM_TS)
-		Else
+		Else*/
 			ZC4->ZC4_PRCCIA	:=	Pr120Calc()
-		EndIf
+		//EndIf
 		
 		
 		MsUnLock()
@@ -560,6 +561,7 @@ While !((cAliasFIL)->(EOF()))
 	cQuery+= "	LEFT OUTER JOIN " +RetSqlName("DA1")+ " DA1 "+CRLF
 	cQuery+= "	ON DA1.D_E_L_E_T_ = ' ' "+CRLF
 	cQuery+= "	AND DA1.DA1_CODPRO = SB1.B1_COD "+CRLF
+	cQuery+= "	AND da1.da1_filial = '"+xFilial("DA1")+"' "+CRLF
 	cQuery+= "	LEFT OUTER JOIN " +RetSqlName("SF7")+ " SF7 "+CRLF
 	cQuery+= "	ON SF7.D_E_L_E_T_ = ' ' "+CRLF
 	cQuery+= "	AND SF7.F7_FILIAL = '"+xFilial("SF7")+"' "+CRLF
@@ -627,11 +629,11 @@ While !((cAliasFIL)->(EOF()))
 		ZC4->ZC4_BICMST	:=(cAliasTRB)->F4_BSICMST
 		ZC4->ZC4_FLAG		:= "2"
 		//ZC4->ZC4_PRCCIA	:=	Pr120Calc()
-		If cUFTab == "PR"
+		/*If cUFTab == "PR"
 			ZC4->ZC4_PRCCIA	:=	U_Pr120STRet((cAliasTRB)->B1_COD,(cAliasTRB)->DA1_PRCVEN,(cAliasTRB)->FM_TS)
-		Else
-			ZC4->ZC4_PRCCIA	:=	Pr120Calc()
-		EndIf
+		Else*/
+		ZC4->ZC4_PRCCIA	:=	Pr120Calc()
+		//EndIf
 		
 		ZC4->(MsUnLock())
 		
@@ -857,29 +859,68 @@ While !((cAliFisic)->(EOF()))
 	cItem := StrZero(0,Len(ZC4->ZC4_ITEM))
 	
 	While !((cQueryP)->(EOF()))
-		ZC4->(Reclock("ZC4",.T.))
 		
-		cItem := Soma1(cItem)
-		ZC4->ZC4_CODTAB	:= cCodZC4
-		ZC4->ZC4_TABBAS	:= cTabBase
-		ZC4->ZC4_EST  		:= cUFTab
-		ZC4->ZC4_ITEM		:= cItem
-		ZC4->ZC4_CODPRO	:= (cQueryP)->B1_COD
-		ZC4->ZC4_DESCRI	:= (cQueryP)->B1_XDESC
-		If cConsumi == "1"
-			ZC4->ZC4_PRCBAS:= (cQueryP)->B1_CONSUMI
-		ElseIf cConsumi == "2"
+		if cConsumi == "2" .and. (cQueryP)->DA1_PRCVEN > 0
+			ZC4->(Reclock("ZC4",.T.))
+			
+			cItem := Soma1(cItem)
+			ZC4->ZC4_CODTAB	:= cCodZC4
+			ZC4->ZC4_TABBAS	:= cTabBase
+			ZC4->ZC4_EST  		:= cUFTab
+			ZC4->ZC4_ITEM		:= cItem
+			ZC4->ZC4_CODPRO	:= (cQueryP)->B1_COD
+			ZC4->ZC4_DESCRI	:= (cQueryP)->B1_XDESC
 			ZC4->ZC4_PRCBAS:= (cQueryP)->DA1_PRCVEN
-		EndIf
-		ZC4->ZC4_PERFRT	:= nFrtZC4
-		ZC4->ZC4_DESP		:= nDespZC4
-		ZC4->ZC4_PERIPI	:= (cQueryP)->B1_IPI
-		ZC4->ZC4_FLAG		:= "2"
-		ZC4->ZC4_TCONSU	:= cConsumi
-		ZC4->ZC4_PESSOA	:= cPessoa
-		ZC4->ZC4_PRCCIA	:=	P120CCalc()
-		
-		ZC4->(MsUnLock())
+			ZC4->ZC4_PERFRT	:= nFrtZC4
+			ZC4->ZC4_DESP		:= nDespZC4
+			ZC4->ZC4_PERIPI	:= (cQueryP)->B1_IPI
+			ZC4->ZC4_FLAG		:= "2"
+			ZC4->ZC4_TCONSU	:= cConsumi
+			ZC4->ZC4_PESSOA	:= cPessoa
+			ZC4->ZC4_PRCCIA	:=	P120CCalc()
+			
+			ZC4->(MsUnLock())
+		ElseIf cConsumi == "1" .And. (cQueryP)->B1_CONSUMI > 0
+			ZC4->(Reclock("ZC4",.T.))
+			
+			cItem := Soma1(cItem)
+			ZC4->ZC4_CODTAB	:= cCodZC4
+			ZC4->ZC4_TABBAS	:= cTabBase
+			ZC4->ZC4_EST  		:= cUFTab
+			ZC4->ZC4_ITEM		:= cItem
+			ZC4->ZC4_CODPRO	:= (cQueryP)->B1_COD
+			ZC4->ZC4_DESCRI	:= (cQueryP)->B1_XDESC
+			ZC4->ZC4_PRCBAS:= (cQueryP)->B1_CONSUMI
+			ZC4->ZC4_PERFRT	:= nFrtZC4
+			ZC4->ZC4_DESP		:= nDespZC4
+			ZC4->ZC4_PERIPI	:= (cQueryP)->B1_IPI
+			ZC4->ZC4_FLAG		:= "2"
+			ZC4->ZC4_TCONSU	:= cConsumi
+			ZC4->ZC4_PESSOA	:= cPessoa
+			ZC4->ZC4_PRCCIA	:=	P120CCalc()
+			
+			ZC4->(MsUnLock())
+		elseif (cQueryP)->DA1_PRCVEN > 0
+			ZC4->(Reclock("ZC4",.T.))
+			
+			cItem := Soma1(cItem)
+			ZC4->ZC4_CODTAB	:= cCodZC4
+			ZC4->ZC4_TABBAS	:= cTabBase
+			ZC4->ZC4_EST  		:= cUFTab
+			ZC4->ZC4_ITEM		:= cItem
+			ZC4->ZC4_CODPRO	:= (cQueryP)->B1_COD
+			ZC4->ZC4_DESCRI	:= (cQueryP)->B1_XDESC
+			ZC4->ZC4_PRCBAS:= (cQueryP)->B1_CONSUMI
+			ZC4->ZC4_PERFRT	:= nFrtZC4
+			ZC4->ZC4_DESP		:= nDespZC4
+			ZC4->ZC4_PERIPI	:= (cQueryP)->B1_IPI
+			ZC4->ZC4_FLAG		:= "2"
+			ZC4->ZC4_TCONSU	:= cConsumi
+			ZC4->ZC4_PESSOA	:= cPessoa
+			ZC4->ZC4_PRCCIA	:=	P120CCalc()
+			
+			ZC4->(MsUnLock())
+		endIf
 		(cQueryP)->(DbSkip())
 		
 	EndDo

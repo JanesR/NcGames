@@ -2712,7 +2712,7 @@ Local cCodRast
 Local lError 		:= .F.
 Local oSite
 Local dData			:= Date()
-Local nDiaCorri		:= 10
+Local nDiaCorri		:= 20
 
 cQry := " SELECT ZC5_NUM,ZC5.R_E_C_N_O_ RecZC5, SZ1.R_E_C_N_O_ RecSZ1 "+CRLF
 cQry += " FROM "+ RetSqlName("ZC5") +" ZC5 "+CRLF

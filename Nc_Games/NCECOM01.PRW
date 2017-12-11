@@ -137,7 +137,7 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 			if valtype( xmlChildEx(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS,"_CAMPO_EXTRA"))=="O"
 				If val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_ENTIDADE_ID:TEXT) == val(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_SHOPPER_ID:TEXT)
 					//Nome do campo extra que dirá a que site o cliente pertence.
-					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "LOJA" .And. UPPER(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT)) == "CLIENTEUZGAMES"
+					if upper(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_CHAVE:TEXT)) == "CLIENTEUZGAMES" .And. UPPER(AllTrim(oXmlExtr:_SHOPPERLIST:_SHOPPER[i]:_CAMPOS_EXTRAS:_CAMPO_EXTRA:_VALOR:TEXT)) == "CLIENTEUZGAMES"
 						_cBloqueado := "2"
 						_cVend := "VN9902"
 						_Canal := "990001"
@@ -319,7 +319,7 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 		AADD(aVetor,{"A1_CGC" 		,_cCpf ,Nil})
 		AADD(aVetor,{"A1_INSCR" 	,_cIE ,Nil})
 		AADD(aVetor,{"A1_PFISICA" 	,_cRG ,Nil})
-		AADD(aVetor,{"A1_VEND" 		,"VN9901" ,Nil})
+		AADD(aVetor,{"A1_VEND" 		,_cVend ,Nil})
 		AADD(aVetor,{"A1_CONTA" 	,"11201010001" ,Nil})
 		AADD(aVetor,{"A1_TRANSP" 	,"000002" ,Nil})
 		AADD(aVetor,{"A1_TPFRET" 	,"C" ,Nil})
@@ -330,7 +330,7 @@ If XmlChildCount(oXml:_SHOPPERLIST) > 4
 		AADD(aVetor,{"A1_CODPAIS"	 ,_cCodpais ,Nil})
 		AADD(aVetor,{"A1_FRETE" 	,"1" ,Nil})
 		AADD(aVetor,{"A1_TEMODAL" 	,"2" ,Nil})
-		AADD(aVetor,{"A1_YCANAL" 	,"990000" ,Nil})
+		AADD(aVetor,{"A1_YCANAL" 	,_Canal ,Nil})
 		AADD(aVetor,{"A1_XGRPCOM" 	,"ECOMME" ,Nil})
 		AADD(aVetor,{"A1_CONTRIB" 	,_cContrib ,Nil})
 		AADD(aVetor,{"A1_TABELA" 	,cTabPrc ,Nil})

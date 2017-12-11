@@ -60,9 +60,12 @@ WHILE SC6->(!EOF()) .AND. SC5->C5_NUM == SC6->C6_NUM
 	//Verificação se vai para o WMS
 	cAtuEst	:= getadvfval("SF4","F4_ESTOQUE",xFilial("SF4")+SC6->C6_TES,1,"")
 	//	If SC6->C6_LOCAL $ GETMV("MV_ARMWMAS") .and. cAtuEst == "S"
-	If cAtuEst == "S"
+	If cAtuEst == "S" .and. xFilial("SF4") == "03"
 		TCSQLEXEC("UPDATE SC9010 SET C9_BLWMS = '02' WHERE C9_FILIAL='"+xFilial("SC9")+"' and C9_PEDIDO='"+alltrim(cPedido)+"' AND C9_BLCRED = ' ' AND C9_BLEST = ' '")
 		
+		TCSQLEXEC("COMMIT")
+	elseIf  cAtuEst == "S" .and. xFilial("SF4") == "04"
+		TCSQLEXEC("UPDATE SC9010 SET C9_BLWMS = '  ' WHERE C9_FILIAL='"+xFilial("SC9")+"' and C9_PEDIDO='"+alltrim(cPedido)+"' AND C9_BLCRED = ' ' AND C9_BLEST = ' '")
 		TCSQLEXEC("COMMIT")
 	EndIf
 	IF !EMPTY(POSICIONE("SC9",1,XFILIAL("SC9")+SC5->C5_NUM+SC6->C6_ITEM,"C9_BLCRED")) //DBSEEK(XFILIAL("SC9")+SC5->C5_NUM+SC6->C6_ITEM)
@@ -99,10 +102,14 @@ CODARM := 0
 CPED := SC5->C5_NUM
 
 //se tiver produto que vai para o WMS, ativa a interface de integração
-If len(aVaiWMS) > 0  .and. EMPTY(CCODBLOQ)
+If len(aVaiWMS) > 0  .and. EMPTY(CCODBLOQ) .and. xFilial("SC9") == "03"
 	//	U_INTPEDVEN(CPED) //ACRESCENTADO POR ERICH BUTTNER 25/04/11 - PROJETO DE INTEGRAÇÃO COM O WMAS
 	
 	TCSQLEXEC("UPDATE SC9010 SET C9_BLWMS='02' WHERE C9_FILIAL='"+xFilial("SC9")+"' and C9_PEDIDO='"+alltrim(CPED)+"'")
+	
+	TCSQLEXEC("COMMIT")
+elseIf xFilial("SC9") == "04"
+	TCSQLEXEC("UPDATE SC9010 SET C9_BLWMS=' ' WHERE C9_FILIAL='"+xFilial("SC9")+"' and C9_PEDIDO='"+alltrim(CPED)+"'")
 	
 	TCSQLEXEC("COMMIT")
 EndIf

@@ -91,14 +91,20 @@ cQuery += "   on(SC5.C5_CLIENTE = SA1.A1_COD AND SC5.C5_LOJACLI = SA1.A1_LOJA)  
 cQuery += " LEFT JOIN "+RetSqlName("SZ7")+" SZ7                                                                                                                                "
 cQuery += "   ON(SC5.C5_FILIAL = SZ7.Z7_FILIAL AND SC5.C5_NUM = SZ7.Z7_NUM AND SC5.C5_CLIENTE = SZ7.Z7_CODCLI)                                                  "
 cQuery += " LEFT JOIN "+RetSqlName("SX5")+" SX5                                                                                                                 "
-cQuery += "   ON(SC6.C6_TPOPER = SX5.X5_CHAVE AND SX5.X5_TABELA = '16')                                                  "
+cQuery += "   ON(SC6.C6_TPOPER = SX5.X5_CHAVE AND SX5.X5_TABELA = 'DJ')                                                  "
 cQuery += " WHERE                                                                                                                                               "
 cQuery += "     SC5.C5_FILIAL = '"+xFilial("SC5")+"'                                                                                                                            "
 cQuery += " AND SC5.D_E_L_E_T_ = ' '                                                                                                                            "
 cQuery += " AND SC6.D_E_L_E_T_ = ' '                                                                                                                            "
 cQuery += " AND SC9.D_E_L_E_T_ = ' '                                                                                                                            "
 cQuery += "                                                                                                                             "
+
+If cEmpAnt $ "03;40"
+cQuery += " AND SZ7.Z7_STAT >= '000002'                                                                                                                          "
+else
 cQuery += " AND SZ7.Z7_STAT = '000002'                                                                                                                          "
+endif
+
 cQuery += " AND SC5.C5_EMISSAO BETWEEN '"+DtoS(MV_PAR01)+"' AND '"+DtoS(MV_PAR02)+"'                                                                                                "
 cQuery += " AND SC9.C9_DATALIB BETWEEN '"+DtoS(MV_PAR03)+"' AND '"+DtoS(MV_PAR04)+"'                                                                                                "
 cQuery += " AND (C6_BLQ <> 'R' OR C6_QTDENT <>0)                                                                                                                "

@@ -17,6 +17,7 @@ User Function MTA103MNU()
 If cEmpAnt$"03*40"
 	aAdd(aRotina,{OemToAnsi("Enviar para Conferencia Loja"), "U_NCGINT001", 0 , 2, 0, nil})
 	aAdd(aRotina,{OemToAnsi("Excluir NF Conf. Cega"), "U_NCGINTEX1", 0 , 2, 0, nil})
+    aAdd(aRotina,{OemToAnsi("Encerrar Conf. Cega"), "U_NCGPR142", 0 , 2, 0, nil})
 EndIf
 
 Return 

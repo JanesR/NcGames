@@ -1,0 +1,259 @@
+#INCLUDE "rwmake.ch"
+#INCLUDE "topconn.ch"
+#Include "Protheus.ch"
+
+/*/
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºPrograma  ³MALTCLI   º Autor ³ Rodrigo Okamoto    º Data ³  05/03/11   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDescricao ³ Ponto de entrada para realizar alterações na alteração     º±±
+±±º          ³ do cadastro de clientes                                    º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³ AP6 IDE                                                    º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+/*/
+
+User Function MALTCLI
+
+	Local aAreaAtu	:= GetArea()
+	Local aDados		:= {}
+	Local cMObs030	:= ""
+	
+	_lRet	:= .T.
+
+	If !Empty(SA1->A1_ZCODCIA)
+		U_EcomHtm7("ALTERACAO")
+	EndIf
+	
+	//lCliEcom := U_M001B2C(SA1->A1_VEND) //Verifica se é cliente ecommcerce
+	
+	M030GTrb()//Função responsavel pela config. de Grp de tributação
+	
+	aadd(aDados,"Aviso de alteração do Cadastro de Clientes")
+	aadd(aDados,"Filial: "+xFilial("SA1"))
+	aadd(aDados,"Nome:"+SA1->A1_NREDUZ)
+	aadd(aDados,"Cliente: "+SA1->A1_COD)
+	aadd(aDados,"Loja: "+SA1->A1_LOJA)
+	aadd(aDados,"Conta Contabil: "+SA1->A1_CONTA)
+	aadd(aDados,"Alterado por: "+cUsername)
+	MEnviaMail("Z04",aDados)
+
+	//Gravar Mensagem de alteração financeira.
+	cMObs030 := u_GetSA1Fin()
+	If !Empty(cMObs030)
+		SA1->(RecLock("SA1",.F.))
+		SA1->A1_PRF_OBS := cMObs030
+		SA1->(MsUnlock())
+	EndIf
+
+	RestArea(aAreaAtu)
+
+Return(_lRet)
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºPrograma  ³M030INC   ºAutor  ³Microsiga           º Data ³  03/30/16   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDesc.     ³ Ponto de entrada que faz as alterações na inclusão do 	  º±±
+±±º          ³  cliente                                                   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³ AP                                                         º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+User Function M030INC
+
+	Local cOldConTrib
+	Local cConTrib
+
+	Local aAliasM30	:= GetNextAlias()
+	Local cQry			:= ""
+
+	If SA1->(Eof())
+		Return
+	EndIf
+	
+	//lCliEcom := U_M001B2C(SA1->A1_VEND) //Verifica se é cliente ecommcerce
+	
+	M030GTrb()//Função responsavel pela config. de Grp de tributação
+
+	// Gravação da numeração do usuário
+	cQry := " SELECT MAX(A1_YCODWMS) PROXNUM FROM "+RetSqlName("SA1")
+	cQry += " WHERE D_E_L_E_T_ = ' '
+	
+	IIf(Select(aAliasM30) > 0,(aAliasM30)->(dbCloseArea()),Nil)
+	DbUseArea(.T.,'TOPCONN',TCGENQRY(,,cQry),aAliasM30  ,.F.,.T.)
+
+
+	//O campo A1_YCODWMS receberá apenas 0, devido não ser utilizado no WMS. Obs. caso retorne a regra, o comentário deverá ser retirado.
+	If Empty(Alltrim(SA1->A1_YCODWMS))
+		SA1->(reclock("SA1",.F.))
+		SA1->A1_YCODWMS := 0//(aAliasM30)->PROXNUM+1
+		SA1->(msunlock())
+	Endif
+
+	(aAliasM30)->(dbCloseArea())
+
+Return
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+±±ÉÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍËÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍÍ»±±
+±±ºPrograma  ³M030INC   ºAutor  ³Microsiga           º Data ³  05/05/16   º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÊÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºDesc.     ³                                                            º±±
+±±º          ³                                                            º±±
+±±ÌÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¹±±
+±±ºUso       ³ AP                                                        º±±
+±±ÈÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼±±
+±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+*/
+User Function M30CodBar()
+
+	Local aAreaAtu	:= GetArea()
+	Local aAreaSA1	:= SA1->(GetArea())
+	Local aAreaQry	:= GetNextAlias()
+	Local lRet		:= .T.
+
+	Local cCodBar	:= AllTrim(M->B1_CODBAR)
+	Local cQry		:= ""
+
+	If !(cCodBar $"PENDENTE/0") .Or. !Empty(cCodBar)
+	
+		cQry += "SELECT * FROM "+RetSqlName("SB1")+" SB1"+CRLF
+		cQry += "WHERE B1_CODBAR LIKE '%"+cCodBar+"%'"+CRLF
+		cQry += "AND B1_FILIAL = '"+xFilial("SB1")+"'"+CRLF
+		cQry += "AND D_E_L_E_T_ = ' '"+CRLF
+		cQry += "AND B1_TIPO = 'PA'"+CRLF
+		cQry += "AND B1_DESC NOT like 'SOFTWARE%'"+CRLF
+		cQry += "AND B1_XUSADO <> '1'"+CRLF
+	
+		cQry := ChangeQuery(cQry)
+	
+		DbUseArea(.T.,"TOPCONN",TcGenQry(,,cQry),aAreaQry, .F., .F.)
+	
+		cMsg := "Cód. de barras já utilizado em outro(s) produto(s)"+ CRLF
+		Do While (aAreaQry)->(!Eof())
+		
+			If !((aAreaQry)->B1_COD == M->B1_COD)
+				cMsg += "Produto: "+ AllTrim((aAreaQry)->B1_COD) +" - "+ AllTrim((aAreaQry)->B1_CODBAR) +" - "+ Alltrim((aAreaQry)->B1_XDESC) + CRLF
+				lRet := .F.
+			EndIf
+			(aAreaQry)->(DbSkip())
+		EndDo
+	
+	EndIf
+
+	If !lRet
+		MsgAlert( cMsg)
+	EndIf
+
+	(aAreaQry)->(DbCloseArea())
+
+	RestArea(aAreaSA1)
+	RestArea(aAreaAtu)
+
+Return lRet
+
+
+//------------------------------------------------------------------------------------------
+//{Protheus.doc} M030GTrb
+//Função responsável pelo ajuste do cadasto fiscal de acordo com as informações do cliente.
+//
+//@author    Lucas Felipe
+//@version   1.xx
+//@since		16/06/2016
+
+/*--------------------------------------------------------------------------------------//
+// Se cliente tipo "Solidário e Inscrição Estadual Diferente de ISENTO"					//
+// Recebera "Grupo de tributação = SOL													//
+// Contribuinte = 1																		// 
+//																						//
+// Se cliente tipo "Consumidor Final e Inscrição Estadual igual a ISENTO"				//
+// Recebera "Grupo de tributação = CFS													//
+// Contribuinte = 2 (não)																//
+//																						//
+// Se cliente tipo "Consumidor Final e Inscrição Estadual diferente de ISENTO"			//
+// Recebera "Grupo de tributação = CFI													//
+// Contribuinte = 1 (sim)																//
+//																						//
+// Cliente para exportação																// 
+//																						//
+// Se pais diferente de "BRASIL" e CNPJ igual a "vazio" e Cliente tipo "Exportação"		//
+// Recebera "Grupo de tributação = EXP													//
+//																						//
+// Grupo de tributação - Suframa														//
+//																						//
+// Se cliente tipo "Solidário" e Suframa diferente de "vazio"							// 
+// Receberá Grupo de tributação = ZFM													//
+//--------------------------------------------------------------------------------------*/
+
+Static Function M030GTrb()
+
+	Local aAreaAtu	:= GetArea()
+	
+	Local cGrpOld		:= SA1->A1_GRPTRIB
+	Local cGrpTrib	:= SA1->A1_GRPTRIB
+	Local cPaisBac	:= SA1->A1_CODPAIS
+	Local cOldConTrib	:= SA1->A1_CONTRIB
+	Local cConTrib	:= SA1->A1_CONTRIB
+	
+	Local cMsg 		:= ""
+
+	If !AllTrim(SA1->A1_INSCR)=="ISENTO" .And. SA1->A1_TIPO=="S"
+		cConTrib:="1"
+		cGrpTrib:="SOL"
+		cMsg := "Cliente Solidário, contribuinte SIM"
+	ElseIf AllTrim(SA1->A1_INSCR)=="ISENTO" .And. SA1->A1_TIPO=="F"
+		cConTrib:="2"
+		cGrpTrib:="CFS"
+		cMsg := "Cliente Cons.Final, contribuinte NÃO"
+	ElseIf !AllTrim(SA1->A1_INSCR)=="ISENTO" .And. SA1->A1_TIPO=="F"
+		cConTrib:="1"
+		cGrpTrib:="CFI"
+		cMsg := "Cliente Cons.Final, contribuinte SIM"
+	EndIf
+
+	/*-----------------------------------------------------------------------//
+	// Exportação		  		                                       	       //
+	//-----------------------------------------------------------------------*/
+	
+	If !(cPaisBac == '01058') .And. Empty(SA1->A1_CGC) .And. SA1->A1_TIPO == 'X'
+		cMsg := "Cliente Exportação"
+		cGrpTrib	:= "EXP"
+	EndIf
+
+	/*-----------------------------------------------------------------------//
+	// Zona Franca de Manaus                                                 //
+	//-----------------------------------------------------------------------*/
+	
+	If SA1->A1_TIPO == "S" .AND. !Empty(AllTrim(SA1->A1_SUFRAMA))
+		cGrpTrib	:= "ZFM"
+		cMsg := "Cliente Zona Franca"
+	Endif
+	
+	MsgAlert(cMsg,"M030INC")
+	
+	
+	SA1->(RecLock("SA1",.F.))
+		
+	SA1->A1_GRPTRIB	:= cGrpTrib
+	SA1->A1_CONTRIB	:= cConTrib
+		
+	SA1->(MsUnlock())
+		
+	Alert("Grupo de Tributação Alterado para: "+cGrpTrib)
+	
+	
+Return

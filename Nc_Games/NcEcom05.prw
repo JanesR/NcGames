@@ -218,7 +218,7 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 
 						ZC6->ZC6_TPPROD := "N"
 						ZC6->(MsUnlock())
-						
+
 						DbSelectArea("SB2")
 						SB2->(DBSETORDER(1))
 
@@ -265,7 +265,7 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 							endif
 
 							ZC6->(MsUnlock())
-
+							
 							DbSelectArea("SB2")
 							SB2->(DBSETORDER(1))
 
@@ -359,7 +359,8 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				EndIf
 				
 				ZC5->(MsUnlock())
-
+				
+				
 				END TRANSACTION
 				IF !empty(_aCli[1])
 					If SA1->A1_EST=="SP" .And. SA1->(AllTrim(A1_ENDENT)+AllTrim(A1_BAIRROE)+AllTrim(A1_CEPE)+AllTrim(A1_MUNE)+AllTrim(A1_ESTE))<>ZC5->(AllTrim(ZC5_ENDENT)+AllTrim(ZC5_COMPLE)+AllTrim(ZC5_BAIROE)+AllTrim(ZC5_CEPE)+AllTrim(ZC5_MUNE)+AllTrim(ZC5_ESTE)  )
@@ -408,10 +409,6 @@ If XmlChildCount(oXml:_RECEIPTLIST) > 4
 				EndIf
 			Endif
 		Endif
-	if !(cTemplate$cTempleB2B)
-		ZC5Local(ZC5->ZC5_NUM)
-	EndIf
-
 	Next i
 Endif
 
@@ -473,7 +470,7 @@ _cQuery+=" FROM "+RetSqlName("SA1")
 _cQuery+=" WHERE A1_FILIAL='"+xFilial("SA1")+"'"
 _cQuery+=" AND D_E_L_E_T_=' '"
 _cQuery+=" AND A1_ZCODCIA='"+ oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_SHOPPER_ID:TEXT +"'"
-_cQuery+=" AND a1_cgc = '"+oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT+"' "
+_cQuery+=" OR a1_cgc = '"+oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT+"' "
 _cQuery+=" ORDER BY A1_COD,A1_LOJA "
 
 _cQuery := ChangeQuery(_cQuery)
@@ -552,28 +549,28 @@ endif
 	AADD(aVetor,{"A1_FILIAL", xFilial("SA1") ,Nil})
 	AADD(aVetor,{"A1_COD", _cDoc,Nil})
 	AADD(aVetor,{"A1_LOJA", "01",Nil})
-
-	if !lJaExist
-		AADD(aVetor,{"A1_NOME",  upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
-		AADD(aVetor,{"A1_NREDUZ",upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
-		AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CNPJ", "S","F"),Nil})
-		AADD(aVetor,{"A1_PESSOA", IIF(upper(docCli) = "CNPJ","J","F"),Nil})
-		AADD(aVetor,{"A1_CGC", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT,Nil})
-		AADD(aVetor,{"A1_INSCR", iif( upper(personType) == "COMPANY",docID,"ISENTO"),Nil})
-		AADD(aVetor,{"A1_PFISICA", iif( upper(personType) == "RG" ,docID," "),Nil})
-		
+	
+	
+	AADD(aVetor,{"A1_NOME",  upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
+	AADD(aVetor,{"A1_NREDUZ",upper( NoAcento( oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_name:TEXT)),Nil})
+	AADD(aVetor,{"A1_TIPO", IIF( upper(docCli) == "CNPJ", "S","F"),Nil})
+	AADD(aVetor,{"A1_PESSOA", IIF(upper(docCli) = "CNPJ","J","F"),Nil})
+	AADD(aVetor,{"A1_CGC", oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_id:TEXT,Nil})
+	AADD(aVetor,{"A1_INSCR", iif( upper(personType) == "COMPANY",docID,"ISENTO"),Nil})
+	AADD(aVetor,{"A1_PFISICA", iif( upper(personType) == "RG" ,docID," "),Nil})
+	
+	_GrpCli := "CFS"
+	if personType == "COMPANY" .and. docID != "ISENTO"
+		_GrpCli := "SOL"
+	ElseIf personType == "PERSON" .and. docID != "ISENTO"
 		_GrpCli := "CFS"
-		if personType == "COMPANY" .and. docID != "ISENTO"
-			_GrpCli := "SOL"
-		ElseIf personType == "PERSON" .and. docID != "ISENTO"
-			_GrpCli := "CFS"
-		Else
-			_GrpCli := "CFS"
-		EndIf
+	Else
+		_GrpCli := "CFS"
+	EndIf
 
-		AADD(aVetor,{"A1_GRPTRIB", _GrpCli,Nil})//iif(upper(docCli) == "CPF","CFS",iif(upper(personType) == "RG","CFI","SOL"))
-		AADD(aVetor,{"A1_CONTRIB", iif( upper(docID) == "ISENTO","2","1")	,Nil})
-	endif
+	AADD(aVetor,{"A1_GRPTRIB", _GrpCli,Nil})//iif(upper(docCli) == "CPF","CFS",iif(upper(personType) == "RG","CFI","SOL"))
+	AADD(aVetor,{"A1_CONTRIB", iif( upper(docID) == "ISENTO","2","1")	,Nil})
+	
 
 	AADD(aVetor,{"A1_END", upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_address1:TEXT)) +", "+upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_number:TEXT)),Nil})
 	AADD(aVetor,{"A1_COMPLEM",iif(XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER,"_ship_to_street_compl"), upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_ship_to_street_compl:TEXT ))," ") + "- Ref.:" + iif(XmlNodeExist(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER,"_REFERENCE"),upper(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_RECEIPT_SHOPPER:_reference:TEXT ))," ") ,Nil})
@@ -631,10 +628,12 @@ endif
 		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
 	elseif cTemplate$cTempleB2B .And. !lJaExist
 		AADD(aVetor,{"A1_MSBLQL", "1",Nil})
+	//elseif UPPER(NoAcento(oXml:_RECEIPTLIST:_RECEIPT[i]:_receipt_billing:_document_type:TEXT)) == "CPF"
+	//	AADD(aVetor,{"A1_MSBLQL", "2",Nil})
 	else
 		AADD(aVetor,{"A1_MSBLQL", "2",Nil})
 	endif
-	
+
 	if u_CriaCli(aVetor,cNPed, lJaExist)
 		aAdd(_aCli,_cDoc)
 		aAdd(_aCli,"01")
@@ -1176,77 +1175,4 @@ ZC5->(DbCloseArea())
 (cAliasQry)->(DbCloseArea())
 
 RestArea(aArea)
-Return
-
-Static Function ZC5Local(cNum)
-
-Local aAreaAtu	:= GetArea()
-Local aAreaZC6	:= ZC6->(GetArea())
-Local aAliasQry	:= GetNextAlias()
-Local cQry			:= ""
-
-Local lAltArm		:= .F.
-Local lB2C			:= .F.
-
-Local cArmPv		:= ""
-Local nQtdPed 	:= 0
-Local nQtdDisp	:= 0
-Local nQtDisp		:= 0
-
-
-cQry += " SELECT ZC6_NUM AS NUMCIA "+CRLF
-cQry += "       ,ZC6_PVVTEX AS PVVTEX "+CRLF
-cQry += "       ,ZC6_ITEM AS ITEM  "+CRLF
-cQry += "	   ,ZC6_PRODUT AS PRODUTO "+CRLF
-cQry += "	   ,ZC6.ZC6_QTDVEN AS QTD "+CRLF
-cQry += "	   ,ZC6_LOCAL AS lOCAL_PV "+CRLF
-cQry += "	   ,NVL((SB2.B2_QATU-SB2.B2_RESERVA),0) AS ARM51 "+CRLF
-cQry += "	   ,NVL((B2.B2_QATU - B2.B2_RESERVA),0) AS ARM01 "+CRLF
-cQry += " FROM "+RetSqlName("ZC6")+" ZC6 "+CRLF
-cQry += "	LEFT OUTER JOIN "+RetSqlName("SB2")+" B2 "+CRLF
-cQry += "		ON B2.D_E_L_E_T_ = ' ' "+CRLF
-cQry += "		AND B2.B2_FILIAL = '"+ xFilial("SB2") +"' "+CRLF
-cQry += "		AND B2.B2_LOCAL = '01' "+CRLF
-cQry += "		AND B2.B2_COD = ZC6.ZC6_PRODUT "+CRLF
-cQry += "	LEFT OUTER JOIN "+RetSqlName("SB2")+" SB2 "+CRLF
-cQry += "		ON SB2.B2_FILIAL = '"+ xFilial("SB2") +"' "+CRLF
-cQry += "		AND SB2.B2_LOCAL = '51' "+CRLF
-cQry += "		AND SB2.D_E_L_E_T_ =' ' "+CRLF
-cQry += "		AND SB2.B2_COD = ZC6.ZC6_PRODUT "+CRLF
-cQry += " WHERE ZC6.ZC6_FILIAL = '"+ xFilial("ZC6") +"' "+CRLF
-cQry += " AND ZC6.D_E_L_E_T_ =' ' "+CRLF
-cQry	+= " AND ZC6.ZC6_NUM = '"+ alltrim(str(cNum)) +"' "+CRLF
-cQry	+= " ORDER BY ZC6_ITEM "+CRLF
-
-cQry := ChangeQuery(cQry)
-
-DbUseArea(.T., "TOPCONN", TCGenQry(,,cQry), aAliasQry, .T., .F.)
-
-
-Do While (aAliasQry)->(!EoF())
-	
-	cArmPv 		:= (aAliasQry)->lOCAL_PV
-	nQtdPed 	:= (aAliasQry)->QTD
-	nQtdDisp 	:=  Iif(cArmPv == '51',(aAliasQry)->ARM51,(aAliasQry)->ARM01)
-	
-	if !(nQtdDisp >= nQtdPed)
-		ZC6->(DbSetOrder(1))
-		ZC6->(MsSeek(xFilial("ZC6")+alltrim(STR(cNum))+(aAliasQry)->ITEM))
-		if(ZC6->(RecLock("ZC6",.F.)))
-			
-			ZC6->ZC6_LOCAL := Iif(ZC6->ZC6_LOCAL=="51","01","51")
-			
-			ZC6->(MsUnlock())
-		endif
-	endif
-
-	(aAliasQry)->(DbSkip())
-	
-EndDo
-
-(aAliasQry)->(DbCloseArea())
-
-RestArea(aAreaZC6)
-RestArea(aAreaAtu)
-
 Return

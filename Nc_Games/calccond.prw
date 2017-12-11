@@ -62,8 +62,12 @@ nFrete		:= M->C5_FRETE
 nSeguro		:= M->C5_SEGURO
 nDespesa	:= M->C5_DESPESA
 cVend1	    := M->C5_VEND1
-cGrpRep 	:= GETADVFVAL("SA3","A3_GRPREP",XFILIAL("SA3")+cVend1,1,"")  
+cGrpRep 	:= GETADVFVAL("SA3","A3_GRPREP",XFILIAL("SA3")+cVend1,1,"")
 nVlMin	:= getadvfval("ACA","ACA_PEDMIN",XFILIAL("ACA")+cGrpRep,1,0)
+
+If nVlMin == Nil
+	nVlMin:=0
+EndIf
 
 IF !M->C5_TIPO = "N" // se o pedido for diferente de normal, não fará a validação
 	RETURN(lparc)

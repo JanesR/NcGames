@@ -16,7 +16,7 @@ Group NCGAMES
       FoldersCount=3
       Folder Fontes
          VSSPath=Nova Pasta1
-         FilesCount=705
+         FilesCount=717
          File \TOTVS118\Microsiga\Protheus\my projects\a100del.prw
              Type=T
          End
@@ -2130,6 +2130,42 @@ Group NCGAMES
              Type=T
          End
          File \TOTVS118\Microsiga\Protheus\my projects\mailTrf.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\criaCliente.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FUNCOES.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncecom08.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCECOM01.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\M450FIL.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\ncgpr106.prw
+             Type=T
+         End
+         File \totvs118\microsiga\protheus\my projects\ncecom01.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR141.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\NCGPR142.PRW
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FisWeb001.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\FinWeb.prw
+             Type=T
+         End
+         File \TOTVS118\Microsiga\Protheus\my projects\baixaTitulosPlanila.prw
              Type=T
          End
       End

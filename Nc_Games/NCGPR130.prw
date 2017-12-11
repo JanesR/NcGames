@@ -15,7 +15,7 @@ Static aDadosFilt:={}
 
 
 User Function PR130JSt(aDados)
-	Default aDados := {"03","01"}
+	Default aDados := {"03","30"}
 	
 	aDadosFilt:={"1","*"}
 	U_NCJOB130(aDados)
@@ -306,6 +306,24 @@ While (cArqTmp)->(!Eof())
 		(cArqTmp)->(DbSkip());Loop
 	EndIf
 	
+	if SF2->F2_TIPO == "D"
+		DbSelectArea("SA2")
+		DbSetOrder(1)
+		if DbSeek(xFilial("SA2")+SF2->F2_CLIENTE+SF2->F2_LOJA, .T.)		
+			If SA2->A2_TIPO == "F"
+				(cArqTmp)->(DbSkip());Loop
+			Endif
+		EndIF
+	Else
+		DbSelectArea("SA1")
+		DbSetOrder(1)
+		if DbSeek(xFilial("SA1")+SF2->F2_CLIENTE+SF2->F2_LOJA, .T.)		
+			If SA1->A1_PESSOA == "F"
+				(cArqTmp)->(DbSkip());Loop
+			Endif
+		EndIF
+	EndIF
+
 	//Realiza a validação dos dados antes de enviar para conferencia cega
 	If VldConfCega(SF2->F2_DOC, SF2->F2_SERIE, SF2->F2_CLIENTE, SF2->F2_LOJA, @cMsgErr)
 		

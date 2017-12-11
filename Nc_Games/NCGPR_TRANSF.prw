@@ -237,8 +237,8 @@ local cQry := ""
 if cEmpAnt == "03"
 
 cQry := "	select                                                                                                                      "  +CRLF
-cQry += "	 distinct CASE WHEN SF2.F2_FILIAL = '01' THEN 'NC STORE P/LOJA'                                                             "  +CRLF
-cQry += "	      WHEN SF2.F2_FILIAL != '01' AND SA1.A1_YEMPDES = '03' AND SA1.A1_YFILDES = '01' THEN 'LOJA P/ NC STORE'                "  +CRLF
+cQry += "	 distinct CASE WHEN SF2.F2_FILIAL = '30' THEN 'NC STORE P/LOJA'                                                             "  +CRLF
+cQry += "	      WHEN SF2.F2_FILIAL != '30' AND SA1.A1_YEMPDES = '03' AND SA1.A1_YFILDES = '30' THEN 'LOJA P/ NC STORE'                "  +CRLF
 cQry += "	      ELSE 'ENTRE LOJAS'                                                                                                    "  +CRLF
 cQry += "	 END TRANF,                                                                                                                 "  +CRLF
 cQry += "	 EMP_ATUAL.DESCRI ORIGEM,                                                                                                   "  +CRLF
@@ -262,6 +262,10 @@ cQry += "	ON SF2.F2_FILIAL = SD2.D2_FILIAL                                      
 cQry += "	 and SF2.F2_doc = sd2.d2_doc                                                                                                "  +CRLF
 cQry += "	 and sf2.f2_serie = SD2.D2_SERIE                                                                                            "  +CRLF
 cQry += "	 and sf2.f2_emissao = sd2.d2_emissao                                                                                        "  +CRLF
+
+cQry += " aND SF2.F2_CLIENTe = SD2.D2_CLIENTE"
+cQry += " AND SF2.F2_LOJA = SD2.D2_LOJA"
+
 cQry += "	 LEFT JOIN sa1030 SA1 ON                                                                                                    "  +CRLF
 cQry += "	 sf2.F2_CLIENTE = sa1.A1_COD                                                                                                "  +CRLF
 cQry += "	 AND SF2.F2_LOJA = sa1.A1_LOJA                                                                                              "  +CRLF
@@ -290,11 +294,11 @@ cQry += "  and ZX5_CHAVE != '3090'"  +CRLF
 
 	do case
 		case tpTranf == "1" 
-		cQry += " and (sf2.f2_filial != '01' and SA1.A1_YFILDES != '01') "  +CRLF
+		cQry += " and (sf2.f2_filial != '30' and SA1.A1_YFILDES != '30') "  +CRLF
 		case tpTranf == "2"
-		cQry += " and (sf2.f2_filial = '01') "  +CRLF
+		cQry += " and (sf2.f2_filial = '30') "  +CRLF
 		case tpTranf == "3"
-		cQry += " AND SA1.A1_YEMPDES = '03' AND SA1.A1_YFILDES = '01' "  +CRLF
+		cQry += " AND SA1.A1_YEMPDES = '03' AND SA1.A1_YFILDES = '30' "  +CRLF
 	endcase
 
 	do case
@@ -313,7 +317,7 @@ cQry += "  and ZX5_CHAVE != '3090'"  +CRLF
 elseif cEmpAnt == "40"
 cQry += "                                                                                                                               "  +CRLF
 cQry += "     select                                                                                                                    "  +CRLF
-cQry += "	 distinct CASE WHEN SA1.A1_YEMPDES = '03' AND SA1.A1_YFILDES = '01' THEN 'LOJA P/ NC STORE'                                 "  +CRLF
+cQry += "	 distinct CASE WHEN SA1.A1_YEMPDES = '03' AND SA1.A1_YFILDES = '30' THEN 'LOJA P/ NC STORE'                                 "  +CRLF
 cQry += "	      ELSE 'ENTRE LOJAS'                                                                                                    "  +CRLF
 cQry += "	 END TRANF,                                                                                                                 "  +CRLF
 cQry += "	 EMP_ATUAL.DESCRI ORIGEM,                                                                                                   "  +CRLF
@@ -337,6 +341,10 @@ cQry += "	ON SF2.F2_FILIAL = SD2.D2_FILIAL                                      
 cQry += "	 and SF2.F2_doc = sd2.d2_doc                                                                                                "  +CRLF
 cQry += "	 and sf2.f2_serie = SD2.D2_SERIE                                                                                            "  +CRLF
 cQry += "	 and sf2.f2_emissao = sd2.d2_emissao                                                                                        "  +CRLF
+
+cQry += " aND SF2.F2_CLIENTe = SD2.D2_CLIENTE"
+cQry += " AND SF2.F2_LOJA = SD2.D2_LOJA"
+
 cQry += "	 LEFT JOIN sa1400 SA1 ON                                                                                                    "  +CRLF
 cQry += "	 sf2.F2_CLIENTE = sa1.A1_COD                                                                                                "  +CRLF
 cQry += "	 AND SF2.F2_LOJA = sa1.A1_LOJA                                                                                              "  +CRLF
@@ -365,11 +373,11 @@ cQry += "  and ZX5_CHAVE != '3090'"  +CRLF
 
 	do case
 		case tpTranf == "1" 
-		cQry += " and (sf2.f2_filial != '01' and SA1.A1_YFILDES != '01') "  +CRLF
+		cQry += " and (sf2.f2_filial != '30' and SA1.A1_YFILDES != '30') "  +CRLF
 		case tpTranf == "2"
-		cQry += " and (sf2.f2_filial = '01') "  +CRLF
+		cQry += " and (sf2.f2_filial = '30') "  +CRLF
 		case tpTranf == "3"
-		cQry += " AND SA1.A1_YEMPDES = '03' AND SA1.A1_YFILDES = '01' "  +CRLF
+		cQry += " AND SA1.A1_YEMPDES = '03' AND SA1.A1_YFILDES = '30' "  +CRLF
 	endcase
 
 	do case
@@ -394,22 +402,22 @@ endif
 	while (cAlias02)->(!EOF())
 		if RecLock(cAlias01,.T.)
 			(cAlias01)->TB_OK 		:= ' '//01
-			(cAlias01)->TB_TRANSF 	:= (cAlias02)->TRANF		//01
-			(cAlias01)->TB_ORIGEM 	:= (cAlias02)->ORIGEM		//02
-			(cAlias01)->TB_LOJAORI 	:= (cAlias02)->LOJA			//03
-			(cAlias01)->TB_EMPORI 	:= (cAlias02)->EMPRESA		//04
-			(cAlias01)->TB_FILORI 	:= (cAlias02)->FILIAL		//05
-			(cAlias01)->TB_DOC 		:= (cAlias02)->DOC			//06
-			(cAlias01)->TB_DESTI 	:= (cAlias02)->DEST			//07
-			(cAlias01)->TB_LJDEST 	:= (cAlias02)->A1_YCODWM	//08
-			(cAlias01)->TB_EMPDEST 	:= (cAlias02)->A1_YEMPDES	//09
-			(cAlias01)->TB_FILDEST 	:= (cAlias02)->A1_YFILDES	//10
-			(cAlias01)->TB_NFISCAL	:= (cAlias02)->NF			//11
-			(cAlias01)->TB_SERIE 	:= (cAlias02)->SERIE		//12
-			(cAlias01)->TB_EMISS 	:= StoD((cAlias02)->EMISSAO)//13
-			(cAlias01)->TB_STATUS 	:= (cAlias02)->SITUACAO		//14
-			(cAlias01)->TB_SAIDA 	:= StoD((cAlias02)->SAIDA)	//15
-			(cAlias01)->TB_ENTREG 	:= StoD((cAlias02)->ENTREGA)//16
+			(cAlias01)->TB_TRANSF 	:= (cAlias02)->TRANF		 //01
+			(cAlias01)->TB_ORIGEM 	:= (cAlias02)->ORIGEM		 //02
+			(cAlias01)->TB_LOJAORI 	:= (cAlias02)->LOJA			 //03
+			(cAlias01)->TB_EMPORI 	:= (cAlias02)->EMPRESA	 	 //04
+			(cAlias01)->TB_FILORI 	:= (cAlias02)->FILIAL		 //05
+			(cAlias01)->TB_DOC 		:= (cAlias02)->DOC			 //06
+			(cAlias01)->TB_DESTI 	:= (cAlias02)->DEST			 //07
+			(cAlias01)->TB_LJDEST 	:= (cAlias02)->A1_YCODWM    //08
+			(cAlias01)->TB_EMPDEST 	:= (cAlias02)->A1_YEMPDES	 //09
+			(cAlias01)->TB_FILDEST 	:= (cAlias02)->A1_YFILDES	 //10
+			(cAlias01)->TB_NFISCAL	:= (cAlias02)->NF			 //11
+			(cAlias01)->TB_SERIE 	:= (cAlias02)->SERIE		 //12
+			(cAlias01)->TB_EMISS 	:= StoD((cAlias02)->EMISSAO) //13
+			(cAlias01)->TB_STATUS 	:= (cAlias02)->SITUACAO		 //14
+			(cAlias01)->TB_SAIDA 	:= StoD((cAlias02)->SAIDA)	 //15
+			(cAlias01)->TB_ENTREG 	:= StoD((cAlias02)->ENTREGA) //16
 			MsUnLock()
 		endif
 		(cAlias02)->(DbSkip())
@@ -643,11 +651,11 @@ user function TRFDanfe01()
 				
 				cAssunto := "TRANSF. DA LOJA "+ aNotasPrt[nxTCount][LOJA_ORI] + " - " + aNotasPrt[nxTCount][ORI] +" P/ NC STORE - WM " + aNotasPrt[nxTCount][CODMW] + " NF " + aNotasPrt[nxTCount][NOTA]+" EMITIDA EM " +  DtoC( aNotasPrt[nxTCount][DTEMI] )
 
-			elseif aNotasPrt[nxTCount][EMP_NF] == "03" .and. aNotasPrt[nxTCount][FILIAL_NOTA] == "01"
+			elseif aNotasPrt[nxTCount][EMP_NF] == "03" .and. aNotasPrt[nxTCount][FILIAL_NOTA] == "30"
 				
 				cAssunto := "TRANSF.  NC STORE P/ "+  aNotasPrt[nxTCount][LOJA_DEST] + " - " + aNotasPrt[nxTCount][DESTINO]  + " NF "+aNotasPrt[nxTCount][NOTA]+" EMITIDA EM " + DtoC( aNotasPrt[nxTCount][DTEMI] )
 
-			elseif  aNotasPrt[nxTCount][FILIAL_NOTA] != "01"
+			elseif  aNotasPrt[nxTCount][FILIAL_NOTA] != "30"
 
 				cAssunto := "TRANSF. ENTRE LOJAS - WM " + aNotasPrt[nxTCount][CODMW] + " NF " + aNotasPrt[nxTCount][NOTA]+" EMITIDA EM " + DtoC( aNotasPrt[nxTCount][DTEMI] )
 			endif
@@ -660,8 +668,8 @@ user function TRFDanfe01()
 				cPARA :=Alltrim( getEmailTo(aNotasPrt[nxTCount][EMP_ORI], aNotasPrt[nxTCount][FIL_ORI]) )
 
 				if cPARA != ""
-					aadd(aFiles,{cAssunto,clDir+cNome+".PDF","jisidoro@ncgames.com.br;rciambarella@ncgames.com.br",_MSG}) 
-				    //aadd(aFiles,{cAssunto,clDir+cNome+".PDF",cPARA,_MSG}) 
+					//aadd(aFiles,{cAssunto,clDir+cNome+".PDF","jisidoro@ncgames.com.br;rciambarella@ncgames.com.br",_MSG}) 
+				    aadd(aFiles,{cAssunto,clDir+cNome+".PDF",cPARA,_MSG}) 
 				EndIf
 			endIF
 		endIf
