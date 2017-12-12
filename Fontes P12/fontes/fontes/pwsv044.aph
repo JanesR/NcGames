@@ -1,0 +1,199 @@
+<% 
+//#INCLUDE "PWSV044.CH"                                                                          
+Local nI 			:= 0
+Local nJ 			:= 0
+Local nTam 			:= Len( HttpSession->PWSV044INFO[2] )
+Local nTamHeader 	:= Len( HttpSession->PWSV044INFO[2][1] )
+Local nCor			:= 0
+%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link href="<%=GetPrtSkin()%>/estilo.css" rel="stylesheet" type="text/css">
+<script language="Javascript" src="criaobj.js"></script>
+<script language="Javascript" src="pplanguage.js"></script>
+<script language="JavaScript">
+<!--
+function DinMenu( x )
+{
+	if ( document.getElementById( x ).style.display == "none" )
+		document.getElementById( x ).style.display = '';
+	else
+		document.getElementById( x ).style.display = "none";
+
+}
+
+function fIncItem()
+{
+	document.all.TABCAB.style.display = "";
+	document.all.TABITEM.style.display = "";
+	
+	if( !valida() )
+	{
+		return;
+	}
+	
+	if( document.all.TABCAB.style.display == "none" )
+	{
+		document.forms[0].cTABCAB.value = "1";
+	}
+	
+	if( document.all.TABITEM.style.display == "none" )
+	{
+		document.forms[0].cTABITEM.value = "1";
+	}
+
+	document.forms[0].cIncItem.value = "1";
+	document.forms[0].action = "W_PWSV045.APW";
+	document.forms[0].submit();
+}
+
+function fExcItem( cItem )
+{
+	document.all.TABCAB.style.display = "";
+	document.all.TABITEM.style.display = "";
+
+	if( !valida() )
+	{
+		return;
+	}
+	
+	document.forms[0].cExcItem.value = "1";
+	document.forms[0].cItem.value = cItem;
+	document.forms[0].action = "W_PWSV045.APW";
+	document.forms[0].submit();
+}
+
+function fCalcPed()
+{
+	document.all.TABCAB.style.display = "";
+	document.all.TABITEM.style.display = "";
+
+	if( !valida() )
+	{
+		return;
+	}
+	
+	document.forms[0].action = "W_PWSV046.APW";
+	document.forms[0].submit();
+}
+
+function fGravar()
+{
+	document.all.TABCAB.style.display = "";
+	document.all.TABITEM.style.display = "";  
+	
+
+	if( !valida() )
+	{
+		return;
+	}
+	
+	document.forms[0].action = "W_PWSV047.APW";
+	document.forms[0].submit();
+	document.getElementById( "inc1" ).style.display = "none";  
+	document.getElementById( "inc2" ).style.display = "none"; 
+}
+//-->
+</script></head>
+
+<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" class="FundoClaro">
+<form name="form1" method="post" action="">
+<input type="hidden" name="cItem" value="">
+<input type="hidden" name="cExcItem" value="">
+<input type="hidden" name="cIncItem" value="">
+<input type="hidden" name="cTABCAB" value="">
+<input type="hidden" name="cTABITEM" value="">
+  <table border="0" cellpadding="0" cellspacing="0">
+    <tr> 
+      <td width="6" valign="top" class="FundoPontilhadoVertical"><img src="<%=GetPrtSkin()%>/transparente.gif" width="6" height="6"></td>
+      <td valign="top" class="FundoClaro">
+        <table border="0" cellpadding="3" cellspacing="0">
+          <tr> 
+            <td><p align="justify" class="titulo">&raquo; <%=HttpSession->PWSV044APH[1]%></p>
+            <p align="justify"><a href="javascript:DinMenu( 'TABCAB' );" class="titulo">&raquo; <%= "Cabeçalho"%></a></p>
+            <%=HttpSession->PWSV044INFO[1][1]%>
+            </td>
+          </tr>
+          <tr>
+            <td><p align="justify"><a href="javascript:DinMenu( 'TABITEM' );" name="Itens" class="titulo">&raquo; <%= "Item"%></a></p>
+              <table width="100%" border="1" align="center" cellpadding="8" cellspacing="0" bordercolor="#FFFFFF" id="TABITEM">
+                <tr>
+                  <td width="100%" bordercolor="#CFCDCD" bgcolor="#FFFFFF">
+                    <table width="100%" border="0" cellspacing="2" cellpadding="1" align="center">
+                      <tr align="center" class="FundoDestaques">
+                        <td><div class="TituloMenorBold"><%= "Ações"%></div></td>
+                        <% For nI := 1 To nTamHeader %>
+                        <td>
+                          <div class="TituloMenorBold"><%=HttpSession->PWSV044INFO[2][1][nI]%></div>
+                        </td>
+                        <% Next nI %>
+                      </tr>
+                      <% For nI := 2 To nTam %>
+                        <% If nCor == 1 %>
+                          <% nCor := 0 %>
+                      <tr>
+                        <% Else %>
+                          <% nCor := 1 %>
+                      <tr align="center" class="FundoLogin">
+                        <% EndIf %>
+                        <% For nJ := 1 To Len( HttpSession->PWSV044INFO[2][nI] ) %>
+                          <% If nJ == 1 %>
+                        <td>
+                          <div align="center">
+                            <a href="#" onClick="fIncItem()"><img src="<%=GetPrtSkin()%>/ico_incluir.gif" border="0"></a>&nbsp;
+                            <a href="#" onClick="fExcItem( '<%=nI - 1%>' )"><img src="<%=GetPrtSkin()%>/ico_excluir.gif" border="0"></a>
+                          </div>
+                        </td>
+                        <% EndIf %>
+                        <td><div align="center" valign="top" class="texto"><%=HttpSession->PWSV044INFO[2][nI][nJ]%></div></td>
+                        <% Next nJ %>
+                      <% Next nI %>
+                      <tr class="FundoDestaques">
+                         <td height="24" colspan="<%=nTamHeader%>"><span class="TituloMenor">&nbsp;&nbsp;<%= "Valor Total do pedido"%> </span></td>
+                         <td><div align="center"><span class="TituloMenorBold">R$ <%=Transform( HttpSession->nTotalPed, "@E 999,999,999.99" )%></span></div></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table width="535" align="center">
+                <tr>
+                  <td>
+                    <div align="center">
+                      <input type="button" value=<%="Calcular pedido"%> class="Botoes" id="inc2" onClick="fCalcPed()">&nbsp;&nbsp;&nbsp;&nbsp;
+                      <input type="button" value=<%="Gravar pedido"%> class="Botoes" id="inc1" onClick="fGravar()">
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</form>
+<a name="#Fim"></a>
+</body>
+</html>
+<%=GetJsGridLines()%>
+<script language="Javascript">
+<!--
+<% If HttpPost->cIncItem == "1" .OR. HttpPost->cExcItem == "1" %>
+window.location = "#Fim";
+<% EndIf %>
+
+<% If HttpPost->cTABCAB == "1" %>
+document.all.TABCAB.style.display = "none";
+<% EndIf %>
+
+<% If HttpPost->cTABITEM == "1" %>
+document.all.TABITEM.style.display = "none";
+<% EndIf %>
+//-->
+</script>

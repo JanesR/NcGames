@@ -1,0 +1,620 @@
+#INCLUDE "PROTHEUS.CH"
+#INCLUDE "TOPCONN.CH"
+#Include "XMLXFUN.CH"
+#INCLUDE "TBICONN.CH"
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณEcom07Job  บAutor  ณLucas Felipe        บ Data ณ  03/17/14   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+User Function Ecom07Job(aDados)
+
+Default aDados:={"01","03"}
+RpcSetEnv(aDados[1],aDados[2])
+
+U_NcEcom07()
+Ecom07Pg()
+
+RpcClearEnv()
+
+Return
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNcEcom07  บAutor  ณOctavio A. Estevam  บ Data ณ  22/01/14   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ Integra็ใo Protheus x CiaShop                              บฑฑ
+ฑฑบ          ณ Atualiza o status do pedido na ferramenta Ciashop          บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ NC Games                                                  บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+User Function NcEcom07(cNumPV)
+Local aAreaAtu	:= GetArea()
+Local aAreaZC5	:= ZC5->(GetArea())
+Local aAreaQry	:= GetNextAlias()
+
+Local oobj		:= nil
+Local oXml		:= nil
+Local _cxml		:= ""
+Local cError	:= ""
+Local cWarning	:= ""
+Local _cQuery	:= ""
+Local _aStatus	:= {}
+Local _aConfi	:= {}
+Local nHDL
+Local _aXml		:= {}
+Local _nCont	:= 0
+
+Default cNumPV:=""
+
+
+If Empty(cNumPV) .And. !Semaforo(.T.,@nHDL,"NCECOM07")
+	Return()
+EndIf
+
+U_COM07WM(cNumPV)
+COM07VTEX(cNumPV)
+
+_cQuery:=" SELECT * FROM "+RetSqlName("ZC5")+" ZC5 "+CRLF
+_cQuery+=" WHERE ZC5.ZC5_FILIAL = '"+xFilial("ZC5")+"' "+CRLF
+_cQuery+=" AND ZC5.ZC5_PLATAF IN (' ','01') "+CRLF
+
+If !Empty(cNumPV)
+	_cQuery+=" AND ZC5.ZC5_NUMPV = '"+cNumPV+"' "+CRLF
+Else
+	_cQuery+=" AND ZC5.ZC5_ATUALI = 'S' "+CRLF
+	_cQuery+=" AND ZC5.D_E_L_E_T_ = ' ' "+CRLF	
+EndIf
+                                                                   	
+_cQuery := ChangeQuery(_cQuery)
+
+DbUseArea(.T., "TOPCONN", TCGenQry(,,_cQuery), aAreaQry, .T., .F.)
+
+
+//Verifica quais pedidos precisam ser atualizados
+While (aAreaQry)->(!Eof())
+	
+	Aadd(_aStatus,{(aAreaQry)->ZC5_NUM,(aAreaQry)->ZC5_STATUS,(aAreaQry)->R_E_C_N_O_})
+	
+	(aAreaQry)->(DbSkip())
+EndDo
+
+
+
+For i:=1 to Len(_aStatus)
+	If _nCont==1000
+		_nCont:=0
+		Aadd(_aXml,_cxml)
+		_cXml:=""
+	Endif
+	
+	ZC5->(DbGoTo(_aStatus[i][3]))
+	
+	_cxml+='<receipt_status xmlns="" op="I" order_id="'+alltrim(str(_aStatus[i][1]))+'" passo="'+_aStatus[i][2]+'"'
+	
+	If Alltrim(_aStatus[i][2])$("5|4")
+		
+		_cxml+=' status_shopper="Pedido realizado com sucesso"
+		_cxml+=' status_adm="Pedido realizado com sucesso"
+		_cxml+=' rastreamento=""
+		_cxml+=' sendMail="0"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+		
+	ElseIf _aStatus[i][2]=="10"
+		
+		_cxml+=' status_shopper="Pagamento Confirmado"
+		_cxml+=' status_adm="Pagamento Confirmado pelo Cliente"
+		_cxml+=' rastreamento=""
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+		
+	ElseIf _aStatus[i][2]=="15"
+		
+		_cxml+=' status_shopper="Enviado para a Expedi็ใo Pedido Venda ERP:'+ZC5->ZC5_NUMPV+'| Nota Fiscal '+ZC5->ZC5_NOTA+'/'+ZC5->ZC5_SERIE+'"'
+		_cxml+=' status_adm="Enviado para a Expedi็ใo"
+		_cxml+=' rastreamento=""
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+	ElseIf _aStatus[i][2]=="16"
+		
+		_cxml+=' status_shopper="Enviado para a Expedi็ใo Pedido Venda ERP:'+ZC5->ZC5_NUMPV+'| Nota Fiscal '+ZC5->ZC5_NOTA+'/'+ZC5->ZC5_SERIE+'"'
+		_cxml+=' status_adm="Enviado para a Expedi็ใo"
+		_cxml+=' rastreamento=""
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+	//JR
+	ElseIf _aStatus[i][2]=="30"
+		_cxml+=' status_shopper="Enviado para o Cliente"'
+		_cxml+=' status_adm="Enviado para a Cliente"
+		_cxml+=' rastreamento="'+ZC5->ZC5_RASTRE+'"'
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+	ElseIf _aStatus[i][2]=="40"
+		_cxml+=' status_shopper="Pedido Entregue"'
+		_cxml+=' status_adm="Pedido Entregue"
+		_cxml+=' rastreamento=""'
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+	//JR
+	ElseIf _aStatus[i][2]=="90"
+		
+		_cxml+=' status_shopper="Pedido Cancelado"
+		_cxml+=' status_adm="Pedido Cancelado"
+		_cxml+=' rastreamento=""
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"}) 
+		
+	ElseIf _aStatus[i][2]=="95"
+		
+		_cxml+=' status_shopper="Pedido Cancelado"
+		_cxml+=' status_adm="Pedido Cancelado"
+		_cxml+=' rastreamento=""
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+		
+	ElseIf _aStatus[i][2]=="96"
+		
+		_cxml+=' status_shopper="Pedido Cancelado Credito"
+		_cxml+=' status_adm="Pedido Cancelado Credito"
+		_cxml+=' rastreamento=""
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+		
+	ElseIf _aStatus[i][2]=="91"
+		
+		_cxml+=' status_shopper="Pedido Devolvido"
+		_cxml+=' status_adm="Pedido Devolvido"
+		_cxml+=' rastreamento=""
+		_cxml+=' sendMail="1"
+		_cxml+=' shipping_method="" />'
+		Aadd(_aConfi,{_aStatus[i][1],"1"})
+		
+	Endif
+	
+	
+	ZC5->(Reclock("ZC5",.F.))
+	
+	ZC5->ZC5_ATUALI := "N"
+	
+	ZC5->(MsUnlock())
+	
+	_nCont++
+	
+Next i
+
+If !Empty(Alltrim(_cxml))
+	Aadd(_aXml,_cxml)
+Endif
+
+
+For i:=1 to Len(_aXml)
+	
+	_cxml:='<?xml version="1.0" encoding="utf-8" standalone="no" ?><receipt_statusList xmlns="dsReceipt.xsd">'
+	_cxml+=_aXml[i]
+	_cxml+='</receipt_statusList>'
+	
+	//Cria o Obejto com os M้todos do Portal CiaShop
+	oobj:=NC_WSWSIntegracao():new()
+	//U_NcEcoLog("NcEcom07()","Resultado da atualiza็ใo do Status dos pedidos na Ciashop:")
+	//chama o metodo do portal
+	
+	oobj:StatusPedidos(SuperGetMV("EC_NCG0010",,"wsncgames"),SuperGetMV("EC_NCG0011",,"apeei.1453"),_cxml)
+	
+	//oSrv:=RpcConnect( "192.168.0.217",1242,"TOTVSHOM_ECOMMERCE","01","03" )
+	//aReturn:=(oSrv:callproc("U_M07POST",_cxml))
+	//RpcDisconnect (oSrv )
+	
+	//oobj:lStatusPedidosResult :=  aReturn[1]
+	//oobj:cxml                 :=  aReturn[2]
+	
+	
+	If oobj:lStatusPedidosResult
+		
+		//transforma o xml do resultado em objeto
+		oXml := XmlParser( oobj:cxml, "_", @cError, @cWarning )
+		
+		//recupera o conteudo dentro do objeto xml
+		//U_NcEcoLog("NcEcom07()",oxml:_result:_resulttext:text)
+	Else
+		//U_NcEcoLog("NcEcom07()","Erro de Execu็ใo : "+GetWSCError())
+	Endif
+	
+Next i
+//Chama a Funcao que ira atualizar os pedidos no portal CiaShop caso haja algum pedido a ser atualizado
+
+If Len(_aConfi)>0
+	u_NcEcom06(_aConfi)
+Endif
+
+Semaforo(.F.,nHDL,"NCECOM07")
+
+(aAreaQry)->(DbCloseArea())
+RestArea(aAreaZC5)
+RestArea(aAreaAtu)
+
+Return
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM07  บAutor  ณMicrosiga           บ Data ณ  04/12/15   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+Static Function COM07VTEX(cNumPV)
+
+Local aAreaAtu	:= GetArea()
+Local cAliasQry	:= GetNextAlias()
+Local cQuery
+Local cStatus
+Local oSite
+
+Local cResp := ""
+Local lError := .F.
+
+
+cQuery :=" SELECT ZC5.R_E_C_N_O_ RecZC5,ZC5_PLATAF "+CRLF
+cQuery +=" FROM "+RetSqlName("ZC5")+" ZC5 "+CRLF
+cQuery +=" WHERE ZC5.ZC5_FILIAL='"+xFilial("ZC5")+"' "+CRLF
+cQuery +=" AND ZC5.ZC5_ATUALI='S' "+CRLF
+cQuery +=" AND ZC5_PLATAF In ('00','03','02')  "+CRLF
+cQuery+=" And ZC5.D_E_L_E_T_=' '"+CRLF
+
+If !Empty(cNumPV)
+	cQuery+=" And ZC5.ZC5_NUMPV='"+cNumPV+"'"+CRLF
+EndIf
+cQuery+=" Order By ZC5_STATUS,ZC5_NUMPV"
+
+cQuery := ChangeQuery(cQuery)
+
+dbUseArea(.T., "TOPCONN", TCGenQry(,,cQuery), cAliasQry, .T., .F.)
+
+Do While (cAliasQry)->(!Eof())
+	
+	oSite:=Nil
+	
+	ZC5->(DbGoTo((cAliasQry)->RecZC5))
+	
+	If ZC5->ZC5_PLATAF=="00"
+		oSite:=ApiVtex():New("NcGames")
+	ElseIf ZC5->ZC5_PLATAF=="02"
+		oSite:=ApiVtex():New("ProximoGames")
+	ElseIf ZC5->ZC5_PLATAF=="03"
+		oSite:=ApiVtex():New("UzGames")
+	EndIf
+	
+	ZC5->(DbGoTo((cAliasQry)->RecZC5))
+	cStatus := AllTrim(ZC5->ZC5_STATUS)                        
+	
+	MyMensagem("Vtex Pedido "+ZC5->ZC5_NUMPV+" Status "+cStatus)
+	
+	
+	If cStatus == "15" //"Enviado para a Expedi็ใo"
+		
+		oSite:cPedido := AllTrim(ZC5->ZC5_PVVTEX)
+		oSite:PedidoStartHandling()
+		
+		cResp := oSite:cResponse
+		
+		If Valtype(cResp) == "U"
+			cResp := "ERROR"
+		EndIf
+		
+		lError :=  At("ERROR",Upper(cResp))>0
+		
+		//ElseIf cStatus=="16"//"Enviado para a Expedi็ใo"
+		
+		//oSite:cPedido := AllTrim(ZC5->ZC5_PVVTEX)
+		//oSite:PedidoStartHandling()
+		
+		//cResp := oSite:cResponse
+		
+		//If Valtype(cResp) == "U"
+		//	cResp := "ERROR"
+		//EndIf
+		
+		//lError :=  At("ERROR",Upper(cResp))>0
+		
+		ElseIf cStatus=="90" .Or. cStatus=="95"//"Pedido Cancelado"
+		oSite:cPedido := AllTrim(ZC5->ZC5_PVVTEX)
+		oSite:CancelarPedido()
+		
+		cResp := oSite:cResponse
+		
+		If Valtype(cResp) == "U"
+			cResp := "ERROR"
+		EndIf
+		
+		lError :=  At("ERROR",Upper(cResp))>0
+	EndIf
+	
+	If  !lError
+		
+		ZC5->(RecLock("ZC5",.F.))
+		ZC5->ZC5_ATUALI:="N"
+		ZC5->(MsUnLock())
+		
+	EndIf
+	
+	
+	(cAliasQry)->(DbSkip())
+	
+EndDo
+
+
+(cAliasQry)->(dbCloseArea())
+RestArea(aAreaAtu)
+
+
+Return
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM07  บAutor  ณMicrosiga           บ Data ณ  01/30/14   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+Static Function Semaforo(lTipo,nHdl,cArq)
+Local lRet		:=	.f.
+Local cSemaf	:=	"SEMAFORO\"+cArq+".LCK"
+
+If lTipo
+	nHdl := MSFCREATE(cSemaf,1 + 16)
+	lRet := nHdl > 0
+Else
+	lRet :=	Fclose(nHdl)
+	Ferase(cSemaf)
+EndIf
+
+Return(lRet)
+
+
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM07  บAutor  ณMicrosiga           บ Data ณ  01/28/16   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+Static Function MyMensagem(cMensagem)
+PtInternal(1,cMensagem)
+TcInternal(1,cMensagem)
+Conout(cMensagem)
+
+Return
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM07  บAutor  ณMicrosiga           บ Data ณ  02/04/16   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+
+Static Function Ecom07Pg()
+
+Local cAliasSql := GetNextAlias()
+
+Local oApiSite
+Local oJson	:= nil
+
+Local cPedido
+Local cUrl 		:=""
+local cResponse :=""
+
+Local cStatusRet := ""
+
+
+BeginSql alias cAliasSql
+	
+	SELECT ZC5.R_E_C_N_O_ RecZC5
+	FROM %table:ZC5% ZC5
+	WHERE ZC5_FILIAL = %xfilial:ZC5%
+	AND ZC5_NUM <> 0
+	AND %notDel%
+	AND ZC5_STATUS in( '4','5')
+	AND ZC5_ESTORN <> 'S'
+	AND ZC5_PLATAF = '01'
+	
+EndSql
+
+ZC5->(DbSetOrder(1))
+
+
+Do While (cAliasSql)->(!Eof())
+	 
+	ZC5->(DbGoTo((cAliasSql)->RecZC5))
+	
+	If !Empty(ZC5->ZC5_NUM)
+		oApiSite:= Nil
+		
+		oApiSite:= ApiCiaShop():New()
+		
+		cPedido := AllTrim(Str(ZC5->ZC5_NUM))
+		
+		cUrlApi	:= 'orders/'+cPedido+'?fields=status'
+		
+		oApiSite:cUrl := cUrlApi
+		oApiSite:HttpGet()
+		
+		If Valtype(oApiSite:cResponse) == "U"
+			(cAliasSql)->(DbSkip())
+		EndIf
+		
+		If FWJsonDeserialize(oApiSite:cResponse,@oJson)
+			cStatusRet	:= Upper(oJson:Status)
+			If !(ValType(cStatusRet) == "C")
+				cStatusRet := ""
+			EndIf
+		EndIf
+		
+		If !Empty(cStatusRet)
+			ZC5->(RecLock("ZC5",.F.))
+			
+			If cStatusRet == "RESERVED"
+				ZC5->ZC5_STATUS := "4"
+			   	//U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,"Status nใo foi atualizado","Status nใo foi atualizado",ZC5->ZC5_STATUS,.T.,,,ZC5->ZC5_PVVTEX)
+			ElseIf cStatusRet == "CONFIRMED"
+				ZC5->ZC5_STATUS := "4"
+				//U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,"Status nใo foi atualizado","Status nใo foi atualizado",ZC5->ZC5_STATUS,.T.,,,ZC5->ZC5_PVVTEX)
+			ElseIf cStatusRet == "PAYMENTAPPROVED"
+				ZC5->ZC5_STATUS := "10"
+				ZC5->ZC5_PAGTO := "2"
+				U_NCECOM09(ZC5->ZC5_NUM, ZC5->ZC5_NUMPV,"Atualiza็ใo de Status para 10","Atualiza็ใo de Status para 10",ZC5->ZC5_STATUS,.T.,,,ZC5->ZC5_PVVTEX)
+			ElseIf cStatusRet == "PACKAGED"
+				
+			ElseIf cStatusRet == "SHIPPED"
+				
+			ElseIf cStatusRet == "CANCELLED"
+				
+			EndIf
+			
+			ZC5->(MsUnLock())
+		EndIf
+		
+	EndIf
+	(cAliasSql)->(DbSkip())
+	
+EndDo
+
+
+Return
+/*
+ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+ฑฑษออออออออออัออออออออออหอออออออัออออออออออออออออออออหออออออัอออออออออออออปฑฑ
+ฑฑบPrograma  ณNCECOM07  บAutor  ณMicrosiga           บ Data ณ  02/24/16   บฑฑ
+ฑฑฬออออออออออุออออออออออสอออออออฯออออออออออออออออออออสออออออฯอออออออออออออนฑฑ
+ฑฑบDesc.     ณ                                                            บฑฑ
+ฑฑบ          ณ                                                            บฑฑ
+ฑฑฬออออออออออุออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออนฑฑ
+ฑฑบUso       ณ AP                                                        บฑฑ
+ฑฑศออออออออออฯออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผฑฑ
+ฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑฑ
+฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿฿
+*/
+User Function COM07WM(cNumPV)
+Local aAreaAtu	:= GetArea()
+Local aAreaZC5	:= ZC5->(GetArea())
+Local aAreaSF2	:= SF2->(GetArea())
+Local cAliasQry	:= GetNextAlias()
+Local cQuery
+Local cStatus
+
+
+Local lError := .F.
+
+
+cQuery :=" SELECT ZC5.R_E_C_N_O_ RecZC5,ZC5_PLATAF "+CRLF
+cQuery +=" FROM "+RetSqlName("ZC5")+" ZC5 "+CRLF
+cQuery +=" WHERE ZC5.ZC5_FILIAL='"+xFilial("ZC5")+"' "+CRLF
+cQuery +=" AND ZC5.ZC5_ATUALI='S' "+CRLF
+cQuery +=" AND ZC5_PLATAF='WM' "+CRLF
+cQuery+=" And ZC5.D_E_L_E_T_=' '"+CRLF
+
+If !Empty(cNumPV)
+	cQuery+=" And ZC5.ZC5_NUMPV='"+cNumPV+"'"+CRLF
+EndIf
+
+cQuery := ChangeQuery(cQuery)
+
+dbUseArea(.T., "TOPCONN", TCGenQry(,,cQuery), cAliasQry, .T., .F.)
+
+SF2->(DbSetOrder(1))
+
+Do While (cAliasQry)->(!Eof())
+	
+	ZC5->(DbGoTo((cAliasQry)->RecZC5))
+	
+	If ZC5->ZC5_STATUS=='15'
+		If SF2->(DbSeek(xFilial("SF2")+ZC5->(ZC5_NOTA+ZC5_SERIE+ZC5_CLIENT+ZC5_LOJA) ) ) .And.U_WM01GrvExp()
+			ZC5->(RecLock("ZC5",.F.))
+			ZC5->ZC5_ATUALI:="N"
+			ZC5->(MsUnLock())
+		EndIf
+		
+	ElseIf 	ZC5->ZC5_STATUS=='16'
+		If SF2->(DbSeek(xFilial("SF2")+ZC5->(ZC5_NOTA+ZC5_SERIE+ZC5_CLIENT+ZC5_LOJA) ) ) .And.U_WM01GrvNF(SF2->(F2_DOC+"/"+F2_SERIE),SF2->F2_EMISSAO) //.And. !Empty(SF2->F2_CHVNFE)
+			ZC5->(RecLock("ZC5",.F.))
+			ZC5->ZC5_ATUALI:="N"
+			ZC5->(MsUnLock())
+		EndIf
+	ElseIf 	ZC5->ZC5_STATUS=='30'
+		SF2->(DbSeek(xFilial("SF2")+ZC5->(ZC5_NOTA+ZC5_SERIE+ZC5_CLIENT+ZC5_LOJA) ) )
+		U_WM01RASTR()
+		ZC5->(RecLock("ZC5",.F.))
+		ZC5->ZC5_ATUALI:="N"
+		ZC5->(MsUnLock())
+	EndIf
+		
+		
+		
+
+	
+	
+	(cAliasQry)->(DbSkip())
+EndDo
+
+
+(cAliasQry)->(dbCloseArea())
+RestArea(aAreaSF2)
+RestArea(aAreaZC5)
+RestArea(aAreaAtu)
+
+
+Return
