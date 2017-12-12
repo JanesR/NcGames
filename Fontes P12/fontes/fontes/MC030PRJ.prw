@@ -14,15 +14,15 @@
 ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
 */
 User Function MC030PRJ()
-
+Local cAliasTmp	:=ParamIxb[1]
 //Custo medio gerencial Brasil
-aCols[ Len(aCols),GdFieldPos('CMVUNITBR') ]:=KDX->CMEDIOGBR
-aCols[ Len(aCols),GdFieldPos('CMVTOTBR') ] :=KDX->CTOTALGBR
+aCols[ Len(aCols),GdFieldPos('CMVUNITBR') ]:=(cAliasTmp)->CMEDIOGBR
+aCols[ Len(aCols),GdFieldPos('CMVTOTBR') ] :=(cAliasTmp)->CTOTALGBR
 //aCols[ Len(aCols),GdFieldPos('CMQUANTBR') ] :=KDX->CQUANTBR
 
 //Custo medio gerencial Price Protection
-aCols[ Len(aCols),GdFieldPos('CMVUNIT') ]:=KDX->CMEDIOG
-aCols[ Len(aCols),GdFieldPos('CMVTOT') ] :=KDX->CTOTALG
+aCols[ Len(aCols),GdFieldPos('CMVUNIT') ]:=(cAliasTmp)->CMEDIOG
+aCols[ Len(aCols),GdFieldPos('CMVTOT') ] :=(cAliasTmp)->CTOTALG
 //aCols[ Len(aCols),GdFieldPos('CMQUANT') ] :=KDX->CQUANT
 
 Return( Nil )

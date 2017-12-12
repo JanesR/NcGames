@@ -69,7 +69,7 @@ Return
 ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
 */
 User Function NCIWML01()
-Local dData:=Msdate()-1
+Local dData:=Stod('20171211')
 
 //Grava o log de processamento
 u_NCGLogWM(cEmpAnt, cFilAnt, "U_WML01JOB", "Preenchimento das tabelas intermediarias PZQ e PZR(Movimento Loja)", "FISCAL", MsDate() )
@@ -78,7 +78,7 @@ u_NCGLogWM(cEmpAnt, cFilAnt, "U_WML01JOB", "Preenchimento das tabelas intermedia
 //Processa({|| SincBsInt(dData-1,dData-1) }, "Integração Web Manager (Fiscal)", "Sincronização de dados")
 //Processa({|| SincBsInt(dData,dData) }, "Integração Web Manager (Fiscal)", "Sincronização de dados")
 //Processa({|| SincBsInt(Msdate()-15, dData) }, "Integração Web Manager (Fiscal)", "Sincronização de dados")
-Processa({|| SincBsInt(dData-30, dData) }, "Integração Web Manager (Fiscal)", "Sincronização de dados")
+Processa({|| SincBsInt(dData-3, dData) }, "Integração Web Manager (Fiscal)", "Sincronização de dados")
 
 
 //Grava o log de processamento
